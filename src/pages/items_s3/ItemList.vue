@@ -98,17 +98,17 @@
 import {
   defineComponent, ref, onMounted, watch, computed,
 } from 'vue';
-import { itemSearch } from 'src/api/items';
+import { itemS3List } from 'src/api/items';
 import { Source } from 'src/models/source-config';
 import { Item, SearchPayload } from 'src/models/item';
 import { useSearchStore } from 'stores/search';
+import TagSelector from 'src/pages/sources/TagSelector.vue';
 import ItemPreview from './ItemPreview.vue';
-import TagSelector from './TagSelector.vue';
 
 export default defineComponent({
   components: { ItemPreview, TagSelector },
   props: {
-    sourceId: {
+    sourceS3Id: {
       type: [Number, String],
       required: true,
     },
@@ -136,7 +136,7 @@ export default defineComponent({
         filter: filter.value,
         tag_ids: selectedTagIds.value,
       };
-      const res = await itemSearch(props.sourceId, payload);
+      const res = await itemS3List(props.sourceS3Id, payload);
       if (res && res.data) {
         sourceData.value = res.data.source;
         itemsData.value = res.data.items;
