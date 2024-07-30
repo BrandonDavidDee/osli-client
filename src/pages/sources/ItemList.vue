@@ -6,7 +6,7 @@
         size="sm"
       />
       <q-toolbar-title>
-        {{ sourceConfigData?.name }}
+        {{ sourceData?.name }}
       </q-toolbar-title>
       <TagSelector />
       <q-input
@@ -99,7 +99,7 @@ import {
   defineComponent, ref, onMounted, watch, computed,
 } from 'vue';
 import { itemSearch } from 'src/api/items';
-import { SourceConfig } from 'src/models/source-config';
+import { Source } from 'src/models/source-config';
 import { Item, SearchPayload } from 'src/models/item';
 import { useSearchStore } from 'stores/search';
 import ItemPreview from './ItemPreview.vue';
@@ -115,7 +115,7 @@ export default defineComponent({
   },
   setup(props) {
     const store = useSearchStore();
-    const sourceConfigData = ref<SourceConfig>();
+    const sourceData = ref<Source>();
     const itemsData = ref<Item[]>([]);
     const limit = ref(18);
     const page = ref(1);
@@ -125,12 +125,12 @@ export default defineComponent({
     const selectedTagIds = computed(() => store.selectedTagIds);
     const filter = computed(() => store.filter);
     const filterLocal = ref('');
-    const gridView = computed(() => sourceConfigData.value?.grid_view);
+    const gridView = computed(() => sourceData.value?.grid_view);
 
     async function fetchItemsData() {
       itemsData.value = [];
       const payload: SearchPayload = {
-        source_config: sourceConfigData.value,
+        source: sourceData.value,
         limit: limit.value,
         offset: offset.value,
         filter: filter.value,
@@ -138,7 +138,7 @@ export default defineComponent({
       };
       const res = await itemSearch(props.sourceId, payload);
       if (res && res.data) {
-        sourceConfigData.value = res.data.source_config;
+        sourceData.value = res.data.source;
         itemsData.value = res.data.items;
         totalCount.value = res.data.total_count;
         maxPages.value = Math.ceil(totalCount.value / limit.value);
@@ -172,7 +172,7 @@ export default defineComponent({
       itemsData,
       page,
       maxPages,
-      sourceConfigData,
+      sourceData,
       gridView,
       filterLocal,
     };

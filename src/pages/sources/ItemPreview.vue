@@ -79,8 +79,8 @@ export default defineComponent({
       return props.item.mime_type.includes('image');
     });
     const mediaUrl = computed(() => {
-      if (!props.item.source_config.media_prefix) { return null; }
-      return `${props.item.source_config.media_prefix}/${props.item.file_path}`;
+      if (!props.item.source.media_prefix) { return null; }
+      return `${props.item.source.media_prefix}/${props.item.file_path}`;
     });
     const itemType = computed(() => {
       const mimeType = props.item.mime_type;

@@ -1,4 +1,4 @@
-export interface SourceConfig {
+export interface Source {
   id: number;
   name: string;
   bucket_name: string;

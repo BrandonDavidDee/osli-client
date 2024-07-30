@@ -1,4 +1,4 @@
-import { SourceConfig } from './source-config';
+import { Source } from './source-config';
 import { Tag } from './tag';
 
 interface ItemTag {
@@ -15,12 +15,12 @@ export interface Item {
   notes: string;
   date_created: string;
   created_by: string;
-  source_config: SourceConfig;
+  source: Source;
   tags: ItemTag[];
 }
 
 export interface SearchPayload {
-  source_config: any;
+  source: any;
   limit: number;
   offset: number;
   filter: string;

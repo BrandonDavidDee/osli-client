@@ -6,7 +6,7 @@ const prefix = `${process.env.API}/api/items`;
 
 export async function itemSearch(sourceId: number | string, payload: SearchPayload) {
   try {
-    return await api.post(`${prefix}?source_config_id=${sourceId}`, payload);
+    return await api.post(`${prefix}?source_id=${sourceId}`, payload);
   } catch (err) {
     return errorHandler(err);
   }
