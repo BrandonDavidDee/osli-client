@@ -6,7 +6,7 @@
     class="q-ma-xs"
   >
     <q-card-section class="bg-grey-3 text-caption">
-      <router-link :to="{ name: 'item-detail', params: { itemId: item.id }}">
+      <router-link :to="{ name: 'item-detail-bucket', params: { itemId: item.id }}">
         {{ item.file_name }}
       </router-link>
     </q-card-section>

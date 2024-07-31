@@ -68,7 +68,12 @@
         >
           <q-item-section>
             <q-item-label>
-              <router-link :to="{ name: 'item-detail', params: { itemId: item.id }}">
+              <router-link
+                :to="{
+                  name: 'item-detail-bucket',
+                  params: { sourceId: sourceId, itemId: item.id }
+                }"
+              >
                 {{ item.file_name }}
               </router-link>
             </q-item-label>
@@ -98,7 +103,7 @@
 import {
   defineComponent, ref, onMounted, watch, computed,
 } from 'vue';
-import { itemS3List } from 'src/api/items';
+import { itemBucketList } from 'src/api/items';
 import { Source } from 'src/models/source-config';
 import { Item, SearchPayload } from 'src/models/item';
 import { useSearchStore } from 'stores/search';
@@ -108,7 +113,7 @@ import ItemPreview from './ItemPreview.vue';
 export default defineComponent({
   components: { ItemPreview, TagSelector },
   props: {
-    sourceS3Id: {
+    sourceId: {
       type: [Number, String],
       required: true,
     },
@@ -136,7 +141,7 @@ export default defineComponent({
         filter: filter.value,
         tag_ids: selectedTagIds.value,
       };
-      const res = await itemS3List(props.sourceS3Id, payload);
+      const res = await itemBucketList(props.sourceId, payload);
       if (res && res.data) {
         sourceData.value = res.data.source;
         itemsData.value = res.data.items;

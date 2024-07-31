@@ -1,9 +1,9 @@
 import { api } from 'src/boot/axios';
 import errorHandler from './error-handler';
 
-const s3Prefix = `${process.env.API}/api/sources/s3`;
+const s3Prefix = `${process.env.API}/api/sources/bucket`;
 
-export async function sourcesS3List() {
+export async function sourceBucketList() {
   try {
     return await api.get(s3Prefix);
   } catch (err) {
@@ -13,7 +13,7 @@ export async function sourcesS3List() {
 
 const vimeoPrefix = `${process.env.API}/api/sources/vimeo`;
 
-export async function sourcesVimeoList() {
+export async function sourceVimeoList() {
   try {
     return await api.get(vimeoPrefix);
   } catch (err) {

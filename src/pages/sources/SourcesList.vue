@@ -22,7 +22,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, onMounted } from 'vue';
-import { sourcesS3List, sourcesVimeoList } from 'src/api/sources';
+import { sourceBucketList, sourceVimeoList } from 'src/api/sources';
 
 interface ResponseData {
   id: number;
@@ -36,20 +36,19 @@ export default defineComponent({
 
     async function fetchData() {
       data.value = [];
-      const res = await sourcesS3List();
+      const res = await sourceBucketList();
       if (res && res.data) {
         data.value.push(...res.data);
       }
-      const resVimeo = await sourcesVimeoList();
+      const resVimeo = await sourceVimeoList();
       if (resVimeo && resVimeo.data) {
         data.value.push(...resVimeo.data);
       }
     }
 
     function makeRouteObj(source: ResponseData) {
-      const name = source.source_type === 's3' ? 's3-item-list' : 'vimeo-item-list';
-      const params = source.source_type === 's3' ? { sourceS3Id: source.id } : { sourceVimeoId: source.id };
-      return { name, params };
+      const name = source.source_type === 'bucket' ? 'item-list-bucket' : 'item-list-vimeo';
+      return { name, params: { sourceId: source.id } };
     }
 
     onMounted(() => fetchData());
