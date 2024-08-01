@@ -9,7 +9,7 @@
         class="GPL__toolbar"
         style="height: 64px"
       >
-        <q-btn
+        <!-- <q-btn
           flat
           dense
           round
@@ -17,7 +17,7 @@
           icon="menu"
           class="q-mx-md"
           @click="toggleLeftDrawer"
-        />
+        /> -->
 
         <q-toolbar-title
           v-if="$q.screen.gt.sm"

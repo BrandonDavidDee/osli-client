@@ -1,6 +1,6 @@
 <template>
   <div>
-    <q-toolbar>
+    <q-toolbar class="bg-grey-9 text-white">
       <q-icon
         name="mdi-image-multiple"
         size="sm"
@@ -15,7 +15,8 @@
         dense
         square
         outlined
-        color="black"
+        color="white"
+        bg-color="white"
         placeholder="Search"
         debounce="500"
       >

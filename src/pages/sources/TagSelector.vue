@@ -9,7 +9,7 @@
       {{ label }}
     </q-chip>
     <q-dialog v-model="dialog">
-      <q-card>
+      <q-card style="width: 800px; max-width: 80vw;">
         <q-card-section>
           <q-input
             v-model="model"
