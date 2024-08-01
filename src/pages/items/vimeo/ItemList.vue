@@ -51,10 +51,9 @@
         :key="item.id"
         class="col-xs-12 col-sm-6 col-md-4 col-lg-3 col-xl-2"
       >
-        <!-- <ItemPreview
+        <ItemPreview
           :item="item"
-        /> -->
-        {{ item }}
+        />
       </div>
     </div>
     <div v-else>
@@ -110,9 +109,10 @@ import { SearchPayload } from 'src/models/item';
 import { ItemVimeo } from 'src/models/item-vimeo';
 import { useSearchStore } from 'stores/search';
 import TagSelector from 'src/pages/sources/TagSelector.vue';
+import ItemPreview from './ItemPreview.vue';
 
 export default defineComponent({
-  components: { TagSelector },
+  components: { TagSelector, ItemPreview },
   props: {
     sourceId: {
       type: [Number, String],

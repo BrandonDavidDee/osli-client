@@ -33,6 +33,12 @@ const routes: RouteRecordRaw[] = [
         name: 'item-detail-bucket',
         props: true,
       },
+      {
+        path: 'vimeo/:sourceId/items/:itemId',
+        component: () => import('pages/items/vimeo/ItemDetail.vue'),
+        name: 'item-detail-vimeo',
+        props: true,
+      },
     ],
   },
   // Always leave this as last one,

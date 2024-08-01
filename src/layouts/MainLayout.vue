@@ -24,10 +24,12 @@
           shrink
           class="row items-center no-wrap"
         >
-          <img
-            style="height: 40px;"
-            src="https://dummyimage.com/200x80/262626/fff&text=OSLI"
-          >
+          <router-link :to="{ name: 'home'}">
+            <img
+              style="height: 40px;"
+              src="https://dummyimage.com/200x80/262626/fff&text=OSLI"
+            >
+          </router-link>
         </q-toolbar-title>
         {{ filter }}
         <q-space />
