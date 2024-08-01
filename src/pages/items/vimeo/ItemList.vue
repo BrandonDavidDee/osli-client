@@ -51,9 +51,10 @@
         :key="item.id"
         class="col-xs-12 col-sm-6 col-md-4 col-lg-3 col-xl-2"
       >
-        <ItemPreview
+        <!-- <ItemPreview
           :item="item"
-        />
+        /> -->
+        {{ item }}
       </div>
     </div>
     <div v-else>
@@ -74,11 +75,11 @@
                   params: { sourceId: sourceId, itemId: item.id }
                 }"
               >
-                {{ item.file_name }}
+                {{ item.title }}
               </router-link>
             </q-item-label>
             <q-item-label caption>
-              {{ item.mime_type }}
+              {{ item.video_id }}
             </q-item-label>
           </q-item-section>
         </q-item>
@@ -103,16 +104,15 @@
 import {
   defineComponent, ref, onMounted, watch, computed,
 } from 'vue';
-import { itemList } from 'src/api/item-bucket';
-import { SourceBucket } from 'src/models/source-bucket';
+import { itemList } from 'src/api/item-vimeo';
+import { SourceVimeo } from 'src/models/source-vimeo';
 import { SearchPayload } from 'src/models/item';
-import { ItemBucket } from 'src/models/item-bucket';
+import { ItemVimeo } from 'src/models/item-vimeo';
 import { useSearchStore } from 'stores/search';
 import TagSelector from 'src/pages/sources/TagSelector.vue';
-import ItemPreview from './ItemPreview.vue';
 
 export default defineComponent({
-  components: { ItemPreview, TagSelector },
+  components: { TagSelector },
   props: {
     sourceId: {
       type: [Number, String],
@@ -121,8 +121,8 @@ export default defineComponent({
   },
   setup(props) {
     const store = useSearchStore();
-    const sourceData = ref<SourceBucket>();
-    const itemsData = ref<ItemBucket[]>([]);
+    const sourceData = ref<SourceVimeo>();
+    const itemsData = ref<ItemVimeo[]>([]);
     const limit = ref(18);
     const page = ref(1);
     const offset = ref(0);

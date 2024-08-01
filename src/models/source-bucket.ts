@@ -1,4 +1,4 @@
-export interface Source {
+export interface SourceBucket {
   id: number;
   title: string;
   bucket_name: string;

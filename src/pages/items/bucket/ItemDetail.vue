@@ -42,9 +42,9 @@
 import {
   defineComponent, ref, watch,
 } from 'vue';
-import { itemBucketDetail, itemBucketUpdate } from 'src/api/items';
+import { itemDetail, itemUpdate } from 'src/api/item-bucket';
 import { debounce } from 'quasar';
-import { Item } from 'src/models/item';
+import { ItemBucket } from 'src/models/item-bucket';
 import LineItem from 'src/components/LineItem.vue';
 import ItemPreview from './ItemPreview.vue';
 import ItemTags from './ItemTags.vue';
@@ -62,10 +62,10 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const data = ref<Item>();
+    const data = ref<ItemBucket>();
 
     async function fetchData() {
-      const res = await itemBucketDetail(props.itemId);
+      const res = await itemDetail(props.itemId);
       if (res && res.data) {
         data.value = res.data;
       }
@@ -73,7 +73,7 @@ export default defineComponent({
 
     const debouncedItemUpdate = debounce(async () => {
       if (data.value) {
-        const res = await itemBucketUpdate(props.itemId, data.value);
+        const res = await itemUpdate(props.itemId, data.value);
         if (res) {
           // console.log(res.status);
         }

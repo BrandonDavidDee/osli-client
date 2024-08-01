@@ -14,12 +14,12 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue';
-import { Item } from 'src/models/item';
+import { ItemBucket } from 'src/models/item-bucket';
 
 export default defineComponent({
   props: {
     item: {
-      type: Object as PropType<Item>,
+      type: Object as PropType<ItemBucket>,
       required: true,
     },
   },

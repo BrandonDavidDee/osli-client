@@ -23,7 +23,7 @@ const routes: RouteRecordRaw[] = [
       },
       {
         path: 'vimeo/:sourceId/items',
-        component: () => import('pages/items/vimeo/VimeoItemsList.vue'),
+        component: () => import('pages/items/vimeo/ItemList.vue'),
         name: 'item-list-vimeo',
         props: true,
       },

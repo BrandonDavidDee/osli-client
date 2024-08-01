@@ -22,7 +22,8 @@
 
 <script lang="ts">
 import { defineComponent, ref, onMounted } from 'vue';
-import { sourceBucketList, sourceVimeoList } from 'src/api/sources';
+import { sourceListBucket } from 'src/api/source-bucket';
+import { sourceListVimeo } from 'src/api/source-vimeo';
 
 interface ResponseData {
   id: number;
@@ -36,11 +37,11 @@ export default defineComponent({
 
     async function fetchData() {
       data.value = [];
-      const res = await sourceBucketList();
+      const res = await sourceListBucket();
       if (res && res.data) {
         data.value.push(...res.data);
       }
-      const resVimeo = await sourceVimeoList();
+      const resVimeo = await sourceListVimeo();
       if (resVimeo && resVimeo.data) {
         data.value.push(...resVimeo.data);
       }
