@@ -13,7 +13,7 @@
         :to="makeRouteObj(source)"
       >
         <q-item-section>
-          <q-item-label>{{ source.name }}</q-item-label>
+          <q-item-label>{{ source.title }}</q-item-label>
         </q-item-section>
       </q-item>
     </q-list>
@@ -26,7 +26,7 @@ import { sourceBucketList, sourceVimeoList } from 'src/api/sources';
 
 interface ResponseData {
   id: number;
-  name: string;
+  title: string;
   source_type: string;
 }
 

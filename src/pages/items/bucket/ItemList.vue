@@ -6,7 +6,7 @@
         size="sm"
       />
       <q-toolbar-title>
-        {{ sourceData?.name }}
+        {{ sourceData?.title }}
       </q-toolbar-title>
       <TagSelector />
       <q-input
