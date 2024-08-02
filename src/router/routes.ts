@@ -39,6 +39,17 @@ const routes: RouteRecordRaw[] = [
         name: 'item-detail-vimeo',
         props: true,
       },
+      {
+        path: 'galleries',
+        component: () => import('pages/galleries/GalleryList.vue'),
+        name: 'gallery-list',
+      },
+      {
+        path: 'galleries/:galleryId',
+        component: () => import('pages/galleries/GalleryDetail.vue'),
+        name: 'gallery-detail',
+        props: true,
+      },
     ],
   },
   // Always leave this as last one,

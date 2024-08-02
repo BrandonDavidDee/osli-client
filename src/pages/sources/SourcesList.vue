@@ -16,6 +16,15 @@
           <q-item-label>{{ source.title }}</q-item-label>
         </q-item-section>
       </q-item>
+      <q-item
+        v-ripple
+        clickable
+        :to="{name: 'gallery-list'}"
+      >
+        <q-item-section>
+          <q-item-label>Galleries</q-item-label>
+        </q-item-section>
+      </q-item>
     </q-list>
   </div>
 </template>
