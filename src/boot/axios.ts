@@ -1,7 +1,6 @@
 import { boot } from 'quasar/wrappers';
 import axios, { AxiosInstance } from 'axios';
 import { useAuthStore } from 'stores/auth';
-// import { Cookies } from 'quasar';
 
 declare module '@vue/runtime-core' {
   interface ComponentCustomProperties {
@@ -10,17 +9,19 @@ declare module '@vue/runtime-core' {
   }
 }
 
-// const noRedirect = ['login', 'password-recovery', 'password-reset'];
 const noHeader = ['/api/authentication/login', '/api/authentication/refresh-tokens'];
+const publicRoutes = ['gallery-link-public', 'item-link-public'];
 const api: AxiosInstance = axios.create({ baseURL: process.env.API, withCredentials: true });
 
 export default boot(async ({ app, router, store }) => {
   const authStore = useAuthStore(store);
   // ^^ note that this variable is set at "boot" time and does not update afterward
-  // Cookies.get('refresh_token')
   await authStore.refreshTokenSet();
 
   router.beforeEach(async (to) => {
+    if (publicRoutes.includes(to.name as string)) {
+      return true;
+    }
     if (to.name !== 'login' && !authStore.refreshToken) {
       return { name: 'login' };
     }

@@ -7,6 +7,18 @@ const routes: RouteRecordRaw[] = [
     name: 'login',
   },
   {
+    path: '/public',
+    component: () => import('layouts/PublicLayout.vue'),
+    children: [
+      {
+        path: 'gallery-link/:link',
+        component: () => import('pages/gallery-links/GalleryLinkPublic.vue'),
+        name: 'gallery-link-public',
+        props: true,
+      },
+    ],
+  },
+  {
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
     children: [
