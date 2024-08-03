@@ -1,5 +1,27 @@
 <template>
-  <pre>{{ data }}</pre>
+  <div v-if="data">
+    <div class="text-h6 q-ma-md text-grey-9">
+      <q-input
+        v-model="data.title"
+        lable="Title"
+        color="black"
+      />
+    </div>
+    <div>
+      <div
+        v-for="item in data?.items"
+        :key="item.id"
+      >
+        <q-card flat>
+          <q-card-section class="row">
+            <div class="col=3">
+              {{ item }}
+            </div>
+          </q-card-section>
+        </q-card>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -38,3 +60,19 @@ export default defineComponent({
   },
 });
 </script>
+
+<style>
+.thumbnail-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  overflow: hidden;
+}
+
+.thumbnail {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: cover;
+}
+</style>
