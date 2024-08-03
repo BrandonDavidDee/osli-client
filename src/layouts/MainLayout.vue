@@ -9,16 +9,6 @@
         class="GPL__toolbar"
         style="height: 64px"
       >
-        <!-- <q-btn
-          flat
-          dense
-          round
-          aria-label="Menu"
-          icon="menu"
-          class="q-mx-md"
-          @click="toggleLeftDrawer"
-        /> -->
-
         <q-toolbar-title
           v-if="$q.screen.gt.sm"
           shrink
@@ -27,11 +17,10 @@
           <router-link :to="{ name: 'home'}">
             <img
               style="height: 40px;"
-              src="https://dummyimage.com/200x80/262626/fff&text=OSLI"
+              :src="logoUrl"
             >
           </router-link>
         </q-toolbar-title>
-        {{ filter }}
         <q-space />
         <div class="q-gutter-sm row items-center no-wrap">
           <q-btn
@@ -44,14 +33,6 @@
         </div>
       </q-toolbar>
     </q-header>
-    <q-drawer
-      v-model="leftDrawerOpen"
-      side="left"
-      behavior="desktop"
-      bordered
-    >
-      LEFT DRAWER MENU
-    </q-drawer>
     <q-page-container>
       <router-view />
     </q-page-container>
@@ -59,22 +40,16 @@
 </template>
 
 <script lang="ts">
-import { ref, computed } from 'vue';
-import { useSearchStore } from 'stores/search';
+import { computed } from 'vue';
 
 export default {
   setup() {
-    const leftDrawerOpen = ref(false);
-
-    const store = useSearchStore();
-    const filter = computed(() => store.filter);
-
+    const logoUrl = computed(() => {
+      const envLogo = process.env.LOGO;
+      return (typeof envLogo === 'string' && envLogo) || 'https://dummyimage.com/200x80/262626/fff&text=OSLI';
+    });
     return {
-      filter,
-      leftDrawerOpen,
-      toggleLeftDrawer() {
-        leftDrawerOpen.value = !leftDrawerOpen.value;
-      },
+      logoUrl,
     };
   },
 };

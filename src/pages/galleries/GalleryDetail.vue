@@ -5,16 +5,33 @@
         v-model="data.title"
         lable="Title"
         color="black"
+        filled
+        square
       />
     </div>
-    <div>
+    <div class="q-ma-sm">
       <div
         v-for="item in data?.items"
         :key="item.id"
       >
-        <q-card flat>
+        <q-card
+          class="q-mb-sm"
+          flat
+          bordered
+          square
+        >
           <q-card-section class="row">
-            <div class="col=3">
+            <div class="col-1">
+              <ItemBucketThumb
+                v-if="item.item_bucket"
+                :item="item.item_bucket"
+              />
+              <ItemVimeoThumb
+                v-if="item.item_vimeo"
+                :item="item.item_vimeo"
+              />
+            </div>
+            <div class="col-11">
               {{ item }}
             </div>
           </q-card-section>
@@ -28,8 +45,11 @@
 import { defineComponent, ref, watch } from 'vue';
 import { Gallery } from 'src/models/gallery';
 import { galleryDetail } from 'src/api/galleries';
+import ItemBucketThumb from 'src/public-thumbs/ItemBucketThumb.vue';
+import ItemVimeoThumb from 'src/public-thumbs/ItemVimeoThumb.vue';
 
 export default defineComponent({
+  components: { ItemVimeoThumb, ItemBucketThumb },
   props: {
     galleryId: {
       type: [Number, String],

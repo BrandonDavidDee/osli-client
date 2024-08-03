@@ -13,8 +13,9 @@
 
 const { configure } = require('quasar/wrappers');
 
+require('dotenv').config();
+
 const apiUrl = 'https://nothing.com';
-const mediaRoot = '';
 
 module.exports = configure((ctx) => ({
   // https://v2.quasar.dev/quasar-cli-vite/prefetch-feature
@@ -64,7 +65,7 @@ module.exports = configure((ctx) => ({
     // analyze: true,
     env: {
       API: ctx.dev ? 'http://127.0.0.1:8000' : apiUrl,
-      MEDIA: mediaRoot,
+      LOGO: process.env.LOGO,
     },
     // rawDefine: {}
     // ignorePublicFolder: true,

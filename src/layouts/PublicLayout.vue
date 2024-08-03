@@ -17,7 +17,7 @@
           <router-link :to="{ name: 'home'}">
             <img
               style="height: 40px;"
-              src="https://dummyimage.com/200x80/262626/fff&text=PUBLIC"
+              :src="logoUrl"
             >
           </router-link>
         </q-toolbar-title>
@@ -28,6 +28,22 @@
     </q-page-container>
   </q-layout>
 </template>
+
+<script lang="ts">
+import { computed } from 'vue';
+
+export default {
+  setup() {
+    const logoUrl = computed(() => {
+      const envLogo = process.env.LOGO;
+      return (typeof envLogo === 'string' && envLogo) || 'https://dummyimage.com/200x80/262626/fff&text=OSLI';
+    });
+    return {
+      logoUrl,
+    };
+  },
+};
+</script>
 
 <style lang="sass">
 .GPL

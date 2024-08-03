@@ -4,6 +4,12 @@
       :src="source"
       :ratio="1"
     >
+      <div class="absolute-bottom-right text-subtitle2">
+        <q-icon
+          name="play_circle"
+          size="2rem"
+        />
+      </div>
       <template #error>
         <div class="absolute-full flex flex-center bg-negative text-white">
           Cannot load image
