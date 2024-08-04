@@ -14,12 +14,21 @@
           shrink
           class="row items-center no-wrap"
         >
-          <router-link :to="{ name: 'home'}">
+          <a
+            v-if="logoClickUrl"
+            :href="logoClickUrl"
+            target="_blank"
+          >
             <img
               style="height: 40px;"
               :src="logoUrl"
             >
-          </router-link>
+          </a>
+          <img
+            v-else
+            style="height: 40px;"
+            :src="logoUrl"
+          >
         </q-toolbar-title>
       </q-toolbar>
     </q-header>
@@ -38,8 +47,14 @@ export default {
       const envLogo = process.env.LOGO;
       return (typeof envLogo === 'string' && envLogo) || 'https://dummyimage.com/200x80/262626/fff&text=OSLI';
     });
+    const logoClickUrl = computed(() => {
+      const url = process.env.LOGO_CLICK_URL;
+      return (typeof url === 'string' && url) || null;
+    });
+
     return {
       logoUrl,
+      logoClickUrl,
     };
   },
 };

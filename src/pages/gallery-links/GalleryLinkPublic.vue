@@ -30,7 +30,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch } from 'vue';
+import {
+  defineComponent, ref, watch, computed,
+} from 'vue';
+import { useMeta } from 'quasar';
 import { galleryLinkDetail } from 'src/api/gallery-links';
 import { Gallery } from 'src/models/gallery';
 import ItemBucketThumb from 'src/public-thumbs/ItemBucketThumb.vue';
@@ -45,12 +48,24 @@ export default defineComponent({
     },
   },
   setup(props) {
+    const title = ref('Gallery');
+    // ^^ title is a required field for a gallery in the api
+    const websiteTitle = computed(() => {
+      const siteTitle = process.env.SITE_TITLE;
+      return (typeof siteTitle === 'string' && siteTitle) || null;
+    });
+    useMeta(() => ({
+      title: websiteTitle.value ? `${websiteTitle.value} | ${title.value}` : title.value,
+    }));
     const data = ref<Gallery>();
 
     async function fetchData() {
       const res = await galleryLinkDetail(props.link);
       if (res && res.data) {
         data.value = res.data;
+        if (data.value && data.value.title) {
+          title.value = data.value.title;
+        }
       }
     }
 

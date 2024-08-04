@@ -66,6 +66,8 @@ module.exports = configure((ctx) => ({
     env: {
       API: ctx.dev ? 'http://127.0.0.1:8000' : apiUrl,
       LOGO: process.env.LOGO,
+      LOGO_CLICK_URL: process.env.LOGO_CLICK_URL,
+      SITE_TITLE: process.env.SITE_TITLE,
     },
     // rawDefine: {}
     // ignorePublicFolder: true,
@@ -116,6 +118,7 @@ module.exports = configure((ctx) => ({
     plugins: [
       'Cookies',
       'Notify',
+      'Meta',
     ],
   },
 
