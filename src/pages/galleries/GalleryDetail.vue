@@ -31,7 +31,7 @@
                 :item="item.item_vimeo"
               />
             </div>
-            <div class="col-11">
+            <div class="col-11 q-pa-sm">
               {{ item }}
             </div>
           </q-card-section>

@@ -41,7 +41,7 @@ import { itemDetail, itemUpdate } from 'src/api/item-vimeo';
 import { debounce } from 'quasar';
 import { ItemVimeo } from 'src/models/item-vimeo';
 import LineItem from 'src/components/LineItem.vue';
-import VimeoPlayer from './VimeoPlayer.vue';
+import VimeoPlayer from 'src/public-thumbs/VimeoPlayer.vue';
 import ItemTags from './ItemTags.vue';
 
 export default defineComponent({

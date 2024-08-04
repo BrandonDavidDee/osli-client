@@ -4,6 +4,7 @@ import { ItemVimeo } from './item-vimeo';
 interface GalleryItem {
   id: number;
   item_order: number;
+  source_type: string;
   item_bucket: ItemBucket | null;
   item_vimeo: ItemVimeo | null;
 }
