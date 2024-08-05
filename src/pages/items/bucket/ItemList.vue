@@ -34,6 +34,14 @@
         </template>
       </q-input>
     </q-toolbar>
+    <q-btn
+      dense
+      flat
+      icon="add"
+      label="Add"
+      @click="dialog = true"
+    />
+    <q-space />
     <q-card
       v-if="!itemsData.length"
       class="q-ma-sm"
@@ -97,6 +105,20 @@
         color="teal"
       />
     </div>
+    <q-dialog v-model="dialog">
+      <q-card style="width: 800px; max-width: 80vw;">
+        <BatchUploader
+          :source-id="sourceId"
+          @uploaded="onUploaded"
+        />
+        <q-card-actions align="right">
+          <q-btn
+            v-close-popup
+            label="Close"
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
@@ -110,10 +132,11 @@ import { SearchPayload } from 'src/models/item';
 import { ItemBucket } from 'src/models/item-bucket';
 import { useSearchStore } from 'stores/search';
 import TagSelector from 'src/pages/sources/TagSelector.vue';
+import BatchUploader from 'src/components/BatchUploader.vue';
 import ItemPreview from './ItemPreview.vue';
 
 export default defineComponent({
-  components: { ItemPreview, TagSelector },
+  components: { ItemPreview, TagSelector, BatchUploader },
   props: {
     sourceId: {
       type: [Number, String],
@@ -121,6 +144,7 @@ export default defineComponent({
     },
   },
   setup(props) {
+    const dialog = ref(false);
     const store = useSearchStore();
     const sourceData = ref<SourceBucket>();
     const itemsData = ref<ItemBucket[]>([]);
@@ -150,6 +174,17 @@ export default defineComponent({
         totalCount.value = res.data.total_count;
         maxPages.value = Math.ceil(totalCount.value / limit.value);
       }
+    }
+
+    function resetSearchParams() {
+      page.value = 1;
+      filterLocal.value = '';
+      // TODO: reset tags and any search values in state too
+    }
+
+    function onUploaded() {
+      resetSearchParams();
+      fetchItemsData();
     }
 
     watch(filter, () => {
@@ -182,6 +217,8 @@ export default defineComponent({
       sourceData,
       gridView,
       filterLocal,
+      onUploaded,
+      dialog,
     };
   },
 });
