@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import { defineComponent, computed } from 'vue';
+import { defineComponent, computed, ref } from 'vue';
 import { useAuthStore } from 'src/stores/auth';
 import { warningNotification } from 'src/services/notify';
 import { getBatchUploadUrl } from 'src/api/item-bucket';
@@ -37,7 +37,8 @@ export default defineComponent({
   setup(props, { emit }) {
     const store = useAuthStore();
     const accessToken = computed(() => store.accessToken);
-    const url = computed(() => getBatchUploadUrl(props.sourceId));
+    const encryptionKey = ref(''); // prompt user for this, then store in state
+    const url = computed(() => getBatchUploadUrl(props.sourceId, encryptionKey.value));
 
     function enforceExtension(files) {
       return files.filter((file) => file.name.includes('.'));

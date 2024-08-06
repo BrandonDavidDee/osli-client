@@ -5,8 +5,8 @@ import errorHandler from './error-handler';
 
 const path = `${process.env.API}/api/items/bucket`;
 
-export function getBatchUploadUrl(sourceId: number | string) {
-  return `${path}?source_id=${sourceId}`;
+export function getBatchUploadUrl(sourceId: number | string, encryptionKey: string) {
+  return `${path}?source_id=${sourceId}&encryption_key=${encryptionKey}`;
 }
 
 export async function itemList(sourceId: number | string, payload: SearchPayload) {
