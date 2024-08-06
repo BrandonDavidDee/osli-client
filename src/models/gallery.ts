@@ -1,5 +1,6 @@
 import { ItemBucket } from './item-bucket';
 import { ItemVimeo } from './item-vimeo';
+import { User } from './user';
 
 interface GalleryItem {
   id: number;
@@ -13,7 +14,7 @@ export interface Gallery {
   id: number;
   title: string;
   description: string | null;
-  created_by: string;
   date_created: string;
   items: GalleryItem[];
+  created_by: User | null;
 }
