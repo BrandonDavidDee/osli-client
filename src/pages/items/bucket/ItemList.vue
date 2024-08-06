@@ -1,10 +1,18 @@
 <template>
   <div>
     <q-toolbar class="bg-grey-9 text-white">
-      <q-icon
-        name="mdi-image-multiple"
+      <q-btn
+        dense
+        icon="add"
+        color="white"
+        text-color="black"
         size="sm"
-      />
+        @click="dialog = true"
+      >
+        <q-tooltip>
+          Add new
+        </q-tooltip>
+      </q-btn>
       <q-toolbar-title>
         {{ sourceData?.title }}
       </q-toolbar-title>
@@ -34,13 +42,6 @@
         </template>
       </q-input>
     </q-toolbar>
-    <q-btn
-      dense
-      flat
-      icon="add"
-      label="Add"
-      @click="dialog = true"
-    />
     <q-space />
     <q-card
       v-if="!itemsData.length"
