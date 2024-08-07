@@ -3,6 +3,24 @@
     v-if="data"
     class="row"
   >
+    <q-toolbar class="bg-grey-9 text-white">
+      <q-btn
+        dense
+        icon="arrow_back"
+        color="white"
+        text-color="black"
+        size="sm"
+        :to="{name: 'item-list-bucket', params: { sourceId: data.source.id}}"
+      />
+      <q-toolbar-title>
+        {{ data.source.title }}
+      </q-toolbar-title>
+      <q-spinner
+        v-show="loading"
+        color="teal"
+        size="2em"
+      />
+    </q-toolbar>
     <div class="col q-pa-md">
       <ItemPreview :item="data" />
     </div>
@@ -21,6 +39,16 @@
         :separator="false"
       />
       <q-input
+        v-model="data.title"
+        filled
+        square
+        label="Title"
+        color="black"
+        class="q-mt-md"
+        hint="Optional"
+        @update:model-value="debouncedItemUpdate"
+      />
+      <q-input
         v-model="data.notes"
         filled
         square
@@ -33,6 +61,8 @@
       <ItemTags
         :item="data"
         class="q-mt-md"
+        @new="onNewTag"
+        @deleted="onDeletedTagItem"
       />
     </div>
   </div>
@@ -44,6 +74,7 @@ import {
 } from 'vue';
 import { itemDetail, itemUpdate } from 'src/api/item-bucket';
 import { debounce } from 'quasar';
+import { ItemTag } from 'src/models/item';
 import { ItemBucket } from 'src/models/item-bucket';
 import LineItem from 'src/components/LineItem.vue';
 import ItemPreview from './ItemPreview.vue';
@@ -63,6 +94,7 @@ export default defineComponent({
   },
   setup(props) {
     const data = ref<ItemBucket>();
+    const loading = ref(false);
 
     async function fetchData() {
       const res = await itemDetail(props.itemId);
@@ -73,10 +105,9 @@ export default defineComponent({
 
     const debouncedItemUpdate = debounce(async () => {
       if (data.value) {
-        const res = await itemUpdate(props.itemId, data.value);
-        if (res) {
-          // console.log(res.status);
-        }
+        loading.value = true;
+        await itemUpdate(props.itemId, data.value);
+        loading.value = false;
       }
     }, 500);
 
@@ -96,14 +127,28 @@ export default defineComponent({
       return `${fileSize} bytes`;
     }
 
+    function onNewTag(v: ItemTag) {
+      data.value?.tags.push(v);
+    }
+
+    function onDeletedTagItem(v: number) {
+      const index = data.value?.tags.findIndex((i: ItemTag) => i.id === v);
+      if (index !== undefined && index !== -1) {
+        data.value?.tags.splice(index, 1);
+      }
+    }
+
     watch(() => props.itemId, () => {
       fetchData();
     }, { immediate: true });
 
     return {
       data,
+      loading,
       calculateSize,
       debouncedItemUpdate,
+      onNewTag,
+      onDeletedTagItem,
     };
   },
 });

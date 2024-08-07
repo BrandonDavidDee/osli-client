@@ -3,19 +3,23 @@
     <q-toolbar class="bg-grey-9 text-white">
       <q-btn
         dense
+        icon="arrow_back"
+        color="white"
+        text-color="black"
+        size="sm"
+        :to="{name: 'home'}"
+      />
+      <q-toolbar-title>
+        {{ sourceData?.title }}
+      </q-toolbar-title>
+      <q-btn
         icon="add"
         color="white"
         text-color="black"
         size="sm"
+        label="Add"
         @click="dialog = true"
-      >
-        <q-tooltip>
-          Add new
-        </q-tooltip>
-      </q-btn>
-      <q-toolbar-title>
-        {{ sourceData?.title }}
-      </q-toolbar-title>
+      />
       <TagSelector />
       <q-input
         v-model="filterLocal"
@@ -42,7 +46,6 @@
         </template>
       </q-input>
     </q-toolbar>
-    <q-space />
     <q-card
       v-if="!itemsData.length"
       class="q-ma-sm"
