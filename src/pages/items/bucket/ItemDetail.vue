@@ -25,6 +25,10 @@
       <ItemPreview :item="data" />
     </div>
     <div class="col q-pa-md">
+      <q-btn
+        label="Links"
+        :to="{ name: 'item-links-bucket', params: { sourceId, itemId}}"
+      />
       <LineItem
         label="File Path"
         :text="data.file_path"

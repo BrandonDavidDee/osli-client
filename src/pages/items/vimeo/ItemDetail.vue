@@ -25,6 +25,10 @@
       <VimeoPlayer :video-id="data.video_id" />
     </div>
     <div class="col q-pa-md">
+      <q-btn
+        label="Links"
+        :to="{ name: 'item-links-vimeo', params: { sourceId, itemId}}"
+      />
       <LineItem
         label="Thumbnail"
         :text="data.thumbnail"

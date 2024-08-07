@@ -1,5 +1,5 @@
 import { api } from 'src/boot/axios';
-import { SearchPayload, ItemTag } from 'src/models/item';
+import { SearchPayload, ItemTag, ItemLink } from 'src/models/item';
 import { ItemBucket } from 'src/models/item-bucket';
 import errorHandler from './error-handler';
 
@@ -44,6 +44,38 @@ export async function itemTagCreate(itemId: number | string, payload: ItemTag) {
 export async function itemTagDelete(itemId: number | string, tagItemBucketId: number) {
   try {
     return await api.delete(`${path}/${itemId}/tags/${tagItemBucketId}`);
+  } catch (err) {
+    return errorHandler(err);
+  }
+}
+
+export async function itemLinkCreate(itemId: number | string, payload: ItemLink) {
+  try {
+    return await api.post(`${path}/${itemId}/links`, payload);
+  } catch (err) {
+    return errorHandler(err);
+  }
+}
+
+export async function itemLinks(itemId: number | string) {
+  try {
+    return await api.get(`${path}/${itemId}/links`);
+  } catch (err) {
+    return errorHandler(err);
+  }
+}
+
+export async function itemLinkUpdate(itemId: number | string, payload: ItemLink) {
+  try {
+    return await api.put(`${path}/${itemId}/links/${payload.id}`, payload);
+  } catch (err) {
+    return errorHandler(err);
+  }
+}
+
+export async function itemLinkDelete(itemId: number | string, itemLinkId: number) {
+  try {
+    return await api.delete(`${path}/${itemId}/links/${itemLinkId}`);
   } catch (err) {
     return errorHandler(err);
   }

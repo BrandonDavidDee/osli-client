@@ -1,5 +1,5 @@
 import { SourceVimeo } from './source-vimeo';
-import { ItemTag } from './item';
+import { ItemTag, ItemLink } from './item';
 
 export interface ItemVimeo {
   id: number;
@@ -11,4 +11,5 @@ export interface ItemVimeo {
   created_by: string;
   source: SourceVimeo;
   tags: ItemTag[];
+  links: ItemLink[];
 }

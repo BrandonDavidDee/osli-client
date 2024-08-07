@@ -1,0 +1,276 @@
+<template>
+  <div>
+    <q-toolbar class="bg-grey-9 text-white">
+      <q-btn
+        dense
+        icon="arrow_back"
+        color="white"
+        text-color="black"
+        size="sm"
+        :to="{name: 'item-detail-bucket', params: { itemId }}"
+      />
+      <q-toolbar-title>
+        Item Links: {{ data?.file_path }}
+      </q-toolbar-title>
+    </q-toolbar>
+    <div class="q-pa-md">
+      <q-markup-table
+        flat
+        square
+        bordered
+        dense
+      >
+        <thead>
+          <tr>
+            <th
+              class="text-right"
+              colspan="5"
+            >
+              <q-btn
+                icon="add"
+                size="sm"
+                flat
+                @click="newLink"
+              />
+            </th>
+          </tr>
+          <tr>
+            <th class="text-left">
+              Title
+            </th>
+            <th class="text-left">
+              Expires On
+            </th>
+            <th class="text-left">
+              View Count
+            </th>
+            <th class="text-left">
+              Created By
+            </th>
+            <th />
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="link in data?.links"
+            :key="link.id"
+          >
+            <td
+              class="cursor-pointer"
+              @click="selectLink(link)"
+            >
+              {{ link.title || 'No Title' }}
+            </td>
+            <td>
+              {{ link.expiration_date || 'No Expiration' }}
+            </td>
+            <td>
+              {{ link.view_count }}
+            </td>
+            <td>
+              {{ link.created_by?.username }}
+              <div>{{ getDateTimeDisplay(link.date_created) }}</div>
+            </td>
+            <td>
+              <q-btn-group flat>
+                <q-btn
+                  size="sm"
+                  icon="visibility"
+                  round
+                  @click="selectLink(link)"
+                />
+                <q-btn
+                  size="sm"
+                  icon="content_copy"
+                  round
+                  @click="copyLink(link.link)"
+                />
+                <q-btn
+                  size="sm"
+                  icon="link"
+                  round
+                  @click="openLink(link.link)"
+                />
+
+                <q-btn
+                  size="sm"
+                  icon="delete"
+                  round
+                  disable
+                />
+              </q-btn-group>
+            </td>
+          </tr>
+        </tbody>
+      </q-markup-table>
+    </div>
+    <q-dialog v-model="dialog">
+      <q-card
+        v-if="selected"
+        style="width: 800px; max-width: 80vw;"
+      >
+        <q-form @submit="onSubmit">
+          <q-card-section>
+            <q-input
+              v-model="selected.title"
+              filled
+              hint="Optional - Overrides Gallery Title"
+              color="black"
+              class="q-mb-md"
+              label="Title"
+            />
+            <q-card
+              v-if="selected.id > 0"
+              flat
+              bordered
+              square
+            >
+              <q-card-section class="text-subtitle2">
+                Public Link
+              </q-card-section>
+              <q-separator />
+              <q-card-section
+                class="cursor-pointer"
+                @click="copyLink(selected?.link)"
+              >
+                {{ selected.link }}
+              </q-card-section>
+            </q-card>
+          </q-card-section>
+          <q-card-actions align="right">
+            <q-btn
+              v-close-popup
+              label="Close"
+              flat
+            />
+            <q-btn
+              color="green"
+              label="Save"
+              type="submit"
+            />
+          </q-card-actions>
+        </q-form>
+      </q-card>
+    </q-dialog>
+  </div>
+</template>
+
+<script lang="ts">
+import { defineComponent, ref, watch } from 'vue';
+import { ItemLink } from 'src/models/item';
+import { ItemBucket } from 'src/models/item-bucket';
+import { itemLinkCreate, itemLinks, itemLinkUpdate } from 'src/api/item-bucket';
+import { getDateTimeDisplay } from 'src/services/date-master';
+import { copyToClipboard, openURL } from 'quasar';
+import { positiveNotification, negativeNotification } from 'src/services/notify';
+
+export default defineComponent({
+  props: {
+    sourceId: {
+      type: [Number, String],
+      required: true,
+    },
+    itemId: {
+      type: [Number, String],
+      required: true,
+    },
+  },
+  setup(props) {
+    const data = ref<ItemBucket>();
+    const dialog = ref(false);
+    const selected = ref<ItemLink>();
+
+    async function fetchData() {
+      const res = await itemLinks(props.itemId);
+      if (res && res.data) {
+        data.value = res.data;
+      }
+    }
+
+    function selectLink(v: ItemLink) {
+      selected.value = v;
+      dialog.value = true;
+    }
+
+    function copyLink(link: string | undefined) {
+      if (link) {
+        copyToClipboard(link)
+          .then(() => {
+            positiveNotification('Copied link to Clipboard');
+          })
+          .catch(() => {
+            negativeNotification('Error Copying Link');
+          });
+      }
+    }
+
+    function openLink(link: string | undefined) {
+      if (link) {
+        openURL(link);
+      }
+    }
+
+    async function createNew() {
+      if (selected.value) {
+        const res = await itemLinkCreate(props.itemId, selected.value);
+        if (res && res.status === 200) {
+          positiveNotification('Created!');
+        }
+        dialog.value = false;
+      }
+    }
+
+    async function updateExisting() {
+      if (selected.value) {
+        const res = await itemLinkUpdate(props.itemId, selected.value);
+        if (res && res.status === 200) {
+          positiveNotification('Updated!');
+        }
+        dialog.value = false;
+      }
+    }
+
+    function onSubmit() {
+      if (selected.value && selected.value.id === 0) {
+        createNew();
+      } else {
+        updateExisting();
+      }
+    }
+
+    function newLink() {
+      const model: ItemLink = {
+        id: 0,
+        title: null,
+        link: '',
+        expiration_date: null,
+        view_count: 0,
+        date_created: null,
+        created_by: null,
+      };
+      selected.value = model;
+      dialog.value = true;
+    }
+
+    watch(
+      () => props.itemId,
+      () => {
+        fetchData();
+      },
+      { immediate: true },
+    );
+
+    return {
+      data,
+      dialog,
+      getDateTimeDisplay,
+      selectLink,
+      selected,
+      onSubmit,
+      copyLink,
+      openLink,
+      newLink,
+    };
+  },
+});
+</script>

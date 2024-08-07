@@ -46,9 +46,21 @@ const routes: RouteRecordRaw[] = [
         props: true,
       },
       {
+        path: 'bucket/:sourceId/items/:itemId/links',
+        component: () => import('pages/items/bucket/ItemLinks.vue'),
+        name: 'item-links-bucket',
+        props: true,
+      },
+      {
         path: 'vimeo/:sourceId/items/:itemId',
         component: () => import('pages/items/vimeo/ItemDetail.vue'),
         name: 'item-detail-vimeo',
+        props: true,
+      },
+      {
+        path: 'vimeo/:sourceId/items/:itemId/links',
+        component: () => import('pages/items/vimeo/ItemLinks.vue'),
+        name: 'item-links-vimeo',
         props: true,
       },
       {

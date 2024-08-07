@@ -1,5 +1,5 @@
 import { SourceBucket } from './source-bucket';
-import { ItemTag } from './item';
+import { ItemTag, ItemLink } from './item';
 
 export interface ItemBucket {
   id: number;
@@ -13,4 +13,5 @@ export interface ItemBucket {
   created_by: string;
   source: SourceBucket;
   tags: ItemTag[];
+  links: ItemLink[];
 }
