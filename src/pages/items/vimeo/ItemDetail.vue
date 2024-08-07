@@ -3,17 +3,41 @@
     v-if="data"
     class="row"
   >
+    <q-toolbar class="bg-grey-9 text-white">
+      <q-btn
+        dense
+        icon="arrow_back"
+        color="white"
+        text-color="black"
+        size="sm"
+        :to="{name: 'item-list-vimeo', params: { sourceId: data.source.id}}"
+      />
+      <q-toolbar-title>
+        {{ data.source.title }}
+      </q-toolbar-title>
+      <q-spinner
+        v-show="loading"
+        color="teal"
+        size="2em"
+      />
+    </q-toolbar>
     <div class="col q-pa-md">
       <VimeoPlayer :video-id="data.video_id" />
     </div>
     <div class="col q-pa-md">
       <LineItem
-        label="Title"
-        :text="data.title"
-      />
-      <LineItem
         label="Thumbnail"
         :text="data.thumbnail"
+      />
+      <q-input
+        v-model="data.title"
+        filled
+        square
+        label="Title"
+        color="black"
+        class="q-mt-md"
+        hint="Optional"
+        @update:model-value="debouncedItemUpdate"
       />
       <q-input
         v-model="data.notes"
@@ -58,6 +82,7 @@ export default defineComponent({
   },
   setup(props) {
     const data = ref<ItemVimeo>();
+    const loading = ref(false);
 
     async function fetchData() {
       const res = await itemDetail(props.itemId);
@@ -68,10 +93,9 @@ export default defineComponent({
 
     const debouncedItemUpdate = debounce(async () => {
       if (data.value) {
-        const res = await itemUpdate(props.itemId, data.value);
-        if (res) {
-          // console.log(res.status);
-        }
+        loading.value = true;
+        await itemUpdate(props.itemId, data.value);
+        loading.value = false;
       }
     }, 500);
 
@@ -81,6 +105,7 @@ export default defineComponent({
 
     return {
       data,
+      loading,
       debouncedItemUpdate,
     };
   },

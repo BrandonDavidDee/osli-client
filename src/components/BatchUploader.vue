@@ -16,14 +16,15 @@
       max-files="10"
       @rejected="onRejected"
       @uploaded="onUploaded"
+      @failed="onFailure"
     />
   </div>
 </template>
 
 <script>
-import { defineComponent, computed, ref } from 'vue';
+import { defineComponent, computed } from 'vue';
 import { useAuthStore } from 'src/stores/auth';
-import { warningNotification } from 'src/services/notify';
+import { warningNotification, negativeNotification } from 'src/services/notify';
 import { getBatchUploadUrl } from 'src/api/item-bucket';
 
 export default defineComponent({
@@ -37,7 +38,7 @@ export default defineComponent({
       required: true,
     },
   },
-  emits: ['uploaded'],
+  emits: ['uploaded', 'error'],
   setup(props, { emit }) {
     const store = useAuthStore();
     const accessToken = computed(() => store.accessToken);
@@ -55,12 +56,18 @@ export default defineComponent({
       emit('uploaded');
     }
 
+    function onFailure() {
+      negativeNotification('Error Uploading');
+      emit('error');
+    }
+
     return {
       enforceExtension,
       url,
       accessToken,
       onRejected,
       onUploaded,
+      onFailure,
     };
   },
 });

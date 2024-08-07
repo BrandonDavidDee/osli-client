@@ -115,6 +115,7 @@
           :encryption-key="encryptionKey"
           :source-id="sourceId"
           @uploaded="onUploaded"
+          @error="dialog = false, encryptionKey = null"
         />
         <q-card-actions align="right">
           <q-btn
@@ -188,7 +189,7 @@ export default defineComponent({
     const filter = computed(() => store.filter);
     const filterLocal = ref('');
     const gridView = computed(() => sourceData.value?.grid_view);
-    const encryptionKey = ref('');
+    const encryptionKey = ref();
 
     async function fetchItemsData() {
       itemsData.value = [];

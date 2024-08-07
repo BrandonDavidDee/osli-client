@@ -5,15 +5,26 @@
     bordered
     class="q-ma-xs"
   >
-    <q-card-section class="bg-grey-3 text-caption">
+    <q-card-section
+      :class="item.title ? 'bg-grey-3 q-pb-xs q-pt-xs' : 'bg-grey-3'"
+    >
       <router-link :to="{ name: 'item-detail-bucket', params: { itemId: item.id }}">
-        {{ item.file_name }}
+        <div
+          v-if="item.title"
+          class="text-overline"
+        >
+          {{ item.title }}
+        </div>
+        <div class="text-caption">
+          {{ item.file_name }}
+        </div>
       </router-link>
     </q-card-section>
     <div v-if="mediaUrl">
       <q-card-section
         v-if="itemType === 'image'"
-        class="text-center"
+        class="text-center cursor-pointer"
+        @click="routeChange(item.id)"
       >
         <q-img
           :src="mediaUrl"
@@ -28,7 +39,8 @@
       </q-card-section>
       <q-card-section
         v-else-if="itemType === 'video'"
-        class="text-center"
+        class="text-center cursor-pointer"
+        @click="routeChange(item.id)"
       >
         <video
           height="100%"
@@ -44,7 +56,8 @@
       </q-card-section>
       <q-card-section
         v-else
-        class="text-center"
+        class="text-center cursor-pointer"
+        @click="routeChange(item.id)"
       >
         <q-icon
           name="mdi-file-question"
@@ -64,6 +77,7 @@
 <script lang="ts">
 import { defineComponent, PropType, computed } from 'vue';
 import { ItemBucket } from 'src/models/item-bucket';
+import { useRouter } from 'vue-router';
 
 export default defineComponent({
   props: {
@@ -73,6 +87,8 @@ export default defineComponent({
     },
   },
   setup(props) {
+    const router = useRouter();
+
     const unknown = 'unknown';
     const isImage = computed(() => {
       if (!props.item.mime_type) { return false; }
@@ -94,11 +110,16 @@ export default defineComponent({
         return undefined;
       }
     });
+
+    function routeChange(itemId: number) {
+      router.push({ name: 'item-detail-bucket', params: { itemId } });
+    }
     return {
       isImage,
       itemType,
       unknown,
       mediaUrl,
+      routeChange,
     };
   },
 });

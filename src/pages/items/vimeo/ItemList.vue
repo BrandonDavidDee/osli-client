@@ -1,9 +1,13 @@
 <template>
   <div>
     <q-toolbar class="bg-grey-9 text-white">
-      <q-icon
-        name="mdi-image-multiple"
+      <q-btn
+        dense
+        icon="arrow_back"
+        color="white"
+        text-color="black"
         size="sm"
+        :to="{name: 'home'}"
       />
       <q-toolbar-title>
         {{ sourceData?.title }}
