@@ -39,6 +39,8 @@ import { Gallery } from 'src/models/gallery';
 import ItemBucketThumb from 'src/public-thumbs/ItemBucketThumb.vue';
 import ItemVimeoThumb from 'src/public-thumbs/ItemVimeoThumb.vue';
 
+// TODO: handle 404
+
 export default defineComponent({
   components: { ItemVimeoThumb, ItemBucketThumb },
   props: {

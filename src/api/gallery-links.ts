@@ -1,7 +1,7 @@
 import { api } from 'src/boot/axios';
 import errorHandler from './error-handler';
 
-const path = `${process.env.API}/api/gallery-links`;
+const path = `${process.env.API}/api/public/gallery`;
 
 export async function galleryLinkDetail(link: string) {
   try {

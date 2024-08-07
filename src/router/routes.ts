@@ -7,7 +7,7 @@ const routes: RouteRecordRaw[] = [
     name: 'login',
   },
   {
-    path: '/public',
+    path: '/share',
     component: () => import('layouts/PublicLayout.vue'),
     children: [
       {
