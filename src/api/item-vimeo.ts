@@ -1,5 +1,5 @@
 import { api } from 'src/boot/axios';
-import { SearchPayload } from 'src/models/item';
+import { SearchPayload, ItemTag } from 'src/models/item';
 import { ItemVimeo } from 'src/models/item-vimeo';
 import errorHandler from './error-handler';
 
@@ -24,6 +24,22 @@ export async function itemDetail(itemId: number | string) {
 export async function itemUpdate(itemId: number | string, payload: ItemVimeo) {
   try {
     return await api.put(`${path}/${itemId}`, payload);
+  } catch (err) {
+    return errorHandler(err);
+  }
+}
+
+export async function itemTagCreate(itemId: number | string, payload: ItemTag) {
+  try {
+    return await api.post(`${path}/${itemId}/tags`, payload);
+  } catch (err) {
+    return errorHandler(err);
+  }
+}
+
+export async function itemTagDelete(itemId: number | string, tagItemBucketId: number) {
+  try {
+    return await api.delete(`${path}/${itemId}/tags/${tagItemBucketId}`);
   } catch (err) {
     return errorHandler(err);
   }

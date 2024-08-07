@@ -52,6 +52,8 @@
       <ItemTags
         :item="data"
         class="q-mt-md"
+        @new="onNewTag"
+        @deleted="onDeletedTagItem"
       />
     </div>
   </div>
@@ -63,6 +65,7 @@ import {
 } from 'vue';
 import { itemDetail, itemUpdate } from 'src/api/item-vimeo';
 import { debounce } from 'quasar';
+import { ItemTag } from 'src/models/item';
 import { ItemVimeo } from 'src/models/item-vimeo';
 import LineItem from 'src/components/LineItem.vue';
 import VimeoPlayer from 'src/public-thumbs/VimeoPlayer.vue';
@@ -103,10 +106,23 @@ export default defineComponent({
       fetchData();
     }, { immediate: true });
 
+    function onNewTag(v: ItemTag) {
+      data.value?.tags.push(v);
+    }
+
+    function onDeletedTagItem(v: number) {
+      const index = data.value?.tags.findIndex((i: ItemTag) => i.id === v);
+      if (index !== undefined && index !== -1) {
+        data.value?.tags.splice(index, 1);
+      }
+    }
+
     return {
       data,
       loading,
       debouncedItemUpdate,
+      onNewTag,
+      onDeletedTagItem,
     };
   },
 });
