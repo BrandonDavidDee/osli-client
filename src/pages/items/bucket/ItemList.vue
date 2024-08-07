@@ -18,7 +18,7 @@
         text-color="black"
         size="sm"
         label="Add"
-        @click="dialog = true"
+        @click="showUploader"
       />
       <TagSelector />
       <q-input
@@ -112,6 +112,7 @@
     <q-dialog v-model="dialog">
       <q-card style="width: 800px; max-width: 80vw;">
         <BatchUploader
+          :encryption-key="encryptionKey"
           :source-id="sourceId"
           @uploaded="onUploaded"
         />
@@ -119,6 +120,31 @@
           <q-btn
             v-close-popup
             label="Close"
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+    <q-dialog v-model="dialogEncryptKey">
+      <q-card style="width: 800px; max-width: 80vw;">
+        <q-card-section>
+          <q-input
+            v-model="encryptionKey"
+            label="Encryption Key"
+            filled
+            color="black"
+            type="password"
+          />
+        </q-card-section>
+        <q-card-actions align="right">
+          <q-btn
+            v-close-popup
+            label="Cancel"
+            flat
+          />
+          <q-btn
+            label="Continue"
+            :disable="!encryptionKey"
+            @click="dialog = true, dialogEncryptKey = false"
           />
         </q-card-actions>
       </q-card>
@@ -149,6 +175,7 @@ export default defineComponent({
   },
   setup(props) {
     const dialog = ref(false);
+    const dialogEncryptKey = ref(false);
     const store = useSearchStore();
     const sourceData = ref<SourceBucket>();
     const itemsData = ref<ItemBucket[]>([]);
@@ -161,6 +188,7 @@ export default defineComponent({
     const filter = computed(() => store.filter);
     const filterLocal = ref('');
     const gridView = computed(() => sourceData.value?.grid_view);
+    const encryptionKey = ref('');
 
     async function fetchItemsData() {
       itemsData.value = [];
@@ -189,6 +217,14 @@ export default defineComponent({
     function onUploaded() {
       resetSearchParams();
       fetchItemsData();
+    }
+
+    function showUploader() {
+      if (!encryptionKey.value) {
+        dialogEncryptKey.value = true;
+      } else {
+        dialog.value = true;
+      }
     }
 
     watch(filter, () => {
@@ -223,6 +259,9 @@ export default defineComponent({
       filterLocal,
       onUploaded,
       dialog,
+      showUploader,
+      dialogEncryptKey,
+      encryptionKey,
     };
   },
 });
