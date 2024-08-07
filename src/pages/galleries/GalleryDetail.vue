@@ -1,19 +1,27 @@
 <template>
   <div
     v-if="data"
-    class="q-ma-md"
   >
+    <q-toolbar class="bg-grey-9 text-white">
+      <q-btn
+        dense
+        icon="arrow_back"
+        color="white"
+        text-color="black"
+        size="sm"
+        :to="{ name: 'gallery-list'}"
+      />
+      <q-toolbar-title>
+        Gallery: {{ data.title }}
+      </q-toolbar-title>
+      <q-spinner
+        v-show="loading"
+        color="teal"
+        size="2em"
+      />
+    </q-toolbar>
     <div class="row">
-      <div class="col-6">
-        <q-input
-          v-model="data.title"
-          lable="Title"
-          color="black"
-          filled
-          square
-          :rules="[(v) => !!v || 'Required']"
-          label="Title"
-        />
+      <div class="col q-pa-md">
         <q-card
           v-for="item in itemsSorted"
           :key="item.id"
@@ -23,7 +31,7 @@
           square
         >
           <q-card-section class="row">
-            <div class="col-3">
+            <div class="col-2">
               <ItemBucketThumb
                 v-if="item.item_bucket"
                 :item="item.item_bucket"
@@ -33,7 +41,7 @@
                 :item="item.item_vimeo"
               />
             </div>
-            <div class="col-9">
+            <div class="col-10">
               <q-input
                 v-model.number="item.item_order"
                 type="number"
@@ -56,48 +64,35 @@
           </q-card-actions>
         </q-card>
       </div>
-      <div class="col-6">
-        <div class="q-pa-sm">
-          <div class="text-h5">
-            Shares
-          </div>
-          <q-markup-table
-            flat
-            square
-            bordered
-            dense
-          >
-            <thead>
-              <tr>
-                <th class="text-left">
-                  Title
-                </th>
-                <th class="text-left">
-                  Created By
-                </th>
-                <th class="text-left">
-                  Expires On
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                v-for="link in data.links"
-                :key="link.id"
-              >
-                <td>
-                  {{ link.title }}
-                </td>
-                <td>
-                  {{ link.created_by?.username }}
-                </td>
-                <td>
-                  {{ link.expiration_date }}
-                </td>
-              </tr>
-            </tbody>
-          </q-markup-table>
-        </div>
+      <div class="col q-pa-md">
+        <q-btn
+          label="Links"
+          :to="{ name: 'gallery-links', params: { galleryId: galleryId}}"
+        />
+        <LineItem
+          label="Date Created"
+          :text="data.date_created"
+        />
+        <LineItem
+          label="Created By"
+          :text="data.created_by?.username"
+        />
+        <q-input
+          v-model="data.title"
+          color="black"
+          filled
+          square
+          :rules="[(v) => !!v || 'Required']"
+          label="Title"
+        />
+        <q-input
+          v-model="data.description"
+          color="black"
+          filled
+          square
+          label="Description"
+          type="textarea"
+        />
       </div>
     </div>
   </div>
@@ -111,9 +106,10 @@ import { Gallery } from 'src/models/gallery';
 import { galleryDetail } from 'src/api/galleries';
 import ItemBucketThumb from 'src/public-thumbs/ItemBucketThumb.vue';
 import ItemVimeoThumb from 'src/public-thumbs/ItemVimeoThumb.vue';
+import LineItem from 'src/components/LineItem.vue';
 
 export default defineComponent({
-  components: { ItemVimeoThumb, ItemBucketThumb },
+  components: { ItemVimeoThumb, ItemBucketThumb, LineItem },
   props: {
     galleryId: {
       type: [Number, String],
@@ -122,6 +118,7 @@ export default defineComponent({
   },
   setup(props) {
     const data = ref<Gallery>();
+    const loading = ref(false);
     const itemsSorted = computed(() => data.value?.items.slice().sort((a, b) => a.item_order - b.item_order));
     async function fetchData() {
       const res = await galleryDetail(props.galleryId);
@@ -140,24 +137,9 @@ export default defineComponent({
 
     return {
       data,
+      loading,
       itemsSorted,
     };
   },
 });
 </script>
-
-<style>
-.thumbnail-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  overflow: hidden;
-}
-
-.thumbnail {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: cover;
-}
-</style>

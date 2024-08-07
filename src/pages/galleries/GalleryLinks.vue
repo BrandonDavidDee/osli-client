@@ -1,19 +1,19 @@
 <template>
   <div>
-    <q-toolbar class="bg-grey-9 text-white q-mb-md">
+    <q-toolbar class="bg-grey-9 text-white">
       <q-btn
         dense
         icon="arrow_back"
         color="white"
         text-color="black"
         size="sm"
-        :to="{ name: 'home'}"
+        :to="{name: 'gallery-detail', params: { galleryId }}"
       />
       <q-toolbar-title>
-        Galleries
+        Gallery Links: {{ data?.title }}
       </q-toolbar-title>
     </q-toolbar>
-    <div class="q-ma-md">
+    <div class="q-pa-md">
       <q-markup-table
         flat
         square
@@ -29,22 +29,24 @@
               Created By
             </th>
             <th class="text-left">
-              Created On
+              Expires On
             </th>
           </tr>
         </thead>
         <tbody>
           <tr
-            v-for="gallery in data"
-            :key="gallery.id"
+            v-for="link in data?.links"
+            :key="link.id"
           >
             <td>
-              <router-link :to="{ name: 'gallery-detail', params: { galleryId: gallery.id}}">
-                {{ gallery.title }}
-              </router-link>
+              {{ link.title }}
             </td>
-            <td>{{ gallery.created_by?.username }}</td>
-            <td>{{ gallery.date_created }}</td>
+            <td>
+              {{ link.created_by?.username }}
+            </td>
+            <td>
+              {{ link.expiration_date }}
+            </td>
           </tr>
         </tbody>
       </q-markup-table>
@@ -53,20 +55,35 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted } from 'vue';
+import { defineComponent, ref, watch } from 'vue';
 import { Gallery } from 'src/models/gallery';
-import { galleryList } from 'src/api/galleries';
+import { galleryLinks } from 'src/api/galleries';
 
 export default defineComponent({
-  setup() {
-    const data = ref<Gallery[]>();
+  props: {
+    galleryId: {
+      type: [Number, String],
+      required: true,
+    },
+  },
+  setup(props) {
+    const data = ref<Gallery>();
+
     async function fetchData() {
-      const res = await galleryList();
+      const res = await galleryLinks(props.galleryId);
       if (res && res.data) {
         data.value = res.data;
       }
     }
-    onMounted(() => fetchData());
+
+    watch(
+      () => props.galleryId,
+      () => {
+        fetchData();
+      },
+      { immediate: true },
+    );
+
     return {
       data,
     };

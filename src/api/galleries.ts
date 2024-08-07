@@ -18,3 +18,11 @@ export async function galleryDetail(galleryId: number | string) {
     return errorHandler(err);
   }
 }
+
+export async function galleryLinks(galleryId: number | string) {
+  try {
+    return await api.get(`${path}/${galleryId}/links`);
+  } catch (err) {
+    return errorHandler(err);
+  }
+}

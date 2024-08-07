@@ -62,6 +62,12 @@ const routes: RouteRecordRaw[] = [
         name: 'gallery-detail',
         props: true,
       },
+      {
+        path: 'galleries/:galleryId/links',
+        component: () => import('pages/galleries/GalleryLinks.vue'),
+        name: 'gallery-links',
+        props: true,
+      },
     ],
   },
   // Always leave this as last one,
