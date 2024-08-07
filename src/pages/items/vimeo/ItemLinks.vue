@@ -24,7 +24,7 @@
           <tr>
             <th
               class="text-right"
-              colspan="5"
+              colspan="6"
             >
               <q-btn
                 icon="add"
@@ -35,6 +35,9 @@
             </th>
           </tr>
           <tr>
+            <th class="text-left">
+              Status
+            </th>
             <th class="text-left">
               Title
             </th>
@@ -51,15 +54,32 @@
           </tr>
         </thead>
         <tbody>
+          <tr v-if="!data?.links.length">
+            <td
+              colspan="4"
+              class="text-caption text-grey-7"
+            >
+              No Links
+            </td>
+          </tr>
           <tr
             v-for="link in data?.links"
             :key="link.id"
+            :class="!link.is_active ? 'bg-grey-3 text-grey-8' : ''"
           >
+            <td>
+              <q-badge
+                v-if="link.is_active"
+                color="green"
+              >
+                Active
+              </q-badge>
+            </td>
             <td
               class="cursor-pointer"
               @click="selectLink(link)"
             >
-              {{ link.title || 'No Title' }}
+              {{ link.is_active }} {{ link.title || 'No Title' }}
             </td>
             <td>
               {{ link.expiration_date || 'No Expiration' }}
@@ -136,6 +156,12 @@
                 {{ selected.link }}
               </q-card-section>
             </q-card>
+            <q-checkbox
+              v-model="selected.is_active"
+              class="q-mt-md"
+              color="black"
+              label="Is Active"
+            />
           </q-card-section>
           <q-card-actions align="right">
             <q-btn
@@ -215,6 +241,8 @@ export default defineComponent({
         const res = await itemLinkCreate(props.itemId, selected.value);
         if (res && res.status === 200) {
           positiveNotification('Created!');
+          // TODO: return object and unshift
+          fetchData();
         }
         dialog.value = false;
       }
@@ -247,6 +275,7 @@ export default defineComponent({
         view_count: 0,
         date_created: null,
         created_by: null,
+        is_active: true,
       };
       selected.value = model;
       dialog.value = true;

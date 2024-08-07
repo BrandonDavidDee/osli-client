@@ -12,6 +12,7 @@ export interface ItemLink {
   link: string;
   expiration_date: string | null;
   view_count: number;
+  is_active: boolean;
   date_created: string | null;
   created_by: User | null;
 }

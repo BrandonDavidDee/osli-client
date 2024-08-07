@@ -18,6 +18,7 @@ export interface GalleryLink {
   view_count: number;
   date_created: string | null;
   created_by: User | null;
+  is_active: boolean;
 }
 
 export interface Gallery {
