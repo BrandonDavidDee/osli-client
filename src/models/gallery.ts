@@ -13,9 +13,10 @@ export interface GalleryItem {
 export interface GalleryLink {
   id: number;
   title: string | null;
+  link: string;
   expiration_date: string | null;
   view_count: number;
-  date_created: string;
+  date_created: string | null;
   created_by: User | null;
 }
 

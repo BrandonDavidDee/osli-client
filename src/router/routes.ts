@@ -11,7 +11,7 @@ const routes: RouteRecordRaw[] = [
     component: () => import('layouts/PublicLayout.vue'),
     children: [
       {
-        path: 'gallery-link/:link',
+        path: 'gallery/:link',
         component: () => import('pages/gallery-links/GalleryLinkPublic.vue'),
         name: 'gallery-link-public',
         props: true,

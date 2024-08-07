@@ -22,15 +22,32 @@
       >
         <thead>
           <tr>
+            <th
+              class="text-right"
+              colspan="5"
+            >
+              <q-btn
+                icon="add"
+                size="sm"
+                flat
+                @click="newLink"
+              />
+            </th>
+          </tr>
+          <tr>
             <th class="text-left">
               Title
             </th>
             <th class="text-left">
-              Created By
-            </th>
-            <th class="text-left">
               Expires On
             </th>
+            <th class="text-left">
+              View Count
+            </th>
+            <th class="text-left">
+              Created By
+            </th>
+            <th />
           </tr>
         </thead>
         <tbody>
@@ -38,26 +55,113 @@
             v-for="link in data?.links"
             :key="link.id"
           >
+            <td
+              class="cursor-pointer"
+              @click="selectLink(link)"
+            >
+              {{ link.title || 'No Title' }}
+            </td>
             <td>
-              {{ link.title }}
+              {{ link.expiration_date || 'No Expiration' }}
+            </td>
+            <td>
+              {{ link.view_count }}
             </td>
             <td>
               {{ link.created_by?.username }}
+              <div>{{ getDateTimeDisplay(link.date_created) }}</div>
             </td>
             <td>
-              {{ link.expiration_date }}
+              <q-btn-group flat>
+                <q-btn
+                  size="sm"
+                  icon="visibility"
+                  round
+                  @click="selectLink(link)"
+                />
+                <q-btn
+                  size="sm"
+                  icon="content_copy"
+                  round
+                  @click="copyLink(link.link)"
+                />
+                <q-btn
+                  size="sm"
+                  icon="link"
+                  round
+                  @click="openLink(link.link)"
+                />
+
+                <q-btn
+                  size="sm"
+                  icon="delete"
+                  round
+                  disable
+                />
+              </q-btn-group>
             </td>
           </tr>
         </tbody>
       </q-markup-table>
     </div>
+    <q-dialog v-model="dialog">
+      <q-card
+        v-if="selected"
+        style="width: 800px; max-width: 80vw;"
+      >
+        <q-form @submit="onSubmit">
+          <q-card-section>
+            <q-input
+              v-model="selected.title"
+              filled
+              hint="Optional - Overrides Gallery Title"
+              color="black"
+              class="q-mb-md"
+              label="Title"
+            />
+            <q-card
+              v-if="selected.id > 0"
+              flat
+              bordered
+              square
+            >
+              <q-card-section class="text-subtitle2">
+                Public Link
+              </q-card-section>
+              <q-separator />
+              <q-card-section
+                class="cursor-pointer"
+                @click="copyLink(selected?.link)"
+              >
+                {{ selected.link }}
+              </q-card-section>
+            </q-card>
+          </q-card-section>
+          <q-card-actions align="right">
+            <q-btn
+              v-close-popup
+              label="Close"
+              flat
+            />
+            <q-btn
+              color="green"
+              label="Save"
+              type="submit"
+            />
+          </q-card-actions>
+        </q-form>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref, watch } from 'vue';
-import { Gallery } from 'src/models/gallery';
-import { galleryLinks } from 'src/api/galleries';
+import { Gallery, GalleryLink } from 'src/models/gallery';
+import { galleryLinks, galleryLinkCreate, galleryLinkUpdate } from 'src/api/galleries';
+import { getDateTimeDisplay } from 'src/services/date-master';
+import { copyToClipboard, openURL } from 'quasar';
+import { positiveNotification, negativeNotification } from 'src/services/notify';
 
 export default defineComponent({
   props: {
@@ -68,12 +172,79 @@ export default defineComponent({
   },
   setup(props) {
     const data = ref<Gallery>();
+    const dialog = ref(false);
+    const selected = ref<GalleryLink>();
 
     async function fetchData() {
       const res = await galleryLinks(props.galleryId);
       if (res && res.data) {
         data.value = res.data;
       }
+    }
+
+    function selectLink(v: GalleryLink) {
+      selected.value = v;
+      dialog.value = true;
+    }
+
+    function copyLink(link: string | undefined) {
+      if (link) {
+        copyToClipboard(link)
+          .then(() => {
+            positiveNotification('Copied link to Clipboard');
+          })
+          .catch(() => {
+            negativeNotification('Error Copying Link');
+          });
+      }
+    }
+
+    function openLink(link: string | undefined) {
+      if (link) {
+        openURL(link);
+      }
+    }
+
+    async function createNew() {
+      if (selected.value) {
+        const res = await galleryLinkCreate(props.galleryId, selected.value);
+        if (res && res.status === 200) {
+          positiveNotification('Created!');
+        }
+        dialog.value = false;
+      }
+    }
+
+    async function updateExisting() {
+      if (selected.value) {
+        const res = await galleryLinkUpdate(props.galleryId, selected.value);
+        if (res && res.status === 200) {
+          positiveNotification('Updated!');
+        }
+        dialog.value = false;
+      }
+    }
+
+    function onSubmit() {
+      if (selected.value && selected.value.id === 0) {
+        createNew();
+      } else {
+        updateExisting();
+      }
+    }
+
+    function newLink() {
+      const model: GalleryLink = {
+        id: 0,
+        title: null,
+        link: '',
+        expiration_date: null,
+        view_count: 0,
+        date_created: null,
+        created_by: null,
+      };
+      selected.value = model;
+      dialog.value = true;
     }
 
     watch(
@@ -86,6 +257,14 @@ export default defineComponent({
 
     return {
       data,
+      dialog,
+      getDateTimeDisplay,
+      selectLink,
+      selected,
+      onSubmit,
+      copyLink,
+      openLink,
+      newLink,
     };
   },
 });

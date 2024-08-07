@@ -44,7 +44,7 @@
               </router-link>
             </td>
             <td>{{ gallery.created_by?.username }}</td>
-            <td>{{ gallery.date_created }}</td>
+            <td>{{ getDateTimeDisplay(gallery.date_created) }}</td>
           </tr>
         </tbody>
       </q-markup-table>
@@ -56,6 +56,7 @@
 import { defineComponent, ref, onMounted } from 'vue';
 import { Gallery } from 'src/models/gallery';
 import { galleryList } from 'src/api/galleries';
+import { getDateTimeDisplay } from 'src/services/date-master';
 
 export default defineComponent({
   setup() {
@@ -69,6 +70,7 @@ export default defineComponent({
     onMounted(() => fetchData());
     return {
       data,
+      getDateTimeDisplay,
     };
   },
 });

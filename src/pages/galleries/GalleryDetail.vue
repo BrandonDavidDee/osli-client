@@ -71,7 +71,7 @@
         />
         <LineItem
           label="Date Created"
-          :text="data.date_created"
+          :text="getDateTimeDisplay(data.date_created)"
         />
         <LineItem
           label="Created By"
@@ -107,6 +107,7 @@ import { galleryDetail } from 'src/api/galleries';
 import ItemBucketThumb from 'src/public-thumbs/ItemBucketThumb.vue';
 import ItemVimeoThumb from 'src/public-thumbs/ItemVimeoThumb.vue';
 import LineItem from 'src/components/LineItem.vue';
+import { getDateTimeDisplay } from 'src/services/date-master';
 
 export default defineComponent({
   components: { ItemVimeoThumb, ItemBucketThumb, LineItem },
@@ -139,6 +140,7 @@ export default defineComponent({
       data,
       loading,
       itemsSorted,
+      getDateTimeDisplay,
     };
   },
 });
