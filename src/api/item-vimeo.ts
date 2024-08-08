@@ -9,10 +9,10 @@ interface NewItem {
   video_id: string;
 }
 
-export async function itemCreate(sourceId: number | string, videoId: string) {
+export async function itemCreate(sourceId: number | string, videoId: string, encryptionKey: string) {
   try {
     const payload: NewItem = { video_id: videoId };
-    return await api.post(`${path}?source_id=${sourceId}`, payload);
+    return await api.post(`${path}?source_id=${sourceId}&encryption_key=${encryptionKey}`, payload);
   } catch (err) {
     return errorHandler(err);
   }

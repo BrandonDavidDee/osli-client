@@ -30,6 +30,11 @@
         :to="{ name: 'item-links-vimeo', params: { sourceId, itemId}}"
       />
       <LineItem
+        label="Video ID"
+        :text="data.video_id"
+        :external-url="`https://vimeo.com/manage/videos/${data.video_id}`"
+      />
+      <LineItem
         label="Thumbnail"
         :text="data.thumbnail"
       />

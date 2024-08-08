@@ -1,12 +1,21 @@
 <template>
   <div class="q-mb-sm q-mt-sm">
-    <span class="text-subtitle2">{{ label }}:</span> {{ text }}
+    <span v-if="externalUrl">
+      <span class="text-subtitle2">{{ label }}:</span> <span
+        class="cursor-pointer"
+        @click="openLink"
+      >{{ text }}</span>
+    </span>
+    <span v-else>
+      <span class="text-subtitle2">{{ label }}:</span> {{ text }}
+    </span>
     <q-separator v-if="separator" />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue';
+import { openURL } from 'quasar';
 
 export default defineComponent({
   props: {
@@ -22,6 +31,18 @@ export default defineComponent({
       type: Boolean,
       default: true,
     },
+    externalUrl: {
+      type: String,
+      default: null,
+    },
+  },
+  setup(props) {
+    function openLink() {
+      openURL(props.externalUrl);
+    }
+    return {
+      openLink,
+    };
   },
 });
 </script>

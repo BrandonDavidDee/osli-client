@@ -43,7 +43,7 @@
         color="white"
         text-color="black"
         size="sm"
-        @click="dialog = true"
+        @click="showNewVideoDialog"
       />
     </q-toolbar>
     <q-card
@@ -132,8 +132,34 @@
           <q-btn
             label="Create"
             color="green"
+            :loading="loading"
             :disable="!newVimeoId"
             @click="createNewItem"
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+    <q-dialog v-model="dialogEncryptKey">
+      <q-card style="width: 800px; max-width: 80vw;">
+        <q-card-section>
+          <q-input
+            v-model="encryptionKey"
+            label="Encryption Key"
+            filled
+            color="black"
+            type="password"
+          />
+        </q-card-section>
+        <q-card-actions align="right">
+          <q-btn
+            v-close-popup
+            label="Cancel"
+            flat
+          />
+          <q-btn
+            label="Continue"
+            :disable="!encryptionKey"
+            @click="dialog = true, dialogEncryptKey = false"
           />
         </q-card-actions>
       </q-card>
@@ -162,6 +188,8 @@ export default defineComponent({
     },
   },
   setup(props) {
+    const dialog = ref(false);
+    const dialogEncryptKey = ref(false);
     const store = useSearchStore();
     const sourceData = ref<SourceVimeo>();
     const itemsData = ref<ItemVimeo[]>([]);
@@ -174,9 +202,9 @@ export default defineComponent({
     const filter = computed(() => store.filter);
     const filterLocal = ref('');
     const gridView = computed(() => sourceData.value?.grid_view);
-    const dialog = ref(false);
     const newVimeoId = ref('');
     const loading = ref(false);
+    const encryptionKey = ref();
 
     async function fetchItemsData() {
       itemsData.value = [];
@@ -204,14 +232,24 @@ export default defineComponent({
 
     async function createNewItem() {
       loading.value = true;
-      const res = await itemCreate(props.sourceId, newVimeoId.value);
+      const res = await itemCreate(props.sourceId, newVimeoId.value, encryptionKey.value);
       if (res && res.status === 200) {
         resetSearchParams();
         fetchItemsData();
+      } else {
+        encryptionKey.value = null;
       }
       newVimeoId.value = '';
       dialog.value = false;
       loading.value = false;
+    }
+
+    function showNewVideoDialog() {
+      if (!encryptionKey.value) {
+        dialogEncryptKey.value = true;
+      } else {
+        dialog.value = true;
+      }
     }
 
     watch(filter, () => {
@@ -248,6 +286,9 @@ export default defineComponent({
       newVimeoId,
       createNewItem,
       loading,
+      dialogEncryptKey,
+      encryptionKey,
+      showNewVideoDialog,
     };
   },
 });
