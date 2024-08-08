@@ -65,9 +65,10 @@ module.exports = configure((ctx) => ({
     // analyze: true,
     env: {
       API: ctx.dev ? 'http://127.0.0.1:8000' : apiUrl,
-      LOGO: process.env.LOGO,
-      LOGO_CLICK_URL: process.env.LOGO_CLICK_URL,
-      SITE_TITLE: process.env.SITE_TITLE,
+      COMPANY_NAME: process.env.COMPANY_NAME,
+      COMPANY_LOGO: process.env.COMPANY_LOGO,
+      COMPANY_URL: process.env.COMPANY_URL,
+      APP_TITLE: process.env.APP_TITLE,
     },
     // rawDefine: {}
     // ignorePublicFolder: true,

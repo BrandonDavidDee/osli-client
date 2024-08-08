@@ -44,11 +44,11 @@ import { computed } from 'vue';
 export default {
   setup() {
     const logoUrl = computed(() => {
-      const envLogo = process.env.LOGO;
+      const envLogo = process.env.COMPANY_LOGO;
       return (typeof envLogo === 'string' && envLogo) || 'https://dummyimage.com/200x80/262626/fff&text=OSLI';
     });
     const logoClickUrl = computed(() => {
-      const url = process.env.LOGO_CLICK_URL;
+      const url = process.env.COMPANY_URL;
       return (typeof url === 'string' && url) || null;
     });
 

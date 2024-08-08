@@ -2,8 +2,21 @@
   <router-view />
 </template>
 
-<script setup lang="ts">
+<script lang="ts">
+import { defineComponent, computed } from 'vue';
+import { useMeta } from 'quasar';
 
+export default defineComponent({
+  setup() {
+    const websiteTitle = computed(() => {
+      const siteTitle = process.env.APP_TITLE;
+      return (typeof siteTitle === 'string' && siteTitle) || null;
+    });
+    useMeta(() => ({
+      title: websiteTitle.value || 'OSLI',
+    }));
+  },
+});
 </script>
 
 <style>

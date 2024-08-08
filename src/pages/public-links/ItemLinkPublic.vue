@@ -49,7 +49,7 @@ export default defineComponent({
     const title = ref('Item');
     // ^^ title is a required field for a gallery in the api
     const websiteTitle = computed(() => {
-      const siteTitle = process.env.SITE_TITLE;
+      const siteTitle = process.env.COMPANY_NAME;
       return (typeof siteTitle === 'string' && siteTitle) || null;
     });
     useMeta(() => ({
