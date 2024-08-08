@@ -37,8 +37,8 @@ import {
 import { useMeta } from 'quasar';
 import { galleryLinkDetail } from 'src/api/gallery-links';
 import { Gallery } from 'src/models/gallery';
-import ItemBucketThumb from 'src/public-thumbs/ItemBucketThumb.vue';
-import ItemVimeoThumb from 'src/public-thumbs/ItemVimeoThumb.vue';
+import ItemBucketThumb from 'src/pages/galleries/ItemBucketThumb.vue';
+import ItemVimeoThumb from 'src/pages/galleries/ItemVimeoThumb.vue';
 import ErrorNotFound from '../ErrorNotFound.vue';
 
 export default defineComponent({

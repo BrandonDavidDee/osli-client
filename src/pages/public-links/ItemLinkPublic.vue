@@ -6,9 +6,9 @@
     </div>
     <q-separator />
     <div class="q-pa-lg">
-      <q-img
+      <ImageDetail
         v-if="data.item_bucket && mediaUrl"
-        :src="mediaUrl"
+        :src-url="mediaUrl"
       />
       <VimeoPlayer
         v-if="data.item_vimeo"
@@ -26,7 +26,8 @@ import { useMeta } from 'quasar';
 import { itemLinkDetail } from 'src/api/item-links';
 import { ItemBucket } from 'src/models/item-bucket';
 import { ItemVimeo } from 'src/models/item-vimeo';
-import VimeoPlayer from 'src/public-thumbs/VimeoPlayer.vue';
+import VimeoPlayer from 'src/components/VimeoPlayer.vue';
+import ImageDetail from 'src/components/ImageDetail.vue';
 import ErrorNotFound from '../ErrorNotFound.vue';
 
 interface PublicItemLink {
@@ -37,7 +38,7 @@ interface PublicItemLink {
 }
 
 export default defineComponent({
-  components: { VimeoPlayer, ErrorNotFound },
+  components: { VimeoPlayer, ErrorNotFound, ImageDetail },
   props: {
     link: {
       type: String,
@@ -47,7 +48,7 @@ export default defineComponent({
   setup(props) {
     const notFound = ref(false);
     const title = ref('Item');
-    // ^^ title is a required field for a gallery in the api
+    // TODO: ^^ title is NOT a required field for an item in the api, must accommodate
     const websiteTitle = computed(() => {
       const siteTitle = process.env.COMPANY_NAME;
       return (typeof siteTitle === 'string' && siteTitle) || null;

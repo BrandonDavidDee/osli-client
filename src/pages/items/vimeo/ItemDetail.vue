@@ -72,7 +72,7 @@ import { debounce } from 'quasar';
 import { ItemTag } from 'src/models/item';
 import { ItemVimeo } from 'src/models/item-vimeo';
 import LineItem from 'src/components/LineItem.vue';
-import VimeoPlayer from 'src/public-thumbs/VimeoPlayer.vue';
+import VimeoPlayer from 'src/components/VimeoPlayer.vue';
 import ItemTags from './ItemTags.vue';
 
 export default defineComponent({

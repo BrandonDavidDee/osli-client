@@ -5,34 +5,17 @@
       class="text-center cursor-pointer"
       @click="dialogImage = true"
     >
-      <q-img
-        :src="mediaUrl"
-        loading="lazy"
+      <ImageDetail
+        :src-url="mediaUrl"
         :ratio="1"
-      >
-        <template #error>
-          <div class="absolute-full flex flex-center bg-grey-8 text-white">
-            Error
-          </div>
-        </template>
-      </q-img>
+      />
     </div>
     <div
       v-else-if="itemType === 'video'"
       class="text-center cursor-pointer"
       @click="dialogVideo = true"
     >
-      <video
-        height="100%"
-        width="100%"
-        controls
-      >
-        <source
-          :src="mediaUrl"
-          type="video/mp4"
-        >
-        Your browser does not support the video tag.
-      </video>
+      <VideoDetail :src-url="mediaUrl" />
     </div>
     <div
       v-else
@@ -48,16 +31,7 @@
     <DialogMaster v-model="dialogImage">
       <template #content="{ closeDialog }">
         <q-card-section>
-          <q-img
-            :src="mediaUrl"
-            loading="lazy"
-          >
-            <template #error>
-              <div class="absolute-full flex flex-center bg-grey-8 text-white">
-                Error
-              </div>
-            </template>
-          </q-img>
+          <ImageDetail :src-url="mediaUrl" />
         </q-card-section>
         <q-card-actions align="right">
           <q-btn
@@ -72,17 +46,7 @@
     <DialogMaster v-model="dialogVideo">
       <template #content="{ closeDialog }">
         <q-card-section>
-          <video
-            height="100%"
-            width="100%"
-            controls
-          >
-            <source
-              :src="mediaUrl"
-              type="video/mp4"
-            >
-            Your browser does not support the video tag.
-          </video>
+          <VideoDetail :src-url="mediaUrl" />
         </q-card-section>
         <q-card-actions align="right">
           <q-btn
@@ -102,9 +66,11 @@ import {
 } from 'vue';
 import { ItemBucket } from 'src/models/item-bucket';
 import DialogMaster from 'src/components/DialogMaster.vue';
+import ImageDetail from 'src/components/ImageDetail.vue';
+import VideoDetail from 'src/components/VideoDetail.vue';
 
 export default defineComponent({
-  components: { DialogMaster },
+  components: { DialogMaster, ImageDetail, VideoDetail },
   props: {
     item: {
       type: Object as PropType<ItemBucket>,

@@ -23,16 +23,7 @@
         class="text-center cursor-pointer"
         @click="routeChange(item.id)"
       >
-        <q-img
-          :src="item.thumbnail"
-          loading="lazy"
-        >
-          <template #error>
-            <div class="absolute-full flex flex-center bg-grey-8 text-white">
-              Error
-            </div>
-          </template>
-        </q-img>
+        <ImageDetail :src-url="item.thumbnail" />
       </q-card-section>
     </div>
   </q-card>
@@ -42,8 +33,10 @@
 import { defineComponent, PropType } from 'vue';
 import { ItemVimeo } from 'src/models/item-vimeo';
 import { useRouter } from 'vue-router';
+import ImageDetail from 'src/components/ImageDetail.vue';
 
 export default defineComponent({
+  components: { ImageDetail },
   props: {
     item: {
       type: Object as PropType<ItemVimeo>,

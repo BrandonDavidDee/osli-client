@@ -104,8 +104,8 @@ import {
 } from 'vue';
 import { Gallery } from 'src/models/gallery';
 import { galleryDetail } from 'src/api/galleries';
-import ItemBucketThumb from 'src/public-thumbs/ItemBucketThumb.vue';
-import ItemVimeoThumb from 'src/public-thumbs/ItemVimeoThumb.vue';
+import ItemBucketThumb from 'src/pages/galleries/ItemBucketThumb.vue';
+import ItemVimeoThumb from 'src/pages/galleries/ItemVimeoThumb.vue';
 import LineItem from 'src/components/LineItem.vue';
 import { getDateTimeDisplay } from 'src/services/date-master';
 

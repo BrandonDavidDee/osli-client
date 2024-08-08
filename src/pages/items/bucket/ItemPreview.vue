@@ -26,33 +26,14 @@
         class="text-center cursor-pointer"
         @click="routeChange(item.id)"
       >
-        <q-img
-          :src="mediaUrl"
-          loading="lazy"
-        >
-          <template #error>
-            <div class="absolute-full flex flex-center bg-grey-8 text-white">
-              Error
-            </div>
-          </template>
-        </q-img>
+        <ImageDetail :src-url="mediaUrl" />
       </q-card-section>
       <q-card-section
         v-else-if="itemType === 'video'"
         class="text-center cursor-pointer"
         @click="routeChange(item.id)"
       >
-        <video
-          height="100%"
-          width="100%"
-          controls
-        >
-          <source
-            :src="mediaUrl"
-            type="video/mp4"
-          >
-          Your browser does not support the video tag.
-        </video>
+        <VideoDetail :src-url="mediaUrl" />
       </q-card-section>
       <q-card-section
         v-else
@@ -78,8 +59,11 @@
 import { defineComponent, PropType, computed } from 'vue';
 import { ItemBucket } from 'src/models/item-bucket';
 import { useRouter } from 'vue-router';
+import ImageDetail from 'src/components/ImageDetail.vue';
+import VideoDetail from 'src/components/VideoDetail.vue';
 
 export default defineComponent({
+  components: { ImageDetail, VideoDetail },
   props: {
     item: {
       type: Object as PropType<ItemBucket>,

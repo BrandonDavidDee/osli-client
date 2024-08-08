@@ -1,24 +1,20 @@
 <template>
   <div>
-    <q-img
-      :src="source"
+    <ImageDetail
+      :src-url="source"
       :ratio="1"
       class="cursor-pointer"
       @click="dialog = true"
     >
-      <div class="absolute-full text-subtitle2 flex flex-center">
-        <q-icon
-          name="play_circle"
-          size="2rem"
-        />
-      </div>
-      <template #error>
-        <div class="absolute-full flex flex-center bg-negative text-white">
-          Cannot load image
+      <template #caption>
+        <div class="absolute-full text-subtitle2 flex flex-center">
+          <q-icon
+            name="play_circle"
+            size="2rem"
+          />
         </div>
       </template>
-    </q-img>
-
+    </ImageDetail>
     <DialogMaster v-model="dialog">
       <template #content="{ closeDialog }">
         <q-card-section
@@ -47,11 +43,12 @@ import {
   defineComponent, PropType, computed, ref,
 } from 'vue';
 import { ItemVimeo } from 'src/models/item-vimeo';
-import VimeoPlayer from 'src/public-thumbs/VimeoPlayer.vue';
+import VimeoPlayer from 'src/components/VimeoPlayer.vue';
 import DialogMaster from 'src/components/DialogMaster.vue';
+import ImageDetail from 'src/components/ImageDetail.vue';
 
 export default defineComponent({
-  components: { DialogMaster, VimeoPlayer },
+  components: { DialogMaster, VimeoPlayer, ImageDetail },
   props: {
     item: {
       type: Object as PropType<ItemVimeo>,
