@@ -37,6 +37,14 @@
           />
         </template>
       </q-input>
+      <q-btn
+        class="q-ml-sm"
+        icon="add"
+        color="white"
+        text-color="black"
+        size="sm"
+        @click="dialog = true"
+      />
     </q-toolbar>
     <q-card
       v-if="!itemsData.length"
@@ -101,6 +109,35 @@
         color="teal"
       />
     </div>
+    <q-dialog v-model="dialog">
+      <q-card
+        style="width: 800px; max-width: 80vw;"
+      >
+        <q-card-section>
+          <q-input
+            v-model="newVimeoId"
+            filled
+            color="black"
+            label="Vimeo Video ID"
+            :rules="[(v) => !!v || 'Required']"
+            :loading="loading"
+          />
+        </q-card-section>
+        <q-card-actions align="right">
+          <q-btn
+            v-close-popup
+            label="Cancel"
+            flat
+          />
+          <q-btn
+            label="Create"
+            color="green"
+            :disable="!newVimeoId"
+            @click="createNewItem"
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
@@ -108,7 +145,7 @@
 import {
   defineComponent, ref, onMounted, watch, computed,
 } from 'vue';
-import { itemList } from 'src/api/item-vimeo';
+import { itemList, itemCreate } from 'src/api/item-vimeo';
 import { SourceVimeo } from 'src/models/source-vimeo';
 import { SearchPayload } from 'src/models/item';
 import { ItemVimeo } from 'src/models/item-vimeo';
@@ -137,6 +174,9 @@ export default defineComponent({
     const filter = computed(() => store.filter);
     const filterLocal = ref('');
     const gridView = computed(() => sourceData.value?.grid_view);
+    const dialog = ref(false);
+    const newVimeoId = ref('');
+    const loading = ref(false);
 
     async function fetchItemsData() {
       itemsData.value = [];
@@ -154,6 +194,24 @@ export default defineComponent({
         totalCount.value = res.data.total_count;
         maxPages.value = Math.ceil(totalCount.value / limit.value);
       }
+    }
+
+    function resetSearchParams() {
+      page.value = 1;
+      filterLocal.value = '';
+      // TODO: reset tags and any search values in state too
+    }
+
+    async function createNewItem() {
+      loading.value = true;
+      const res = await itemCreate(props.sourceId, newVimeoId.value);
+      if (res && res.status === 200) {
+        resetSearchParams();
+        fetchItemsData();
+      }
+      newVimeoId.value = '';
+      dialog.value = false;
+      loading.value = false;
     }
 
     watch(filter, () => {
@@ -186,6 +244,10 @@ export default defineComponent({
       sourceData,
       gridView,
       filterLocal,
+      dialog,
+      newVimeoId,
+      createNewItem,
+      loading,
     };
   },
 });

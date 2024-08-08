@@ -5,9 +5,22 @@ import errorHandler from './error-handler';
 
 const path = `${process.env.API}/api/items/vimeo`;
 
+interface NewItem {
+  video_id: string;
+}
+
+export async function itemCreate(sourceId: number | string, videoId: string) {
+  try {
+    const payload: NewItem = { video_id: videoId };
+    return await api.post(`${path}?source_id=${sourceId}`, payload);
+  } catch (err) {
+    return errorHandler(err);
+  }
+}
+
 export async function itemList(sourceId: number | string, payload: SearchPayload) {
   try {
-    return await api.post(`${path}?source_id=${sourceId}`, payload);
+    return await api.post(`${path}/search?source_id=${sourceId}`, payload);
   } catch (err) {
     return errorHandler(err);
   }
