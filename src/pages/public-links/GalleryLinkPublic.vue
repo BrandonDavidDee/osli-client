@@ -1,5 +1,6 @@
 <template>
-  <div v-if="data">
+  <ErrorNotFound v-if="notFound" />
+  <div v-if="!notFound && data">
     <div class="text-h6 q-ma-md text-grey-9">
       {{ data.title }}
     </div>
@@ -38,11 +39,10 @@ import { galleryLinkDetail } from 'src/api/gallery-links';
 import { Gallery } from 'src/models/gallery';
 import ItemBucketThumb from 'src/public-thumbs/ItemBucketThumb.vue';
 import ItemVimeoThumb from 'src/public-thumbs/ItemVimeoThumb.vue';
-
-// TODO: handle 404
+import ErrorNotFound from '../ErrorNotFound.vue';
 
 export default defineComponent({
-  components: { ItemVimeoThumb, ItemBucketThumb },
+  components: { ItemVimeoThumb, ItemBucketThumb, ErrorNotFound },
   props: {
     link: {
       type: String,
@@ -50,6 +50,7 @@ export default defineComponent({
     },
   },
   setup(props) {
+    const notFound = ref(false);
     const title = ref('Gallery');
     // ^^ title is a required field for a gallery in the api
     const websiteTitle = computed(() => {
@@ -63,11 +64,14 @@ export default defineComponent({
 
     async function fetchData() {
       const res = await galleryLinkDetail(props.link);
-      if (res && res.data) {
+      if (res && res.data && res.status === 200) {
+        notFound.value = false;
         data.value = res.data;
         if (data.value && data.value.title) {
           title.value = data.value.title;
         }
+      } else {
+        notFound.value = true;
       }
     }
 
@@ -79,6 +83,7 @@ export default defineComponent({
 
     return {
       data,
+      notFound,
     };
   },
 });

@@ -12,14 +12,6 @@
       <q-toolbar-title>
         {{ sourceData?.title }}
       </q-toolbar-title>
-      <q-btn
-        icon="add"
-        color="white"
-        text-color="black"
-        size="sm"
-        label="Add"
-        @click="showUploader"
-      />
       <TagSelector />
       <q-input
         v-model="filterLocal"
@@ -45,6 +37,14 @@
           />
         </template>
       </q-input>
+      <q-btn
+        class="q-ml-sm"
+        icon="add"
+        color="white"
+        text-color="black"
+        size="sm"
+        @click="showUploader"
+      />
     </q-toolbar>
     <q-card
       v-if="!itemsData.length"

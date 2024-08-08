@@ -12,8 +12,14 @@ const routes: RouteRecordRaw[] = [
     children: [
       {
         path: 'gallery/:link',
-        component: () => import('pages/gallery-links/GalleryLinkPublic.vue'),
+        component: () => import('pages/public-links/GalleryLinkPublic.vue'),
         name: 'gallery-link-public',
+        props: true,
+      },
+      {
+        path: 'item/:link',
+        component: () => import('pages/public-links/ItemLinkPublic.vue'),
+        name: 'item-link-public',
         props: true,
       },
     ],
