@@ -86,6 +86,21 @@ const routes: RouteRecordRaw[] = [
         name: 'gallery-links',
         props: true,
       },
+      {
+        path: 'me/profile',
+        component: () => import('pages/me/MyProfile.vue'),
+        name: 'my-profile',
+      },
+      {
+        path: 'me/links',
+        component: () => import('pages/me/MyLinks.vue'),
+        name: 'my-links',
+      },
+      {
+        path: 'me/saved',
+        component: () => import('pages/me/MySavedItems.vue'),
+        name: 'my-saved',
+      },
     ],
   },
   // Always leave this as last one,

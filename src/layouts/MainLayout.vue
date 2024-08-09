@@ -23,13 +23,14 @@
         </q-toolbar-title>
         <q-space />
         <div class="q-gutter-sm row items-center no-wrap">
-          <q-btn
+          <!-- <q-btn
             flat
             round
             dense
             icon="sim_card"
             class="q-mr-xs"
-          />
+          /> -->
+          <MyMenu />
         </div>
       </q-toolbar>
     </q-header>
@@ -41,8 +42,10 @@
 
 <script lang="ts">
 import { computed } from 'vue';
+import MyMenu from 'src/components/MyMenu.vue';
 
 export default {
+  components: { MyMenu },
   setup() {
     const logoUrl = computed(() => {
       const envLogo = process.env.COMPANY_LOGO;
