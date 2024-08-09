@@ -25,10 +25,19 @@
       <ItemPreview :item="data" />
     </div>
     <div class="col q-pa-md">
-      <q-btn
-        label="Links"
-        :to="{ name: 'item-links-bucket', params: { sourceId, itemId}}"
-      />
+      <div class="text-right">
+        <q-btn-group>
+          <q-btn
+            label="Links"
+            :to="{ name: 'item-links-bucket', params: { sourceId, itemId}}"
+          />
+          <ItemSave
+            :item-id="itemId"
+            :saved="data.saved"
+            @update="onSaveUpdate"
+          />
+        </q-btn-group>
+      </div>
       <LineItem
         label="File Path"
         :text="data.file_path"
@@ -83,9 +92,12 @@ import { ItemBucket } from 'src/models/item-bucket';
 import LineItem from 'src/components/LineItem.vue';
 import ItemPreview from './ItemPreview.vue';
 import ItemTags from './ItemTags.vue';
+import ItemSave from './ItemSave.vue';
 
 export default defineComponent({
-  components: { ItemPreview, LineItem, ItemTags },
+  components: {
+    ItemPreview, LineItem, ItemTags, ItemSave,
+  },
   props: {
     sourceId: {
       type: [Number, String],
@@ -142,6 +154,12 @@ export default defineComponent({
       }
     }
 
+    function onSaveUpdate(v: boolean) {
+      if (data.value) {
+        data.value.saved = v;
+      }
+    }
+
     watch(() => props.itemId, () => {
       fetchData();
     }, { immediate: true });
@@ -153,6 +171,7 @@ export default defineComponent({
       debouncedItemUpdate,
       onNewTag,
       onDeletedTagItem,
+      onSaveUpdate,
     };
   },
 });

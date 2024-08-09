@@ -80,3 +80,19 @@ export async function itemLinkDelete(itemId: number | string, itemLinkId: number
     return errorHandler(err);
   }
 }
+
+export async function saveItem(itemId: number | string) {
+  try {
+    return await api.post(`${path}/${itemId}/save`);
+  } catch (err) {
+    return errorHandler(err);
+  }
+}
+
+export async function deleteSavedItem(itemId: number | string) {
+  try {
+    return await api.delete(`${path}/${itemId}/save`);
+  } catch (err) {
+    return errorHandler(err);
+  }
+}

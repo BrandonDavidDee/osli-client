@@ -4,6 +4,7 @@ import { ItemTag, ItemLink } from './item';
 export interface ItemBucket {
   id: number;
   title: string | null;
+  saved: boolean;
   mime_type: string;
   file_path: string;
   file_name: string;
