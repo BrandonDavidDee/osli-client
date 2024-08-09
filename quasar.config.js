@@ -15,8 +15,6 @@ const { configure } = require('quasar/wrappers');
 
 require('dotenv').config();
 
-const apiUrl = 'https://nothing.com';
-
 module.exports = configure((ctx) => ({
   // https://v2.quasar.dev/quasar-cli-vite/prefetch-feature
   // preFetch: true,
@@ -64,7 +62,7 @@ module.exports = configure((ctx) => ({
     // publicPath: '/',
     // analyze: true,
     env: {
-      API: ctx.dev ? 'http://127.0.0.1:8000' : apiUrl,
+      API: ctx.dev ? process.env.API_DEV : process.env.API_PRODUCTION,
       COMPANY_NAME: process.env.COMPANY_NAME,
       COMPANY_LOGO: process.env.COMPANY_LOGO,
       COMPANY_URL: process.env.COMPANY_URL,
