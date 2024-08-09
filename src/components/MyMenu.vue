@@ -27,6 +27,7 @@
           v-close-popup
           clickable
           class="text-grey-9"
+          @click="$emit('logout')"
         >
           <q-item-section avatar>
             <q-icon
@@ -50,6 +51,7 @@ interface MenuItem {
   icon: string;
 }
 export default defineComponent({
+  emits: ['logout'],
   setup() {
     const menuItems: MenuItem[] = [
       {

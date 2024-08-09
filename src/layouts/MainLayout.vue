@@ -23,14 +23,7 @@
         </q-toolbar-title>
         <q-space />
         <div class="q-gutter-sm row items-center no-wrap">
-          <!-- <q-btn
-            flat
-            round
-            dense
-            icon="sim_card"
-            class="q-mr-xs"
-          /> -->
-          <MyMenu />
+          <MyMenu @logout="onLogout" />
         </div>
       </q-toolbar>
     </q-header>
@@ -42,17 +35,27 @@
 
 <script lang="ts">
 import { computed } from 'vue';
+import { useAuthStore } from 'stores/auth';
+import { useRouter } from 'vue-router';
 import MyMenu from 'src/components/MyMenu.vue';
 
 export default {
   components: { MyMenu },
   setup() {
+    const store = useAuthStore();
+    const router = useRouter();
     const logoUrl = computed(() => {
       const envLogo = process.env.COMPANY_LOGO;
       return (typeof envLogo === 'string' && envLogo) || 'https://dummyimage.com/200x80/262626/fff&text=OSLI';
     });
+
+    function onLogout() {
+      store.clearTokens();
+      router.push({ name: 'login' });
+    }
     return {
       logoUrl,
+      onLogout,
     };
   },
 };
