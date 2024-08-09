@@ -4,6 +4,7 @@ import { ItemTag, ItemLink } from './item';
 export interface ItemVimeo {
   id: number;
   title: string | null;
+  saved: boolean;
   thumbnail: string | null;
   video_id: string;
   notes: string;

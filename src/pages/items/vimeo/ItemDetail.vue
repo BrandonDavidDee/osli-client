@@ -25,10 +25,19 @@
       <VimeoPlayer :video-id="data.video_id" />
     </div>
     <div class="col q-pa-md">
-      <q-btn
-        label="Links"
-        :to="{ name: 'item-links-vimeo', params: { sourceId, itemId}}"
-      />
+      <div class="text-right">
+        <q-btn-group>
+          <q-btn
+            label="Links"
+            :to="{ name: 'item-links-vimeo', params: { sourceId, itemId}}"
+          />
+          <ItemSave
+            :item-id="itemId"
+            :saved="data.saved"
+            @update="onSaveUpdate"
+          />
+        </q-btn-group>
+      </div>
       <LineItem
         label="Video ID"
         :text="data.video_id"
@@ -79,9 +88,12 @@ import { ItemVimeo } from 'src/models/item-vimeo';
 import LineItem from 'src/components/LineItem.vue';
 import VimeoPlayer from 'src/components/VimeoPlayer.vue';
 import ItemTags from './ItemTags.vue';
+import ItemSave from './ItemSave.vue';
 
 export default defineComponent({
-  components: { LineItem, ItemTags, VimeoPlayer },
+  components: {
+    LineItem, ItemTags, VimeoPlayer, ItemSave,
+  },
   props: {
     sourceId: {
       type: [Number, String],
@@ -126,12 +138,19 @@ export default defineComponent({
       }
     }
 
+    function onSaveUpdate(v: boolean) {
+      if (data.value) {
+        data.value.saved = v;
+      }
+    }
+
     return {
       data,
       loading,
       debouncedItemUpdate,
       onNewTag,
       onDeletedTagItem,
+      onSaveUpdate,
     };
   },
 });
