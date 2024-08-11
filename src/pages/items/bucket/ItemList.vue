@@ -115,7 +115,7 @@
           :encryption-key="encryptionKey"
           :source-id="sourceId"
           @uploaded="onUploaded"
-          @error="dialog = false, encryptionKey = null"
+          @error="onUploadError"
         />
         <q-card-actions align="right">
           <q-btn
@@ -145,7 +145,7 @@
           <q-btn
             label="Continue"
             :disable="!encryptionKey"
-            @click="dialog = true, dialogEncryptKey = false"
+            @click="addEncryptionKey"
           />
         </q-card-actions>
       </q-card>
@@ -162,6 +162,7 @@ import { SourceBucket } from 'src/models/source-bucket';
 import { SearchPayload } from 'src/models/item';
 import { ItemBucket } from 'src/models/item-bucket';
 import { useSearchStore } from 'stores/search';
+import { useKeyStore } from 'src/stores/keys';
 import TagSelector from 'src/pages/sources/TagSelector.vue';
 import BatchUploader from 'src/components/BatchUploader.vue';
 import ItemPreview from './ItemPreview.vue';
@@ -178,6 +179,7 @@ export default defineComponent({
     const dialog = ref(false);
     const dialogEncryptKey = ref(false);
     const store = useSearchStore();
+    const keyStore = useKeyStore();
     const sourceData = ref<SourceBucket>();
     const itemsData = ref<ItemBucket[]>([]);
     const limit = ref(18);
@@ -221,11 +223,24 @@ export default defineComponent({
     }
 
     function showUploader() {
-      if (!encryptionKey.value) {
+      const keyInStore = keyStore.getKey(props.sourceId, 'bucket');
+      if (!keyInStore) {
         dialogEncryptKey.value = true;
       } else {
         dialog.value = true;
       }
+    }
+
+    function onUploadError() {
+      dialog.value = false;
+      encryptionKey.value = null;
+      keyStore.removeKey(props.sourceId, 'bucket');
+    }
+
+    function addEncryptionKey() {
+      dialog.value = true;
+      dialogEncryptKey.value = false;
+      keyStore.addKey(props.sourceId, 'bucket', encryptionKey.value);
     }
 
     watch(filter, () => {
@@ -252,6 +267,10 @@ export default defineComponent({
           filterLocal.value = filter.value;
         }
       }
+      const keyInStore = keyStore.getKey(props.sourceId, 'bucket');
+      if (keyInStore) {
+        encryptionKey.value = keyInStore;
+      }
     });
 
     return {
@@ -266,6 +285,8 @@ export default defineComponent({
       showUploader,
       dialogEncryptKey,
       encryptionKey,
+      onUploadError,
+      addEncryptionKey,
     };
   },
 });

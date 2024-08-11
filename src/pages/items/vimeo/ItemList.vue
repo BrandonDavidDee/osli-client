@@ -83,7 +83,7 @@
             <q-item-label>
               <router-link
                 :to="{
-                  name: 'item-detail-bucket',
+                  name: 'item-detail-vimeo',
                   params: { sourceId: sourceId, itemId: item.id }
                 }"
               >
@@ -159,7 +159,7 @@
           <q-btn
             label="Continue"
             :disable="!encryptionKey"
-            @click="dialog = true, dialogEncryptKey = false"
+            @click="addEncryptionKey"
           />
         </q-card-actions>
       </q-card>
@@ -176,6 +176,7 @@ import { SourceVimeo } from 'src/models/source-vimeo';
 import { SearchPayload } from 'src/models/item';
 import { ItemVimeo } from 'src/models/item-vimeo';
 import { useSearchStore } from 'stores/search';
+import { useKeyStore } from 'src/stores/keys';
 import TagSelector from 'src/pages/sources/TagSelector.vue';
 import ItemPreview from './ItemPreview.vue';
 
@@ -191,6 +192,7 @@ export default defineComponent({
     const dialog = ref(false);
     const dialogEncryptKey = ref(false);
     const store = useSearchStore();
+    const keyStore = useKeyStore();
     const sourceData = ref<SourceVimeo>();
     const itemsData = ref<ItemVimeo[]>([]);
     const limit = ref(18);
@@ -238,6 +240,7 @@ export default defineComponent({
         fetchItemsData();
       } else {
         encryptionKey.value = null;
+        keyStore.removeKey(props.sourceId, 'vimeo');
       }
       newVimeoId.value = '';
       dialog.value = false;
@@ -245,11 +248,18 @@ export default defineComponent({
     }
 
     function showNewVideoDialog() {
-      if (!encryptionKey.value) {
+      const keyInStore = keyStore.getKey(props.sourceId, 'vimeo');
+      if (!keyInStore) {
         dialogEncryptKey.value = true;
       } else {
         dialog.value = true;
       }
+    }
+
+    function addEncryptionKey() {
+      dialog.value = true;
+      dialogEncryptKey.value = false;
+      keyStore.addKey(props.sourceId, 'vimeo', encryptionKey.value);
     }
 
     watch(filter, () => {
@@ -276,6 +286,10 @@ export default defineComponent({
           filterLocal.value = filter.value;
         }
       }
+      const keyInStore = keyStore.getKey(props.sourceId, 'vimeo');
+      if (keyInStore) {
+        encryptionKey.value = keyInStore;
+      }
     });
 
     return {
@@ -292,6 +306,7 @@ export default defineComponent({
       dialogEncryptKey,
       encryptionKey,
       showNewVideoDialog,
+      addEncryptionKey,
     };
   },
 });
