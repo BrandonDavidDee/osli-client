@@ -7,7 +7,9 @@
     >
       <thead>
         <tr>
-          <th class="text-left" />
+          <th class="text-left">
+            Preview
+          </th>
           <th class="text-left">
             Item Title
           </th>
@@ -17,7 +19,9 @@
           <th class="text-left">
             Date Saved
           </th>
-          <th class="text-left" />
+          <th class="text-left">
+            View
+          </th>
         </tr>
       </thead>
       <tbody>
@@ -54,7 +58,7 @@
             <q-btn
               size="sm"
               flat
-              icon="visibility"
+              label="View"
               :to="getDetailRoute(item)"
             />
           </td>

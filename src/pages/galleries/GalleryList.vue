@@ -34,6 +34,14 @@
           </tr>
         </thead>
         <tbody>
+          <tr v-if="!data">
+            <td
+              class="text-caption text-grey-8"
+              colspan="3"
+            >
+              No Galleries
+            </td>
+          </tr>
           <tr
             v-for="gallery in data"
             :key="gallery.id"

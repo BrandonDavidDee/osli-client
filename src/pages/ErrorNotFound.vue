@@ -14,7 +14,7 @@
         Oops. Nothing here...
       </div>
 
-      <q-btn
+      <!-- <q-btn
         class="q-mt-xl"
         color="white"
         text-color="black"
@@ -22,7 +22,7 @@
         to="/"
         label="Go Home"
         no-caps
-      />
+      /> -->
     </div>
   </div>
 </template>
