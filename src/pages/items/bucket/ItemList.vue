@@ -158,13 +158,13 @@ import {
   defineComponent, ref, onMounted, watch, computed,
 } from 'vue';
 import { itemList } from 'src/api/item-bucket';
+import { ItemBucket } from 'src/models/item-bucket';
 import { SourceBucket } from 'src/models/source-bucket';
 import { SearchPayload } from 'src/models/item';
-import { ItemBucket } from 'src/models/item-bucket';
-import { useSearchStore } from 'stores/search';
 import { useKeyStore } from 'src/stores/keys';
-import TagSelector from 'src/pages/sources/TagSelector.vue';
+import { useSearchStore } from 'stores/search';
 import BatchUploader from 'src/components/BatchUploader.vue';
+import TagSelector from 'src/pages/sources/TagSelector.vue';
 import ItemPreview from './ItemPreview.vue';
 
 export default defineComponent({
@@ -176,22 +176,24 @@ export default defineComponent({
     },
   },
   setup(props) {
+    const keyStore = useKeyStore();
+    const store = useSearchStore();
+
     const dialog = ref(false);
     const dialogEncryptKey = ref(false);
-    const store = useSearchStore();
-    const keyStore = useKeyStore();
-    const sourceData = ref<SourceBucket>();
+    const encryptionKey = ref();
+    const filterLocal = ref('');
     const itemsData = ref<ItemBucket[]>([]);
     const limit = ref(18);
-    const page = ref(1);
-    const offset = ref(0);
-    const totalCount = ref(0);
     const maxPages = ref(0);
-    const selectedTagIds = computed(() => store.selectedTagIds);
+    const offset = ref(0);
+    const page = ref(1);
+    const sourceData = ref<SourceBucket>();
+    const totalCount = ref(0);
+
     const filter = computed(() => store.filter);
-    const filterLocal = ref('');
     const gridView = computed(() => sourceData.value?.grid_view);
-    const encryptionKey = ref();
+    const selectedTagIds = computed(() => store.selectedTagIds);
 
     async function fetchItemsData() {
       itemsData.value = [];
@@ -209,6 +211,12 @@ export default defineComponent({
         totalCount.value = res.data.total_count;
         maxPages.value = Math.ceil(totalCount.value / limit.value);
       }
+    }
+
+    function addEncryptionKey() {
+      dialog.value = true;
+      dialogEncryptKey.value = false;
+      keyStore.addKey(props.sourceId, 'bucket', encryptionKey.value);
     }
 
     function resetSearchParams() {
@@ -235,12 +243,6 @@ export default defineComponent({
       dialog.value = false;
       encryptionKey.value = null;
       keyStore.removeKey(props.sourceId, 'bucket');
-    }
-
-    function addEncryptionKey() {
-      dialog.value = true;
-      dialogEncryptKey.value = false;
-      keyStore.addKey(props.sourceId, 'bucket', encryptionKey.value);
     }
 
     watch(filter, () => {
@@ -274,19 +276,19 @@ export default defineComponent({
     });
 
     return {
+      addEncryptionKey,
+      dialog,
+      dialogEncryptKey,
+      encryptionKey,
+      filterLocal,
+      gridView,
       itemsData,
       page,
       maxPages,
-      sourceData,
-      gridView,
-      filterLocal,
       onUploaded,
-      dialog,
-      showUploader,
-      dialogEncryptKey,
-      encryptionKey,
       onUploadError,
-      addEncryptionKey,
+      showUploader,
+      sourceData,
     };
   },
 });

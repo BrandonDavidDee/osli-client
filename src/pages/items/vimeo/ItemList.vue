@@ -189,24 +189,26 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const dialog = ref(false);
-    const dialogEncryptKey = ref(false);
     const store = useSearchStore();
     const keyStore = useKeyStore();
-    const sourceData = ref<SourceVimeo>();
+
+    const dialog = ref(false);
+    const dialogEncryptKey = ref(false);
+    const encryptionKey = ref();
+    const filterLocal = ref('');
     const itemsData = ref<ItemVimeo[]>([]);
     const limit = ref(18);
-    const page = ref(1);
-    const offset = ref(0);
-    const totalCount = ref(0);
-    const maxPages = ref(0);
-    const selectedTagIds = computed(() => store.selectedTagIds);
-    const filter = computed(() => store.filter);
-    const filterLocal = ref('');
-    const gridView = computed(() => sourceData.value?.grid_view);
-    const newVimeoId = ref('');
     const loading = ref(false);
-    const encryptionKey = ref();
+    const maxPages = ref(0);
+    const newVimeoId = ref('');
+    const offset = ref(0);
+    const page = ref(1);
+    const sourceData = ref<SourceVimeo>();
+    const totalCount = ref(0);
+
+    const filter = computed(() => store.filter);
+    const gridView = computed(() => sourceData.value?.grid_view);
+    const selectedTagIds = computed(() => store.selectedTagIds);
 
     async function fetchItemsData() {
       itemsData.value = [];
@@ -224,6 +226,12 @@ export default defineComponent({
         totalCount.value = res.data.total_count;
         maxPages.value = Math.ceil(totalCount.value / limit.value);
       }
+    }
+
+    function addEncryptionKey() {
+      dialog.value = true;
+      dialogEncryptKey.value = false;
+      keyStore.addKey(props.sourceId, 'vimeo', encryptionKey.value);
     }
 
     function resetSearchParams() {
@@ -254,12 +262,6 @@ export default defineComponent({
       } else {
         dialog.value = true;
       }
-    }
-
-    function addEncryptionKey() {
-      dialog.value = true;
-      dialogEncryptKey.value = false;
-      keyStore.addKey(props.sourceId, 'vimeo', encryptionKey.value);
     }
 
     watch(filter, () => {
@@ -293,20 +295,20 @@ export default defineComponent({
     });
 
     return {
-      itemsData,
-      page,
-      maxPages,
-      sourceData,
-      gridView,
+      addEncryptionKey,
+      createNewItem,
       filterLocal,
       dialog,
-      newVimeoId,
-      createNewItem,
-      loading,
       dialogEncryptKey,
       encryptionKey,
+      gridView,
+      itemsData,
+      loading,
+      maxPages,
+      newVimeoId,
+      page,
       showNewVideoDialog,
-      addEncryptionKey,
+      sourceData,
     };
   },
 });
