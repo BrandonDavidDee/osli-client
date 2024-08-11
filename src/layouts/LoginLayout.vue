@@ -18,6 +18,7 @@
             color="black"
             outlined
             :rules="[(v) => !!v || 'Required']"
+            :loading="loading"
           />
           <q-input
             v-model="password"
@@ -26,6 +27,7 @@
             outlined
             type="password"
             :rules="[(v) => !!v || 'Required']"
+            :loading="loading"
           />
         </q-card-section>
         <q-card-actions align="right">
@@ -33,6 +35,7 @@
             label="Login"
             type="submit"
             text-color="white"
+            :loading="loading"
           />
         </q-card-actions>
       </q-form>
@@ -42,27 +45,34 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
-import { useAuthStore } from 'stores/auth';
 import { useRouter } from 'vue-router';
+import { useAuthStore } from 'stores/auth';
 
 export default defineComponent({
   setup() {
     const store = useAuthStore();
     const router = useRouter();
+    const loading = ref(false);
     const loginForm = ref();
     const username = ref();
     const password = ref();
+
     async function onSubmit() {
+      loading.value = true;
       const res = await store.login(username.value, password.value);
       if (res && res.status === 200) {
+        loading.value = false;
         await router.push({ name: 'home' });
       }
+      loading.value = false;
     }
+
     return {
+      loading,
       loginForm,
-      username,
-      password,
       onSubmit,
+      password,
+      username,
     };
   },
 });
