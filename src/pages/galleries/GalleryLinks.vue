@@ -124,12 +124,13 @@
         </tbody>
       </q-markup-table>
     </div>
-    <q-dialog v-model="dialog">
-      <q-card
+
+    <DialogMaster v-model="dialog">
+      <template
         v-if="selected"
-        style="width: 800px; max-width: 80vw;"
+        #content="{ closeDialog }"
       >
-        <q-form @submit="onSubmit">
+        <q-form @submit.prevent="onSubmit(closeDialog)">
           <q-card-section>
             <q-input
               v-model="selected.title"
@@ -165,9 +166,9 @@
           </q-card-section>
           <q-card-actions align="right">
             <q-btn
-              v-close-popup
               label="Close"
               flat
+              @click="closeDialog"
             />
             <q-btn
               color="green"
@@ -176,20 +177,22 @@
             />
           </q-card-actions>
         </q-form>
-      </q-card>
-    </q-dialog>
+      </template>
+    </DialogMaster>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref, watch } from 'vue';
-import { Gallery, GalleryLink } from 'src/models/gallery';
-import { galleryLinks, galleryLinkCreate, galleryLinkUpdate } from 'src/api/galleries';
-import { getDateTimeDisplay } from 'src/services/date-master';
 import { copyToClipboard, openURL } from 'quasar';
+import { galleryLinks, galleryLinkCreate, galleryLinkUpdate } from 'src/api/galleries';
+import { Gallery, GalleryLink } from 'src/models/gallery';
+import { getDateTimeDisplay } from 'src/services/date-master';
 import { positiveNotification, negativeNotification } from 'src/services/notify';
+import DialogMaster from 'src/components/DialogMaster.vue';
 
 export default defineComponent({
+  components: { DialogMaster },
   props: {
     galleryId: {
       type: [Number, String],
@@ -239,7 +242,6 @@ export default defineComponent({
           // TODO: return object and unshift
           fetchData();
         }
-        dialog.value = false;
       }
     }
 
@@ -249,16 +251,16 @@ export default defineComponent({
         if (res && res.status === 200) {
           positiveNotification('Updated!');
         }
-        dialog.value = false;
       }
     }
 
-    function onSubmit() {
+    function onSubmit(closeDialog: () => void) {
       if (selected.value && selected.value.id === 0) {
         createNew();
       } else {
         updateExisting();
       }
+      closeDialog();
     }
 
     function newLink() {
