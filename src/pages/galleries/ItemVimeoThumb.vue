@@ -10,7 +10,7 @@
         <div class="absolute-full text-subtitle2 flex flex-center">
           <q-icon
             name="play_circle"
-            size="2rem"
+            :size="playIconSize"
           />
         </div>
       </template>
@@ -53,6 +53,10 @@ export default defineComponent({
     item: {
       type: Object as PropType<ItemVimeo>,
       required: true,
+    },
+    playIconSize: {
+      type: String,
+      default: '2rem',
     },
   },
   setup(props) {

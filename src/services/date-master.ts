@@ -81,28 +81,3 @@ export const getTimeDisplay = (v: string) => {
   const timeObject = getTimeObject(v);
   return timeObject.format(timeOutputFormat);
 };
-
-// utility functions
-export const getDateRangeOptions = (start: string, end: string) => {
-  // for generating the options in a v-select component
-  const startDate = getDateObject(start);
-  const endDate = getDateObject(end);
-  const daysCount = endDate.diff(startDate, 'day') + 1;
-  return Array.from({ length: daysCount }, (_, index) => {
-    const currentDate = startDate.add(index, 'day');
-    return {
-      value: currentDate.format('YYYY-MM-DD'),
-      label: currentDate.format(dateOutputFormat),
-    };
-  });
-};
-
-export const isDateInRange = (queryDate: string, start: string, end: string) => dayjs(queryDate, customDateFormat).isBetween(start, end, 'day', '[]');
-
-export const eventDatesDisplay = (start: string, end: string) => {
-  const startDate = getDateDisplay(start);
-  const endDate = getDateDisplay(end);
-  return start === end ? startDate : `${startDate} - ${endDate}`;
-};
-
-export const getNow = () => dayjs();

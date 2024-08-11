@@ -54,21 +54,21 @@ export default defineComponent({
   emits: ['logout'],
   setup() {
     const menuItems: MenuItem[] = [
-      {
-        label: 'Profile',
-        routeName: 'my-profile',
-        icon: 'account_circle',
-      },
+      // {
+      //   label: 'Profile',
+      //   routeName: 'my-profile',
+      //   icon: 'account_circle',
+      // },
       {
         label: 'Saved',
         routeName: 'my-saved',
         icon: 'bookmark',
       },
-      {
-        label: 'My Links',
-        routeName: 'my-saved',
-        icon: 'link',
-      },
+      // {
+      //   label: 'My Links',
+      //   routeName: 'my-saved',
+      //   icon: 'link',
+      // },
     ];
     return {
       menuItems,
