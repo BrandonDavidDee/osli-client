@@ -1,6 +1,28 @@
 <template>
   <div>
     <q-list
+      v-if="!data.length"
+      class="q-ma-xl"
+      bordered
+      separator
+    >
+      <q-item
+        v-for="index in 5"
+        :key="index"
+      >
+        <q-item-section avatar>
+          <q-skeleton type="QAvatar" />
+        </q-item-section>
+
+        <q-item-section>
+          <q-item-label>
+            <q-skeleton type="text" />
+          </q-item-label>
+        </q-item-section>
+      </q-item>
+    </q-list>
+    <q-list
+      v-else
       class="q-ma-xl"
       bordered
       separator
@@ -12,8 +34,19 @@
         clickable
         :to="makeRouteObj(source)"
       >
+        <q-item-section avatar>
+          <q-icon
+            :name="source.source_type === 'vimeo' ? 'mdi-video' : 'mdi-image'"
+          />
+        </q-item-section>
         <q-item-section>
           <q-item-label>{{ source.title }}</q-item-label>
+          <q-item-label
+            caption
+            class="text-uppercase"
+          >
+            {{ source.source_type }}
+          </q-item-label>
         </q-item-section>
       </q-item>
       <q-item
@@ -21,6 +54,11 @@
         clickable
         :to="{name: 'gallery-list'}"
       >
+        <q-item-section avatar>
+          <q-icon
+            name="mdi-image-multiple"
+          />
+        </q-item-section>
         <q-item-section>
           <q-item-label>Galleries</q-item-label>
         </q-item-section>
