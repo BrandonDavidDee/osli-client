@@ -14,19 +14,39 @@
         Oops. Nothing here...
       </div>
 
-      <!-- <q-btn
+      <q-btn
+        v-if="companyUrl"
         class="q-mt-xl"
         color="white"
         text-color="black"
         unelevated
-        to="/"
         label="Go Home"
         no-caps
-      /> -->
+        @click="openCompanyUrl"
+      />
     </div>
   </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts">
+import { computed } from 'vue';
+import { openURL } from 'quasar';
 
+export default {
+  setup() {
+    const companyUrl = computed(() => {
+      const url = process.env.COMPANY_URL;
+      return (typeof url === 'string' && url) || null;
+    });
+    function openCompanyUrl() {
+      if (companyUrl.value) {
+        openURL(companyUrl.value);
+      }
+    }
+    return {
+      companyUrl,
+      openCompanyUrl,
+    };
+  },
+};
 </script>

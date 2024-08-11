@@ -248,6 +248,9 @@ export default defineComponent({
     onMounted(() => {
       if (store.page) {
         page.value = store.page;
+        if (filter.value) {
+          filterLocal.value = filter.value;
+        }
       }
     });
 
