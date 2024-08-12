@@ -38,8 +38,8 @@
         </q-chip>
       </q-card-section>
     </q-card>
-    <q-dialog v-model="dialog">
-      <q-card style="width: 800px; max-width: 80vw;">
+    <DialogMaster v-model="dialog">
+      <template #content="{ closeDialog }">
         <q-card-section>
           <q-input
             v-model="model"
@@ -64,12 +64,12 @@
         <q-separator />
         <q-card-actions align="right">
           <q-btn
-            v-close-popup
             label="Close"
+            @click="closeDialog"
           />
         </q-card-actions>
-      </q-card>
-    </q-dialog>
+      </template>
+    </DialogMaster>
   </div>
 </template>
 
@@ -90,8 +90,10 @@ import { ItemBucket } from 'src/models/item-bucket';
 import { ItemTag } from 'src/models/item';
 import { ItemVimeo } from 'src/models/item-vimeo';
 import { Tag } from 'src/models/tag';
+import DialogMaster from 'src/components/DialogMaster.vue';
 
 export default defineComponent({
+  components: { DialogMaster },
   props: {
     item: {
       type: Object as PropType<ItemBucket | ItemVimeo>,
@@ -105,9 +107,9 @@ export default defineComponent({
   },
   emits: ['new', 'deleted'],
   setup(props, { emit }) {
-    const model = ref();
     const data = ref<Tag[]>([]);
     const dialog = ref(false);
+    const model = ref();
 
     const tagsSorted = computed(() => {
       const copy = JSON.parse(JSON.stringify(props.item.tags));
