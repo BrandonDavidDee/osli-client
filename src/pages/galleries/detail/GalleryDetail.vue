@@ -22,7 +22,10 @@
     </q-toolbar>
     <div class="row">
       <div class="col q-pa-md">
-        <GalleryItems :gallery="data" />
+        <GalleryItems
+          :gallery="data"
+          @update="updateGallery"
+        />
       </div>
       <div class="col q-pa-md">
         <div class="text-right">
@@ -46,6 +49,7 @@
           square
           :rules="[(v) => !!v || 'Required']"
           label="Title"
+          @update:model-value="debouncedGalleryUpdate"
         />
         <q-input
           v-model="data.description"
@@ -54,6 +58,7 @@
           square
           label="Description"
           type="textarea"
+          @update:model-value="debouncedGalleryUpdate"
         />
       </div>
     </div>
@@ -64,8 +69,9 @@
 import {
   defineComponent, ref, watch, computed,
 } from 'vue';
+import { debounce } from 'quasar';
 import { Gallery } from 'src/models/gallery';
-import { galleryDetail } from 'src/api/galleries';
+import { galleryDetail, galleryUpdate } from 'src/api/galleries';
 import LineItem from 'src/components/LineItem.vue';
 import { getDateTimeDisplay } from 'src/services/date-master';
 import GalleryItems from './GalleryItems.vue';
@@ -92,6 +98,20 @@ export default defineComponent({
       }
     }
 
+    async function updateGallery() {
+      if (data.value) {
+        await galleryUpdate(props.galleryId, data.value);
+      }
+    }
+
+    const debouncedGalleryUpdate = debounce(async () => {
+      if (data.value) {
+        loading.value = true;
+        await galleryUpdate(props.galleryId, data.value);
+        loading.value = false;
+      }
+    }, 500);
+
     watch(
       () => props.galleryId,
       () => {
@@ -105,6 +125,8 @@ export default defineComponent({
       loading,
       itemsSorted,
       getDateTimeDisplay,
+      updateGallery,
+      debouncedGalleryUpdate,
     };
   },
 });
