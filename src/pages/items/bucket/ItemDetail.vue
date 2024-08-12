@@ -78,6 +78,11 @@
         @new="onNewTag"
         @deleted="onDeletedTagItem"
       />
+      <ItemDelete
+        class="q-mt-md"
+        :source-id="sourceId"
+        :item="data"
+      />
     </div>
   </div>
 </template>
@@ -94,10 +99,11 @@ import LineItem from 'src/components/LineItem.vue';
 import ItemTags from 'src/pages/items/common/ItemTags.vue';
 import ItemPreview from './ItemPreview.vue';
 import ItemSave from './ItemSave.vue';
+import ItemDelete from './ItemDelete.vue';
 
 export default defineComponent({
   components: {
-    ItemPreview, LineItem, ItemTags, ItemSave,
+    ItemPreview, LineItem, ItemTags, ItemSave, ItemDelete,
   },
   props: {
     sourceId: {

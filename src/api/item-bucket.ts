@@ -33,6 +33,14 @@ export async function itemUpdate(itemId: number | string, payload: ItemBucket) {
   }
 }
 
+export async function itemDelete(encryptionKey: string, sourceId: number | string, payload: ItemBucket) {
+  try {
+    return await api.put(`${path}/${payload.id}/delete?source_id=${sourceId}&encryption_key=${encryptionKey}`, payload);
+  } catch (err) {
+    return errorHandler(err);
+  }
+}
+
 export async function itemTagCreate(itemId: number | string, payload: ItemTag) {
   try {
     return await api.post(`${path}/${itemId}/tags`, payload);

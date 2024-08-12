@@ -228,6 +228,7 @@ export default defineComponent({
     function onUploaded() {
       resetSearchParams();
       fetchItemsData();
+      dialog.value = false;
     }
 
     function showUploader() {
