@@ -73,6 +73,7 @@
       />
       <ItemTags
         :item="data"
+        source-type="bucket"
         class="q-mt-md"
         @new="onNewTag"
         @deleted="onDeletedTagItem"
@@ -90,8 +91,8 @@ import { debounce } from 'quasar';
 import { ItemTag } from 'src/models/item';
 import { ItemBucket } from 'src/models/item-bucket';
 import LineItem from 'src/components/LineItem.vue';
+import ItemTags from 'src/pages/items/common/ItemTags.vue';
 import ItemPreview from './ItemPreview.vue';
-import ItemTags from './ItemTags.vue';
 import ItemSave from './ItemSave.vue';
 
 export default defineComponent({

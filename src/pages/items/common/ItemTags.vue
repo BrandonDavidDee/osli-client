@@ -77,16 +77,29 @@
 import {
   defineComponent, PropType, ref, computed,
 } from 'vue';
-import { ItemVimeo } from 'src/models/item-vimeo';
-import { ItemTag } from 'src/models/item';
-import { Tag } from 'src/models/tag';
+import {
+  itemTagCreate as itemTagCreateBucket,
+  itemTagDelete as itemTagDeleteBucket,
+} from 'src/api/item-bucket';
+import {
+  itemTagCreate as itemTagCreateVimeo,
+  itemTagDelete as itemTagDeleteVimeo,
+} from 'src/api/item-vimeo';
 import { tagList } from 'src/api/tags';
-import { itemTagCreate, itemTagDelete } from 'src/api/item-vimeo';
+import { ItemBucket } from 'src/models/item-bucket';
+import { ItemTag } from 'src/models/item';
+import { ItemVimeo } from 'src/models/item-vimeo';
+import { Tag } from 'src/models/tag';
 
 export default defineComponent({
   props: {
     item: {
-      type: Object as PropType<ItemVimeo>,
+      type: Object as PropType<ItemBucket | ItemVimeo>,
+      required: true,
+    },
+    sourceType: {
+      type: String,
+      validator: (value: string) => ['bucket', 'vimeo'].includes(value),
       required: true,
     },
   },
@@ -131,6 +144,16 @@ export default defineComponent({
       dialog.value = true;
     }
 
+    async function itemTagCreate(itemId: number, payload: ItemTag) {
+      if (props.sourceType === 'bucket') {
+        return itemTagCreateBucket(itemId, payload);
+      }
+      if (props.sourceType === 'vimeo') {
+        return itemTagCreateVimeo(itemId, payload);
+      }
+      throw new Error(`Unknown sourceType: ${props.sourceType}`);
+    }
+
     async function onSelected(value: Tag) {
       const payload: ItemTag = {
         id: 0,
@@ -142,6 +165,16 @@ export default defineComponent({
       }
     }
 
+    async function itemTagDelete(itemId: number, itemTagId: number) {
+      if (props.sourceType === 'bucket') {
+        return itemTagDeleteBucket(itemId, itemTagId);
+      }
+      if (props.sourceType === 'vimeo') {
+        return itemTagDeleteVimeo(itemId, itemTagId);
+      }
+      throw new Error(`Unknown sourceType: ${props.sourceType}`);
+    }
+
     async function deleteTag(value: ItemTag) {
       const res = await itemTagDelete(props.item.id, value.id);
       if (res && res.status === 200) {
@@ -150,15 +183,15 @@ export default defineComponent({
     }
 
     return {
-      dialog,
       dataFiltered,
-      model,
-      showDialog,
+      deleteTag,
+      dialog,
       getTagColor,
       isClickable,
+      model,
       onSelected,
+      showDialog,
       tagsSorted,
-      deleteTag,
     };
   },
 });

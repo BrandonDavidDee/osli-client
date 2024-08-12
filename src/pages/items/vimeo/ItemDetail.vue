@@ -69,6 +69,7 @@
       />
       <ItemTags
         :item="data"
+        source-type="vimeo"
         class="q-mt-md"
         @new="onNewTag"
         @deleted="onDeletedTagItem"
@@ -87,7 +88,7 @@ import { ItemTag } from 'src/models/item';
 import { ItemVimeo } from 'src/models/item-vimeo';
 import LineItem from 'src/components/LineItem.vue';
 import VimeoPlayer from 'src/components/VimeoPlayer.vue';
-import ItemTags from './ItemTags.vue';
+import ItemTags from 'src/pages/items/common/ItemTags.vue';
 import ItemSave from './ItemSave.vue';
 
 export default defineComponent({
