@@ -22,53 +22,15 @@
     </q-toolbar>
     <div class="row">
       <div class="col q-pa-md">
-        <q-card
-          v-for="item in itemsSorted"
-          :key="item.id"
-          class="q-mb-sm"
-          flat
-          bordered
-          square
-        >
-          <q-card-section class="row">
-            <div class="col-2">
-              <ItemBucketThumb
-                v-if="item.item_bucket"
-                :item="item.item_bucket"
-              />
-              <ItemVimeoThumb
-                v-if="item.item_vimeo"
-                :item="item.item_vimeo"
-              />
-            </div>
-            <div class="col-10">
-              <q-input
-                v-model.number="item.item_order"
-                type="number"
-                label="Item Order"
-                class="q-ma-md"
-                dense
-                filled
-                color="black"
-              />
-            </div>
-          </q-card-section>
-          <q-card-actions
-            align="right"
-            class="q-pt-none"
-          >
-            <q-btn
-              label="Delete"
-              size="sm"
-            />
-          </q-card-actions>
-        </q-card>
+        <GalleryItems :gallery="data" />
       </div>
       <div class="col q-pa-md">
-        <q-btn
-          label="Links"
-          :to="{ name: 'gallery-links', params: { galleryId: galleryId}}"
-        />
+        <div class="text-right">
+          <q-btn
+            label="Links"
+            :to="{ name: 'gallery-links', params: { galleryId: galleryId}}"
+          />
+        </div>
         <LineItem
           label="Date Created"
           :text="getDateTimeDisplay(data.date_created)"
@@ -104,14 +66,14 @@ import {
 } from 'vue';
 import { Gallery } from 'src/models/gallery';
 import { galleryDetail } from 'src/api/galleries';
-import ItemBucketThumb from 'src/pages/galleries/ItemBucketThumb.vue';
-import ItemVimeoThumb from 'src/pages/galleries/ItemVimeoThumb.vue';
 import LineItem from 'src/components/LineItem.vue';
 import { getDateTimeDisplay } from 'src/services/date-master';
+import GalleryItems from './GalleryItems.vue';
 
 export default defineComponent({
-  // eslint-disable-next-line vue/no-unused-components
-  components: { ItemVimeoThumb, ItemBucketThumb, LineItem },
+  components: {
+    LineItem, GalleryItems,
+  },
   props: {
     galleryId: {
       type: [Number, String],
@@ -121,6 +83,7 @@ export default defineComponent({
   setup(props) {
     const data = ref<Gallery>();
     const loading = ref(false);
+
     const itemsSorted = computed(() => data.value?.items.slice().sort((a, b) => a.item_order - b.item_order));
     async function fetchData() {
       const res = await galleryDetail(props.galleryId);
