@@ -1,42 +1,38 @@
 <template>
-  <div>
+  <div class="q-pa-xl">
     <q-list
-      v-if="!data.length"
-      class="q-ma-xl"
       bordered
       separator
     >
-      <q-item
-        v-for="index in 5"
-        :key="index"
-      >
+      <q-item v-if="loadingBuckets">
         <q-item-section avatar>
-          <q-skeleton type="QAvatar" />
+          <q-icon
+            name="mdi-image"
+          />
         </q-item-section>
-
         <q-item-section>
           <q-item-label>
             <q-skeleton type="text" />
           </q-item-label>
+          <q-item-label>
+            <q-skeleton
+              type="text"
+              width="10%"
+            />
+          </q-item-label>
         </q-item-section>
       </q-item>
-    </q-list>
-    <q-list
-      v-else
-      class="q-ma-xl"
-      bordered
-      separator
-    >
+
       <q-item
-        v-for="source in data"
+        v-for="source in dataBuckets"
         :key="source.id"
         v-ripple
         clickable
-        :to="makeRouteObj(source)"
+        :to="{ name: 'item-list-bucket', params: { sourceId: source.id}}"
       >
         <q-item-section avatar>
           <q-icon
-            :name="source.source_type === 'vimeo' ? 'mdi-video' : 'mdi-image'"
+            name="mdi-image"
           />
         </q-item-section>
         <q-item-section>
@@ -45,10 +41,53 @@
             caption
             class="text-uppercase"
           >
-            {{ source.source_type }}
+            BUCKET
           </q-item-label>
         </q-item-section>
       </q-item>
+
+      <q-item v-if="loadingVimeo">
+        <q-item-section avatar>
+          <q-icon
+            name="mdi-video"
+          />
+        </q-item-section>
+        <q-item-section>
+          <q-item-label>
+            <q-skeleton type="text" />
+          </q-item-label>
+          <q-item-label>
+            <q-skeleton
+              type="text"
+              width="10%"
+            />
+          </q-item-label>
+        </q-item-section>
+      </q-item>
+
+      <q-item
+        v-for="source in dataVimeo"
+        :key="source.id"
+        v-ripple
+        clickable
+        :to="{ name: 'item-list-vimeo', params: { sourceId: source.id}}"
+      >
+        <q-item-section avatar>
+          <q-icon
+            name="mdi-video"
+          />
+        </q-item-section>
+        <q-item-section>
+          <q-item-label>{{ source.title }}</q-item-label>
+          <q-item-label
+            caption
+            class="text-uppercase"
+          >
+            VIMEO
+          </q-item-label>
+        </q-item-section>
+      </q-item>
+
       <q-item
         v-ripple
         clickable
@@ -68,43 +107,31 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted } from 'vue';
-import { sourceListBucket } from 'src/api/source-bucket';
-import { sourceListVimeo } from 'src/api/source-vimeo';
-
-interface ResponseData {
-  id: number;
-  title: string;
-  source_type: string;
-}
+import {
+  defineComponent, onMounted, computed,
+} from 'vue';
+import { useSourceStore } from 'src/stores/sources';
 
 export default defineComponent({
   setup() {
-    const data = ref<ResponseData[]>([]);
+    const store = useSourceStore();
 
-    async function fetchData() {
-      data.value = [];
-      const res = await sourceListBucket();
-      if (res && res.data) {
-        data.value.push(...res.data);
-      }
-      const resVimeo = await sourceListVimeo();
-      if (resVimeo && resVimeo.data) {
-        data.value.push(...resVimeo.data);
-      }
-    }
+    const dataBuckets = computed(() => store.bucketData);
+    const dataVimeo = computed(() => store.vimeoData);
 
-    function makeRouteObj(source: ResponseData) {
-      const name = source.source_type === 'bucket' ? 'item-list-bucket' : 'item-list-vimeo';
-      return { name, params: { sourceId: source.id } };
-    }
+    const loadingBuckets = computed(() => store.bucketLoading);
+    const loadingVimeo = computed(() => store.vimeoLoading);
 
-    onMounted(() => fetchData());
+    onMounted(async () => {
+      await store.getBucketSources();
+      await store.getVimeoSources();
+    });
 
     return {
-      data,
-      fetchData,
-      makeRouteObj,
+      loadingBuckets,
+      loadingVimeo,
+      dataBuckets,
+      dataVimeo,
     };
   },
 });
