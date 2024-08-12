@@ -10,7 +10,7 @@
         :to="{name: 'item-detail-bucket', params: { itemId }}"
       />
       <q-toolbar-title>
-        Item Links: {{ data?.file_path }}
+        Item Links: {{ displayTitle }}
       </q-toolbar-title>
     </q-toolbar>
     <div class="q-pa-md">
@@ -182,12 +182,24 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch } from 'vue';
-import { ItemLink } from 'src/models/item';
-import { ItemBucket } from 'src/models/item-bucket';
-import { itemLinkCreate, itemLinks, itemLinkUpdate } from 'src/api/item-bucket';
-import { getDateTimeDisplay } from 'src/services/date-master';
+import {
+  defineComponent, ref, watch, computed,
+} from 'vue';
 import { copyToClipboard, openURL } from 'quasar';
+import {
+  itemLinkCreate as itemLinkCreateBucket,
+  itemLinks as itemLinksBucket,
+  itemLinkUpdate as itemLinkUpdateBucket,
+} from 'src/api/item-bucket';
+import {
+  itemLinkCreate as itemLinkCreateVimeo,
+  itemLinks as itemLinksVimeo,
+  itemLinkUpdate as itemLinkUpdateVimeo,
+} from 'src/api/item-vimeo';
+import { ItemLink } from 'src/models/item';
+import { ItemVimeo } from 'src/models/item-vimeo';
+import { ItemBucket } from 'src/models/item-bucket';
+import { getDateTimeDisplay } from 'src/services/date-master';
 import { positiveNotification, negativeNotification } from 'src/services/notify';
 
 export default defineComponent({
@@ -200,11 +212,49 @@ export default defineComponent({
       type: [Number, String],
       required: true,
     },
+    sourceType: {
+      type: String,
+      validator: (value: string) => ['bucket', 'vimeo'].includes(value),
+      required: true,
+    },
   },
   setup(props) {
-    const data = ref<ItemBucket>();
+    const data = ref<ItemBucket | ItemVimeo>();
     const dialog = ref(false);
     const selected = ref<ItemLink>();
+
+    function isItemBucket(item: ItemBucket | ItemVimeo): item is ItemBucket {
+      return (item as ItemBucket).file_path !== undefined;
+    }
+
+    // Type guard function for ItemVimeo
+    function isItemVimeo(item: ItemBucket | ItemVimeo): item is ItemVimeo {
+      return (item as ItemVimeo).video_id !== undefined;
+    }
+
+    const displayTitle = computed(() => {
+      if (!data.value) return '';
+      if (data.value.title) {
+        return data.value.title;
+      }
+      if (isItemBucket(data.value)) {
+        return data.value.file_path;
+      }
+      if (isItemVimeo(data.value)) {
+        return data.value.video_id;
+      }
+      return '';
+    });
+
+    async function itemLinks(itemId: number | string) {
+      if (props.sourceType === 'bucket') {
+        return itemLinksBucket(itemId);
+      }
+      if (props.sourceType === 'vimeo') {
+        return itemLinksVimeo(itemId);
+      }
+      throw new Error(`Unknown sourceType: ${props.sourceType}`);
+    }
 
     async function fetchData() {
       const res = await itemLinks(props.itemId);
@@ -216,6 +266,11 @@ export default defineComponent({
     function selectLink(v: ItemLink) {
       selected.value = v;
       dialog.value = true;
+    }
+    function openLink(link: string | undefined) {
+      if (link) {
+        openURL(link);
+      }
     }
 
     function copyLink(link: string | undefined) {
@@ -230,10 +285,29 @@ export default defineComponent({
       }
     }
 
-    function openLink(link: string | undefined) {
-      if (link) {
-        openURL(link);
+    function newLink() {
+      const model: ItemLink = {
+        id: 0,
+        title: null,
+        link: '',
+        expiration_date: null,
+        view_count: 0,
+        date_created: null,
+        created_by: null,
+        is_active: true,
+      };
+      selected.value = model;
+      dialog.value = true;
+    }
+
+    async function itemLinkCreate(itemId: number | string, selectedItemLink: ItemLink) {
+      if (props.sourceType === 'bucket') {
+        return itemLinkCreateBucket(itemId, selectedItemLink);
       }
+      if (props.sourceType === 'vimeo') {
+        return itemLinkCreateVimeo(itemId, selectedItemLink);
+      }
+      throw new Error(`Unknown sourceType: ${props.sourceType}`);
     }
 
     async function createNew() {
@@ -246,6 +320,15 @@ export default defineComponent({
         }
         dialog.value = false;
       }
+    }
+    async function itemLinkUpdate(itemId: number | string, selectedItemLink: ItemLink) {
+      if (props.sourceType === 'bucket') {
+        return itemLinkUpdateBucket(itemId, selectedItemLink);
+      }
+      if (props.sourceType === 'vimeo') {
+        return itemLinkUpdateVimeo(itemId, selectedItemLink);
+      }
+      throw new Error(`Unknown sourceType: ${props.sourceType}`);
     }
 
     async function updateExisting() {
@@ -266,21 +349,6 @@ export default defineComponent({
       }
     }
 
-    function newLink() {
-      const model: ItemLink = {
-        id: 0,
-        title: null,
-        link: '',
-        expiration_date: null,
-        view_count: 0,
-        date_created: null,
-        created_by: null,
-        is_active: true,
-      };
-      selected.value = model;
-      dialog.value = true;
-    }
-
     watch(
       () => props.itemId,
       () => {
@@ -293,6 +361,7 @@ export default defineComponent({
       data,
       dialog,
       getDateTimeDisplay,
+      displayTitle,
       selectLink,
       selected,
       onSubmit,
