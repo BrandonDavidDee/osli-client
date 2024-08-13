@@ -113,24 +113,27 @@
         color="teal"
       />
     </div>
-    <q-dialog v-model="dialog">
-      <q-card style="width: 800px; max-width: 80vw;">
-        <BatchUploader
-          :encryption-key="encryptionKey"
-          :source-id="sourceId"
-          @uploaded="onUploaded"
-          @error="onUploadError"
-        />
-        <q-card-actions align="right">
-          <q-btn
-            v-close-popup
-            label="Close"
+    <DialogMaster
+      v-model="dialog"
+      close-header
+      close-footer
+    >
+      <template #content="{ closeDialog }">
+        <q-card-section>
+          <BatchUploader
+            :encryption-key="encryptionKey"
+            :source-id="sourceId"
+            @uploaded="onUploaded(closeDialog)"
+            @error="onUploadError(closeDialog)"
           />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
-    <q-dialog v-model="dialogEncryptKey">
-      <q-card style="width: 800px; max-width: 80vw;">
+        </q-card-section>
+      </template>
+    </DialogMaster>
+    <DialogMaster
+      v-model="dialogEncryptKey"
+      close-header
+    >
+      <template #content="{ closeDialog }">
         <q-card-section>
           <q-input
             v-model="encryptionKey"
@@ -142,18 +145,18 @@
         </q-card-section>
         <q-card-actions align="right">
           <q-btn
-            v-close-popup
             label="Cancel"
             flat
+            @click="closeDialog"
           />
           <q-btn
             label="Continue"
             :disable="!encryptionKey"
-            @click="addEncryptionKey"
+            @click="addEncryptionKey(closeDialog)"
           />
         </q-card-actions>
-      </q-card>
-    </q-dialog>
+      </template>
+    </DialogMaster>
   </div>
 </template>
 
@@ -169,10 +172,13 @@ import { useKeyStore } from 'src/stores/keys';
 import { useSearchStore } from 'stores/search';
 import BatchUploader from 'src/components/BatchUploader.vue';
 import TagSelector from 'src/pages/sources/TagSelector.vue';
+import DialogMaster from 'src/components/DialogMaster.vue';
 import ItemListPreview from './ItemListPreview.vue';
 
 export default defineComponent({
-  components: { ItemListPreview, TagSelector, BatchUploader },
+  components: {
+    ItemListPreview, TagSelector, BatchUploader, DialogMaster,
+  },
   props: {
     sourceId: {
       type: [Number, String],
@@ -222,9 +228,10 @@ export default defineComponent({
       }
     }
 
-    function addEncryptionKey() {
+    function addEncryptionKey(closeDialog: () => void) {
       dialog.value = true;
-      dialogEncryptKey.value = false;
+      // dialogEncryptKey.value = false;
+      closeDialog();
       keyStore.addKey(props.sourceId, 'bucket', encryptionKey.value);
     }
 
@@ -234,10 +241,11 @@ export default defineComponent({
       // TODO: reset tags and any search values in state too
     }
 
-    function onUploaded() {
+    function onUploaded(closeDialog: () => void) {
       resetSearchParams();
       fetchItemsData();
-      dialog.value = false;
+      // dialog.value = false;
+      closeDialog();
     }
 
     function showUploader() {
@@ -249,8 +257,9 @@ export default defineComponent({
       }
     }
 
-    function onUploadError() {
-      dialog.value = false;
+    function onUploadError(closeDialog: () => void) {
+      // dialog.value = false;
+      closeDialog();
       encryptionKey.value = null;
       keyStore.removeKey(props.sourceId, 'bucket');
     }

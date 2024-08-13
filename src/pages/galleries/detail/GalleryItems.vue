@@ -63,25 +63,30 @@
         </q-item-section>
       </q-item>
     </q-list>
-    <q-dialog v-model="dialog">
-      <q-card>
+    <DialogMaster
+      v-model="dialog"
+      close-header
+      size="small"
+    >
+      <template #content="{ closeDialog }">
         <q-card-section>This will only remove this item from this gallery. It is permanent.</q-card-section>
+        <q-separator />
         <q-card-actions align="right">
           <q-btn
-            v-close-popup
             label="Cancel"
             flat
             :disable="loading"
+            @click="closeDialog"
           />
           <q-btn
             label="Delete"
             color="red"
             :loading="loading"
-            @click="doItemDelete"
+            @click="doItemDelete(closeDialog)"
           />
         </q-card-actions>
-      </q-card>
-    </q-dialog>
+      </template>
+    </DialogMaster>
   </div>
 </template>
 
@@ -95,10 +100,11 @@ import { positiveNotification } from 'src/services/notify';
 import { getDateTimeDisplay } from 'src/services/date-master';
 import { ItemBucket } from 'src/models/item-bucket';
 import { ItemVimeo } from 'src/models/item-vimeo';
+import DialogMaster from 'src/components/DialogMaster.vue';
 import AddItemMenu from './AddItemMenu.vue';
 
 export default defineComponent({
-  components: { AddItemMenu },
+  components: { AddItemMenu, DialogMaster },
   props: {
     galleryId: {
       type: [Number, String],
@@ -176,16 +182,16 @@ export default defineComponent({
       }
     }
 
-    async function doItemDelete() {
+    async function doItemDelete(closeDialog: () => void) {
       // TODO: remove this value from the array instead of refreshing
       if (selectedItemId.value) {
         const res = await galleryItemDelete(props.galleryId, selectedItemId.value);
         if (res && res.status === 200) {
           positiveNotification('Deleted');
-          dialog.value = false;
           selectedItemId.value = null;
           emit('refresh');
         }
+        closeDialog();
       }
     }
 

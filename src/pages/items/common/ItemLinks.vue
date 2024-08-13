@@ -124,12 +124,15 @@
         </tbody>
       </q-markup-table>
     </div>
-    <q-dialog v-model="dialog">
-      <q-card
+    <DialogMaster
+      v-model="dialog"
+      close-header
+    >
+      <template
         v-if="selected"
-        style="width: 800px; max-width: 80vw;"
+        #content="{ closeDialog }"
       >
-        <q-form @submit="onSubmit">
+        <q-form @submit="onSubmit(closeDialog)">
           <q-card-section>
             <q-input
               v-model="selected.title"
@@ -163,6 +166,7 @@
               label="Is Active"
             />
           </q-card-section>
+          <q-separator />
           <q-card-actions align="right">
             <q-btn
               v-close-popup
@@ -176,8 +180,8 @@
             />
           </q-card-actions>
         </q-form>
-      </q-card>
-    </q-dialog>
+      </template>
+    </DialogMaster>
   </div>
 </template>
 
@@ -201,8 +205,10 @@ import { ItemVimeo } from 'src/models/item-vimeo';
 import { ItemBucket } from 'src/models/item-bucket';
 import { getDateTimeDisplay } from 'src/services/date-master';
 import { positiveNotification, negativeNotification } from 'src/services/notify';
+import DialogMaster from 'src/components/DialogMaster.vue';
 
 export default defineComponent({
+  components: { DialogMaster },
   props: {
     sourceId: {
       type: [Number, String],
@@ -318,7 +324,6 @@ export default defineComponent({
           // TODO: return object and unshift
           fetchData();
         }
-        dialog.value = false;
       }
     }
     async function itemLinkUpdate(itemId: number | string, selectedItemLink: ItemLink) {
@@ -337,16 +342,16 @@ export default defineComponent({
         if (res && res.status === 200) {
           positiveNotification('Updated!');
         }
-        dialog.value = false;
       }
     }
 
-    function onSubmit() {
+    function onSubmit(closeDialog: () => void) {
       if (selected.value && selected.value.id === 0) {
         createNew();
       } else {
         updateExisting();
       }
+      closeDialog();
     }
 
     watch(

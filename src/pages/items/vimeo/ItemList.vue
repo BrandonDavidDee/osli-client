@@ -113,10 +113,11 @@
         color="teal"
       />
     </div>
-    <q-dialog v-model="dialog">
-      <q-card
-        style="width: 800px; max-width: 80vw;"
-      >
+    <DialogMaster
+      v-model="dialog"
+      close-header
+    >
+      <template #content="{ closeDialog }">
         <q-card-section>
           <q-input
             v-model="newVimeoId"
@@ -129,23 +130,26 @@
         </q-card-section>
         <q-card-actions align="right">
           <q-btn
-            v-close-popup
             label="Cancel"
             flat
             :disable="loading"
+            @click="closeDialog"
           />
           <q-btn
             label="Create"
             color="green"
             :loading="loading"
             :disable="!newVimeoId"
-            @click="createNewItem"
+            @click="createNewItem(closeDialog)"
           />
         </q-card-actions>
-      </q-card>
-    </q-dialog>
-    <q-dialog v-model="dialogEncryptKey">
-      <q-card style="width: 800px; max-width: 80vw;">
+      </template>
+    </DialogMaster>
+    <DialogMaster
+      v-model="dialogEncryptKey"
+      close-header
+    >
+      <template #content="{ closeDialog }">
         <q-card-section>
           <q-input
             v-model="encryptionKey"
@@ -157,18 +161,18 @@
         </q-card-section>
         <q-card-actions align="right">
           <q-btn
-            v-close-popup
             label="Cancel"
             flat
+            @click="closeDialog"
           />
           <q-btn
             label="Continue"
             :disable="!encryptionKey"
-            @click="addEncryptionKey"
+            @click="addEncryptionKey(closeDialog)"
           />
         </q-card-actions>
-      </q-card>
-    </q-dialog>
+      </template>
+    </DialogMaster>
   </div>
 </template>
 
@@ -183,10 +187,11 @@ import { ItemVimeo } from 'src/models/item-vimeo';
 import { useSearchStore } from 'stores/search';
 import { useKeyStore } from 'src/stores/keys';
 import TagSelector from 'src/pages/sources/TagSelector.vue';
+import DialogMaster from 'src/components/DialogMaster.vue';
 import ItemListPreview from './ItemListPreview.vue';
 
 export default defineComponent({
-  components: { TagSelector, ItemListPreview },
+  components: { TagSelector, ItemListPreview, DialogMaster },
   props: {
     sourceId: {
       type: [Number, String],
@@ -238,9 +243,10 @@ export default defineComponent({
       }
     }
 
-    function addEncryptionKey() {
+    function addEncryptionKey(closeDialog: () => void) {
       dialog.value = true;
-      dialogEncryptKey.value = false;
+      // dialogEncryptKey.value = false;
+      closeDialog();
       keyStore.addKey(props.sourceId, 'vimeo', encryptionKey.value);
     }
 
@@ -250,7 +256,7 @@ export default defineComponent({
       // TODO: reset tags and any search values in state too
     }
 
-    async function createNewItem() {
+    async function createNewItem(closeDialog: () => void) {
       loading.value = true;
       const res = await itemCreate(props.sourceId, newVimeoId.value, encryptionKey.value);
       if (res && res.status === 200) {
@@ -261,7 +267,8 @@ export default defineComponent({
         keyStore.removeKey(props.sourceId, 'vimeo');
       }
       newVimeoId.value = '';
-      dialog.value = false;
+      // dialog.value = false;
+      closeDialog();
       loading.value = false;
     }
 

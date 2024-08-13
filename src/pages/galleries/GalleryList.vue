@@ -69,12 +69,15 @@
           </tr>
         </tbody>
       </q-markup-table>
-      <q-dialog v-model="dialog">
-        <q-card
+      <DialogMaster
+        v-model="dialog"
+        close-header
+      >
+        <template
           v-if="selected"
-          style="width: 800px; max-width: 80vw;"
+          #content="{ closeDialog }"
         >
-          <q-form @submit="onSubmit">
+          <q-form @submit="onSubmit(closeDialog)">
             <q-card-section>
               <q-input
                 v-model="selected.title"
@@ -91,6 +94,7 @@
                 type="textarea"
               />
             </q-card-section>
+            <q-separator />
             <q-card-actions align="right">
               <q-btn
                 v-close-popup
@@ -106,8 +110,8 @@
               />
             </q-card-actions>
           </q-form>
-        </q-card>
-      </q-dialog>
+        </template>
+      </DialogMaster>
     </div>
   </div>
 </template>
@@ -118,6 +122,7 @@ import { Gallery } from 'src/models/gallery';
 import { positiveNotification } from 'src/services/notify';
 import { galleryCreate, galleryList } from 'src/api/galleries';
 import { getDateTimeDisplay } from 'src/services/date-master';
+import DialogMaster from 'src/components/DialogMaster.vue';
 
 const model = {
   id: 0,
@@ -126,6 +131,7 @@ const model = {
 };
 
 export default defineComponent({
+  components: { DialogMaster },
   setup() {
     const data = ref<Gallery[]>();
     const dialog = ref(false);
@@ -144,7 +150,7 @@ export default defineComponent({
       dialog.value = true;
     }
 
-    async function onSubmit() {
+    async function onSubmit(closeDialog: () => void) {
       if (selected.value) {
         const res = await galleryCreate(selected.value);
         if (res && res.status === 200) {
@@ -152,7 +158,8 @@ export default defineComponent({
           fetchData();
         }
       }
-      dialog.value = false;
+      // dialog.value = false;
+      closeDialog();
       selected.value = null;
     }
     onMounted(() => fetchData());
