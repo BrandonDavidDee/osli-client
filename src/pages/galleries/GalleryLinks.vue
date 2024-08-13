@@ -24,7 +24,7 @@
           <tr>
             <th
               class="text-right"
-              colspan="6"
+              colspan="5"
             >
               <q-btn
                 icon="add"
@@ -40,9 +40,6 @@
             </th>
             <th class="text-left">
               Title
-            </th>
-            <th class="text-left">
-              Expires On
             </th>
             <th class="text-left">
               View Count
@@ -80,9 +77,6 @@
               @click="selectLink(link)"
             >
               {{ link.title || 'No Title' }}
-            </td>
-            <td>
-              {{ link.expiration_date || 'No Expiration' }}
             </td>
             <td>
               {{ link.view_count }}

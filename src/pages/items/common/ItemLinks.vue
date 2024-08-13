@@ -24,7 +24,7 @@
           <tr>
             <th
               class="text-right"
-              colspan="6"
+              colspan="5"
             >
               <q-btn
                 icon="add"
@@ -40,9 +40,6 @@
             </th>
             <th class="text-left">
               Title
-            </th>
-            <th class="text-left">
-              Expires On
             </th>
             <th class="text-left">
               View Count
@@ -82,9 +79,6 @@
               {{ link.title || 'No Title' }}
             </td>
             <td>
-              {{ link.expiration_date || 'No Expiration' }}
-            </td>
-            <td>
               {{ link.view_count }}
             </td>
             <td>
@@ -116,7 +110,8 @@
                   size="sm"
                   icon="delete"
                   round
-                  disable
+                  :disable="isDisabled(link)"
+                  @click="deleteWarn(link)"
                 />
               </q-btn-group>
             </td>
@@ -177,9 +172,33 @@
               color="green"
               label="Save"
               type="submit"
+              :disable="isDisabled(selected)"
             />
           </q-card-actions>
         </q-form>
+      </template>
+    </DialogMaster>
+
+    <DialogMaster
+      v-model="dialogDelete"
+      close-header
+      size="small"
+    >
+      <template #content="{ closeDialog }">
+        <q-card-section>Are you sure? This is permanent.</q-card-section>
+        <q-separator />
+        <q-card-actions align="right">
+          <q-btn
+            label="Cancel"
+            flat
+            @click="closeDialog"
+          />
+          <q-btn
+            label="Delete"
+            color="red"
+            @click="doLinkDelete(closeDialog)"
+          />
+        </q-card-actions>
       </template>
     </DialogMaster>
   </div>
@@ -194,16 +213,19 @@ import {
   itemLinkCreate as itemLinkCreateBucket,
   itemLinks as itemLinksBucket,
   itemLinkUpdate as itemLinkUpdateBucket,
+  itemLinkDelete as itemLinkDeleteBucket,
 } from 'src/api/item-bucket';
 import {
   itemLinkCreate as itemLinkCreateVimeo,
   itemLinks as itemLinksVimeo,
   itemLinkUpdate as itemLinkUpdateVimeo,
+  itemLinkDelete as itemLinkDeleteVimeo,
 } from 'src/api/item-vimeo';
 import { ItemLink } from 'src/models/item';
 import { ItemVimeo } from 'src/models/item-vimeo';
 import { ItemBucket } from 'src/models/item-bucket';
 import { getDateTimeDisplay } from 'src/services/date-master';
+import { useAuthStore } from 'src/stores/auth';
 import { positiveNotification, negativeNotification } from 'src/services/notify';
 import DialogMaster from 'src/components/DialogMaster.vue';
 
@@ -225,9 +247,14 @@ export default defineComponent({
     },
   },
   setup(props) {
+    const store = useAuthStore();
+
     const data = ref<ItemBucket | ItemVimeo>();
     const dialog = ref(false);
+    const dialogDelete = ref(false);
     const selected = ref<ItemLink>();
+
+    const userId = computed(() => (store.userId !== null ? parseInt(store.userId, 10) : null));
 
     function isItemBucket(item: ItemBucket | ItemVimeo): item is ItemBucket {
       return (item as ItemBucket).file_path !== undefined;
@@ -302,6 +329,9 @@ export default defineComponent({
         created_by: null,
         is_active: true,
       };
+      if (userId.value) {
+        model.created_by = { id: userId.value, username: '', is_active: true };
+      }
       selected.value = model;
       dialog.value = true;
     }
@@ -354,6 +384,37 @@ export default defineComponent({
       closeDialog();
     }
 
+    function deleteWarn(v: ItemLink) {
+      selected.value = v;
+      dialogDelete.value = true;
+    }
+
+    function isDisabled(v: ItemLink) {
+      if (!v.created_by) { return true; }
+      return v.created_by.id !== userId.value;
+    }
+
+    async function itemLinkDelete(itemId: number | string, itemLinkId: number) {
+      if (props.sourceType === 'bucket') {
+        return itemLinkDeleteBucket(itemId, itemLinkId);
+      }
+      if (props.sourceType === 'vimeo') {
+        return itemLinkDeleteVimeo(itemId, itemLinkId);
+      }
+      throw new Error(`Unknown sourceType: ${props.sourceType}`);
+    }
+
+    async function doLinkDelete(closeDialog: () => void) {
+      if (selected.value) {
+        const res = await itemLinkDelete(props.itemId, selected.value.id);
+        if (res && res.status === 200) {
+          positiveNotification('Deleted!');
+          fetchData();
+        }
+      }
+      closeDialog();
+    }
+
     watch(
       () => props.itemId,
       () => {
@@ -365,8 +426,12 @@ export default defineComponent({
     return {
       data,
       dialog,
-      getDateTimeDisplay,
+      dialogDelete,
       displayTitle,
+      deleteWarn,
+      doLinkDelete,
+      getDateTimeDisplay,
+      isDisabled,
       selectLink,
       selected,
       onSubmit,
