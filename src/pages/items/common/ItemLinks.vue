@@ -89,7 +89,7 @@
               <q-btn-group flat>
                 <q-btn
                   size="sm"
-                  icon="edit"
+                  icon="visibility"
                   round
                   @click="selectLink(link)"
                 />

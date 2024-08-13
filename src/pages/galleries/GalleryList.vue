@@ -23,8 +23,19 @@
         <thead>
           <tr>
             <th
+              colspan="2"
+              class="text-left"
+            >
+              <q-btn
+                icon="settings"
+                :label="myGalleries ? 'My Galleries' : 'All Galleries'"
+                size="sm"
+                flat
+                @click="myGalleries = !myGalleries"
+              />
+            </th>
+            <th
               class="text-right"
-              colspan="3"
             >
               <q-btn
                 icon="add"
@@ -56,7 +67,7 @@
             </td>
           </tr>
           <tr
-            v-for="gallery in data"
+            v-for="gallery in dataFiltered"
             :key="gallery.id"
           >
             <td>
@@ -117,12 +128,15 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted } from 'vue';
+import {
+  defineComponent, ref, onMounted, computed,
+} from 'vue';
 import { Gallery } from 'src/models/gallery';
 import { positiveNotification } from 'src/services/notify';
 import { galleryCreate, galleryList } from 'src/api/galleries';
 import { getDateTimeDisplay } from 'src/services/date-master';
 import DialogMaster from 'src/components/DialogMaster.vue';
+import { useAuthStore } from 'src/stores/auth';
 
 const model = {
   id: 0,
@@ -133,10 +147,19 @@ const model = {
 export default defineComponent({
   components: { DialogMaster },
   setup() {
+    const store = useAuthStore();
     const data = ref<Gallery[]>();
     const dialog = ref(false);
     const loading = ref(false);
+    const myGalleries = ref(false);
     const selected = ref<Gallery | null>(null);
+
+    const userId = computed(() => (store.userId !== null ? parseInt(store.userId, 10) : null));
+
+    const dataFiltered = computed(() => {
+      if (!myGalleries.value) { return data.value; }
+      return data.value?.filter((v) => v.created_by?.id === userId.value);
+    });
 
     async function fetchData() {
       const res = await galleryList();
@@ -168,9 +191,11 @@ export default defineComponent({
       data,
       dialog,
       getDateTimeDisplay,
+      myGalleries,
       loading,
       onSubmit,
       selected,
+      dataFiltered,
     };
   },
 });
