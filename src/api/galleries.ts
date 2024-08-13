@@ -36,6 +36,14 @@ export async function galleryItemCreate(galleryId: number | string, payload: Gal
   }
 }
 
+export async function galleryItemDelete(galleryId: number | string, galleryItemId: number) {
+  try {
+    return await api.delete(`${path}/${galleryId}/items/${galleryItemId}`);
+  } catch (err) {
+    return errorHandler(err);
+  }
+}
+
 export async function galleryLinkCreate(galleryId: number | string, payload: GalleryLink) {
   try {
     return await api.post(`${path}/${galleryId}/links`, payload);

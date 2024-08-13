@@ -26,6 +26,7 @@
           :gallery-id="galleryId"
           :gallery="data"
           @update="updateGallery"
+          @refresh="fetchData"
         />
       </div>
       <div class="col q-pa-md">
@@ -128,6 +129,7 @@ export default defineComponent({
       getDateTimeDisplay,
       updateGallery,
       debouncedGalleryUpdate,
+      fetchData,
     };
   },
 });

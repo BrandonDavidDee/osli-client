@@ -109,6 +109,7 @@ import {
 import { galleryItemCreate } from 'src/api/galleries';
 import { GalleryItemCreate } from 'src/models/gallery';
 import { useSourceStore } from 'src/stores/sources';
+import { positiveNotification } from 'src/services/notify';
 import DialogMaster from 'src/components/DialogMaster.vue';
 import ItemListBucket from 'src/pages/items/bucket/ItemList.vue';
 import ItemListVimeo from 'src/pages/items/vimeo/ItemList.vue';
@@ -130,8 +131,13 @@ export default defineComponent({
       type: Number,
       required: true,
     },
+    lastOrderValue: {
+      type: Number,
+      default: 0,
+    },
   },
-  setup(props) {
+  emits: ['refresh'],
+  setup(props, { emit }) {
     const dialogBucketSource = ref(false);
     const dialogVimeoSource = ref(false);
     const dropDown = ref();
@@ -163,9 +169,14 @@ export default defineComponent({
     }
 
     async function saveGalleryItem(payload: GalleryItemCreate) {
-      payload.item_order = props.itemCount;
+      payload.item_order = props.lastOrderValue + 1;
       const res = await galleryItemCreate(props.galleryId, payload);
-      console.log(res);
+      // TODO: return inserted id and apply to entire item,
+      // this will require emitting the entire item so it is here on scope
+      if (res && res.status === 200) {
+        emit('refresh');
+        positiveNotification('Added Item');
+      }
     }
 
     function onSelectedBucketItem(v: number, closeDialog: () => void) {
