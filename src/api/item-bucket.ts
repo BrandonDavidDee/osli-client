@@ -41,6 +41,14 @@ export async function itemDelete(encryptionKey: string, sourceId: number | strin
   }
 }
 
+export async function itemRelated(itemId: number | string) {
+  try {
+    return await api.get(`${path}/${itemId}/related`);
+  } catch (err) {
+    return errorHandler(err);
+  }
+}
+
 export async function itemTagCreate(itemId: number | string, payload: ItemTag) {
   try {
     return await api.post(`${path}/${itemId}/tags`, payload);
