@@ -6,27 +6,35 @@
       color="grey-9"
       @click="deletePrecheck"
     />
-    <q-dialog v-model="dialog">
-      <q-card style="width: 500px; max-width: 50vw;">
+    <DialogMaster
+      v-model="dialog"
+      close-header
+      size="small"
+    >
+      <template #content="{ closeDialog }">
         <q-card-section>Are you sure you want to delete?</q-card-section>
+        <q-separator />
         <q-card-actions align="right">
           <q-btn
-            v-close-popup
             label="Cancel"
             :diable="loading"
             flat
+            @click="closeDialog"
           />
           <q-btn
             label="Delete"
             color="red"
             :loading="loading"
-            @click="doDelete"
+            @click="doDelete(closeDialog)"
           />
         </q-card-actions>
-      </q-card>
-    </q-dialog>
-    <q-dialog v-model="dialogEncryptKey">
-      <q-card style="width: 800px; max-width: 80vw;">
+      </template>
+    </DialogMaster>
+    <DialogMaster
+      v-model="dialogEncryptKey"
+      close-header
+    >
+      <template #content="{ closeDialog }">
         <q-card-section>
           <q-input
             v-model="encryptionKey"
@@ -36,22 +44,26 @@
             type="password"
           />
         </q-card-section>
+        <q-separator />
         <q-card-actions align="right">
           <q-btn
-            v-close-popup
             label="Cancel"
             flat
+            @click="closeDialog"
           />
           <q-btn
             label="Continue"
             :disable="!encryptionKey"
-            @click="addEncryptionKey"
+            @click="addEncryptionKey(closeDialog)"
           />
         </q-card-actions>
-      </q-card>
-    </q-dialog>
-    <q-dialog v-model="dialogRelated">
-      <q-card style="width: 800px; max-width: 80vw;">
+      </template>
+    </DialogMaster>
+    <DialogMaster
+      v-model="dialogRelated"
+      close-header
+    >
+      <template #content="{ closeDialog }">
         <q-card-section v-if="relatedGalleries.length">
           <q-banner class="bg-amber-3">
             This item must be removed from the following galleries before deleting:
@@ -104,21 +116,22 @@
             </q-item>
           </q-list>
         </q-card-section>
+        <q-separator />
         <q-card-actions align="right">
           <q-btn
-            v-close-popup
             label="Cancel"
             flat
+            @click="closeDialog"
           />
           <q-btn
             label="Continue"
             color="amber"
             :disable="relatedGalleries.length > 0"
-            @click="showDeleteDialog();"
+            @click="showDeleteDialog(closeDialog);"
           />
         </q-card-actions>
-      </q-card>
-    </q-dialog>
+      </template>
+    </DialogMaster>
   </div>
 </template>
 
@@ -133,6 +146,7 @@ import { Gallery } from 'src/models/gallery';
 import { useKeyStore } from 'src/stores/keys';
 import { positiveNotification } from 'src/services/notify';
 import { getDateTimeDisplay } from 'src/services/date-master';
+import DialogMaster from 'src/components/DialogMaster.vue';
 
 interface RelatedData {
   has_related: boolean;
@@ -141,6 +155,7 @@ interface RelatedData {
 }
 
 export default defineComponent({
+  components: { DialogMaster },
   props: {
     sourceId: {
       type: [Number, String],
@@ -164,7 +179,7 @@ export default defineComponent({
     const relatedGalleries = ref<Gallery[]>([]);
     const savedUsers = ref<string[]>([]);
 
-    async function doDelete() {
+    async function doDelete(closeDialog: () => void) {
       loading.value = true;
       const res = await itemDelete(encryptionKey.value, props.sourceId, props.item);
       if (res && res.status !== 200) {
@@ -174,17 +189,19 @@ export default defineComponent({
         positiveNotification('Deleted!');
         router.push({ name: 'item-list-bucket', params: { sourceId: props.sourceId } });
       }
-      dialog.value = false;
+      // dialog.value = false;
+      closeDialog();
       loading.value = false;
     }
 
-    function showDeleteDialog() {
+    function showDeleteDialog(closeDialog?: () => void) {
       dialogRelated.value = false;
       const keyInStore = keyStore.getKey(props.sourceId, 'bucket');
       if (!keyInStore) {
         dialogEncryptKey.value = true;
-      } else {
-        dialog.value = true;
+      } else if (closeDialog) {
+        // dialog.value = true;
+        closeDialog();
       }
     }
 
@@ -202,9 +219,10 @@ export default defineComponent({
       }
     }
 
-    function addEncryptionKey() {
+    function addEncryptionKey(closeDialog: () => void) {
       dialog.value = true;
-      dialogEncryptKey.value = false;
+      // dialogEncryptKey.value = false;
+      closeDialog();
       keyStore.addKey(props.sourceId, 'bucket', encryptionKey.value);
     }
 

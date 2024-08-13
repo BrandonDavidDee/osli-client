@@ -143,6 +143,7 @@
             type="password"
           />
         </q-card-section>
+        <q-separator />
         <q-card-actions align="right">
           <q-btn
             label="Cancel"
