@@ -2,6 +2,7 @@
   <div>
     <q-toolbar class="bg-grey-9 text-white">
       <q-btn
+        v-if="isRoute"
         dense
         icon="arrow_back"
         color="white"
@@ -38,6 +39,7 @@
         </template>
       </q-input>
       <q-btn
+        v-if="isRoute"
         class="q-ml-sm"
         icon="add"
         color="white"
@@ -64,8 +66,9 @@
         :key="item.id"
         class="col-xs-12 col-sm-6 col-md-4 col-lg-3 col-xl-2"
       >
-        <ItemPreview
+        <ItemListPreview
           :item="item"
+          :use-router="isRoute"
         />
       </div>
     </div>
@@ -165,13 +168,17 @@ import { useKeyStore } from 'src/stores/keys';
 import { useSearchStore } from 'stores/search';
 import BatchUploader from 'src/components/BatchUploader.vue';
 import TagSelector from 'src/pages/sources/TagSelector.vue';
-import ItemPreview from './ItemPreview.vue';
+import ItemListPreview from './ItemListPreview.vue';
 
 export default defineComponent({
-  components: { ItemPreview, TagSelector, BatchUploader },
+  components: { ItemListPreview, TagSelector, BatchUploader },
   props: {
     sourceId: {
       type: [Number, String],
+      required: true,
+    },
+    isRoute: {
+      type: Boolean,
       required: true,
     },
   },

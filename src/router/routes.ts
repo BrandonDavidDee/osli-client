@@ -37,13 +37,19 @@ const routes: RouteRecordRaw[] = [
         path: 'bucket/:sourceId/items',
         component: () => import('pages/items/bucket/ItemList.vue'),
         name: 'item-list-bucket',
-        props: true,
+        props: (route) => ({
+          sourceId: route.params.sourceId,
+          isRoute: true,
+        }),
       },
       {
         path: 'vimeo/:sourceId/items',
         component: () => import('pages/items/vimeo/ItemList.vue'),
         name: 'item-list-vimeo',
-        props: true,
+        props: (route) => ({
+          sourceId: route.params.sourceId,
+          isRoute: true,
+        }),
       },
       {
         path: 'bucket/:sourceId/items/:itemId',

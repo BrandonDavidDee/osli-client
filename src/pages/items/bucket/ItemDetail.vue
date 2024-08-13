@@ -22,7 +22,7 @@
       />
     </q-toolbar>
     <div class="col q-pa-md">
-      <ItemPreview :item="data" />
+      <ItemDetailPreview :item="data" />
     </div>
     <div class="col q-pa-md">
       <div class="text-right">
@@ -97,13 +97,13 @@ import { ItemTag } from 'src/models/item';
 import { ItemBucket } from 'src/models/item-bucket';
 import LineItem from 'src/components/LineItem.vue';
 import ItemTags from 'src/pages/items/common/ItemTags.vue';
-import ItemPreview from './ItemPreview.vue';
+import ItemDetailPreview from './ItemDetailPreview.vue';
 import ItemSave from './ItemSave.vue';
 import ItemDelete from './ItemDelete.vue';
 
 export default defineComponent({
   components: {
-    ItemPreview, LineItem, ItemTags, ItemSave, ItemDelete,
+    ItemDetailPreview, LineItem, ItemTags, ItemSave, ItemDelete,
   },
   props: {
     sourceId: {

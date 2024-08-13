@@ -5,40 +5,22 @@
     bordered
     class="q-ma-xs"
   >
-    <q-card-section
-      :class="item.title ? 'bg-grey-3 q-pb-xs q-pt-xs' : 'bg-grey-3'"
-    >
-      <router-link :to="{ name: 'item-detail-bucket', params: { itemId: item.id }}">
-        <div
-          v-if="item.title"
-          class="text-overline"
-        >
-          {{ item.title }}
-        </div>
-        <div class="text-caption">
-          {{ item.file_name }}
-        </div>
-      </router-link>
-    </q-card-section>
     <div v-if="mediaUrl">
       <q-card-section
         v-if="itemType === 'image'"
-        class="text-center cursor-pointer"
-        @click="routeChange(item.id)"
+        class="text-center"
       >
         <ImageDetail :src-url="mediaUrl" />
       </q-card-section>
       <q-card-section
         v-else-if="itemType === 'video'"
-        class="text-center cursor-pointer"
-        @click="routeChange(item.id)"
+        class="text-center"
       >
         <VideoDetail :src-url="mediaUrl" />
       </q-card-section>
       <q-card-section
         v-else
-        class="text-center cursor-pointer"
-        @click="routeChange(item.id)"
+        class="text-center"
       >
         <q-icon
           name="mdi-file-question"
@@ -47,20 +29,15 @@
         />
       </q-card-section>
     </div>
-    <q-card-section class="text-caption text-grey-7">
-      <q-badge color="blue">
-        {{ itemType }}
-      </q-badge>
-    </q-card-section>
   </q-card>
 </template>
 
 <script lang="ts">
 import { defineComponent, PropType, computed } from 'vue';
 import { ItemBucket } from 'src/models/item-bucket';
-import { useRouter } from 'vue-router';
 import ImageDetail from 'src/components/ImageDetail.vue';
 import VideoDetail from 'src/components/VideoDetail.vue';
+// TODO: add a download button ?
 
 export default defineComponent({
   components: { ImageDetail, VideoDetail },
@@ -71,8 +48,6 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const router = useRouter();
-
     const unknown = 'unknown';
     const isImage = computed(() => {
       if (!props.item.mime_type) { return false; }
@@ -95,15 +70,11 @@ export default defineComponent({
       }
     });
 
-    function routeChange(itemId: number) {
-      router.push({ name: 'item-detail-bucket', params: { itemId } });
-    }
     return {
       isImage,
       itemType,
       unknown,
       mediaUrl,
-      routeChange,
     };
   },
 });
