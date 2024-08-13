@@ -1,5 +1,8 @@
 <template>
   <div>
+    <AddItemMenu
+      :item-count="gallery.items.length"
+    />
     <q-list bordered>
       <q-item
         v-for="(item, index) in gallery.items"
@@ -35,8 +38,10 @@ import {
 import { Gallery, GalleryItem } from 'src/models/gallery';
 import { ItemBucket } from 'src/models/item-bucket';
 import { ItemVimeo } from 'src/models/item-vimeo';
+import AddItemMenu from './AddItemMenu.vue';
 
 export default defineComponent({
+  components: { AddItemMenu },
   props: {
     gallery: {
       type: Object as PropType<Gallery>,
