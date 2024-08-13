@@ -10,6 +10,12 @@ export interface GalleryItem {
   item_vimeo: ItemVimeo | null;
 }
 
+export interface GalleryItemCreate {
+  item_order: number;
+  item_id: number | null;
+  source_type: string | null;
+}
+
 export interface GalleryLink {
   id: number;
   title: string | null;

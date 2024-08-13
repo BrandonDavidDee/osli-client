@@ -23,6 +23,7 @@
       </div>
       <div
         v-else
+        class="cursor-pointer"
         @click="itemSelect(item.id)"
       >
         <div

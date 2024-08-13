@@ -1,6 +1,7 @@
 <template>
   <div>
     <AddItemMenu
+      :gallery-id="galleryId"
       :item-count="gallery.items.length"
     />
     <q-list bordered>
@@ -43,6 +44,10 @@ import AddItemMenu from './AddItemMenu.vue';
 export default defineComponent({
   components: { AddItemMenu },
   props: {
+    galleryId: {
+      type: [Number, String],
+      required: true,
+    },
     gallery: {
       type: Object as PropType<Gallery>,
       required: true,

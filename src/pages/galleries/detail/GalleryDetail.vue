@@ -23,6 +23,7 @@
     <div class="row">
       <div class="col q-pa-md">
         <GalleryItems
+          :gallery-id="galleryId"
           :gallery="data"
           @update="updateGallery"
         />

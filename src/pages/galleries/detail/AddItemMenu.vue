@@ -106,14 +106,26 @@
 import {
   defineComponent, computed, onMounted, ref,
 } from 'vue';
+import { galleryItemCreate } from 'src/api/galleries';
+import { GalleryItemCreate } from 'src/models/gallery';
 import { useSourceStore } from 'src/stores/sources';
 import DialogMaster from 'src/components/DialogMaster.vue';
 import ItemListBucket from 'src/pages/items/bucket/ItemList.vue';
 import ItemListVimeo from 'src/pages/items/vimeo/ItemList.vue';
 
+const newItem: GalleryItemCreate = {
+  item_order: 0,
+  item_id: null,
+  source_type: null,
+};
+
 export default defineComponent({
   components: { DialogMaster, ItemListBucket, ItemListVimeo },
   props: {
+    galleryId: {
+      type: [Number, String],
+      required: true,
+    },
     itemCount: {
       type: Number,
       required: true,
@@ -150,14 +162,26 @@ export default defineComponent({
       dropDown.value.hide();
     }
 
+    async function saveGalleryItem(payload: GalleryItemCreate) {
+      payload.item_order = props.itemCount;
+      const res = await galleryItemCreate(props.galleryId, payload);
+      console.log(res);
+    }
+
     function onSelectedBucketItem(v: number, closeDialog: () => void) {
-      console.log(v);
+      const payload: GalleryItemCreate = JSON.parse(JSON.stringify(newItem));
+      payload.source_type = 'bucket';
+      payload.item_id = v;
       closeDialog();
+      saveGalleryItem(payload);
     }
 
     function onSelectedVimeoItem(v: number, closeDialog: () => void) {
-      console.log(v);
+      const payload: GalleryItemCreate = JSON.parse(JSON.stringify(newItem));
+      payload.source_type = 'vimeo';
+      payload.item_id = v;
       closeDialog();
+      saveGalleryItem(payload);
     }
 
     return {
