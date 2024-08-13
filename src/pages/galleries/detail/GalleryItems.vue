@@ -35,6 +35,9 @@
         </q-item-section>
         <q-item-section>
           {{ getTitle(item) }}
+          <q-item-label caption>
+            {{ getDateTimeDisplay(item.date_created) }}
+          </q-item-label>
         </q-item-section>
         <q-item-section side>
           <q-btn-group flat>
@@ -43,6 +46,12 @@
               flat
               icon="drag_handle"
               draggable="true"
+            />
+            <q-btn
+              size="sm"
+              flat
+              icon="visibility"
+              :to="makeRouteObject(item)"
             />
             <q-btn
               size="sm"
@@ -83,6 +92,7 @@ import {
 import { galleryItemDelete } from 'src/api/galleries';
 import { Gallery, GalleryItem } from 'src/models/gallery';
 import { positiveNotification } from 'src/services/notify';
+import { getDateTimeDisplay } from 'src/services/date-master';
 import { ItemBucket } from 'src/models/item-bucket';
 import { ItemVimeo } from 'src/models/item-vimeo';
 import AddItemMenu from './AddItemMenu.vue';
@@ -184,6 +194,20 @@ export default defineComponent({
       dialog.value = true;
     }
 
+    function makeRouteObject(item: GalleryItem) {
+      let routeName;
+      let itemId: number | null = null;
+      if (item.item_bucket) {
+        routeName = 'item-detail-bucket';
+        itemId = item.item_bucket.id;
+      } else if (item.item_vimeo) {
+        routeName = 'item-detail-vimeo';
+        itemId = item.item_vimeo.id;
+      }
+      const sourceId = item.source_id;
+      return { name: routeName, params: { sourceId, itemId } };
+    }
+
     return {
       dialog,
       doItemDelete,
@@ -196,6 +220,8 @@ export default defineComponent({
       deleteWarn,
       loading,
       lastOrderValue,
+      getDateTimeDisplay,
+      makeRouteObject,
     };
   },
 });

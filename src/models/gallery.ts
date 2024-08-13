@@ -8,6 +8,8 @@ export interface GalleryItem {
   source_type: string;
   item_bucket: ItemBucket | null;
   item_vimeo: ItemVimeo | null;
+  date_created: string;
+  source_id: number | null;
 }
 
 export interface GalleryItemCreate {
