@@ -28,33 +28,27 @@
       />
     </div>
 
-    <DialogMaster v-model="dialogImage">
-      <template #content="{ closeDialog }">
+    <DialogMaster
+      v-model="dialogImage"
+      close-header
+      close-footer
+    >
+      <template #content>
         <q-card-section>
           <ImageDetail :src-url="mediaUrl" />
         </q-card-section>
-        <q-card-actions align="right">
-          <q-btn
-            label="Close"
-            flat
-            @click="closeDialog"
-          />
-        </q-card-actions>
       </template>
     </DialogMaster>
 
-    <DialogMaster v-model="dialogVideo">
-      <template #content="{ closeDialog }">
+    <DialogMaster
+      v-model="dialogVideo"
+      close-header
+      close-footer
+    >
+      <template #content>
         <q-card-section>
           <VideoDetail :src-url="mediaUrl" />
         </q-card-section>
-        <q-card-actions align="right">
-          <q-btn
-            label="Close"
-            flat
-            @click="closeDialog"
-          />
-        </q-card-actions>
       </template>
     </DialogMaster>
   </div>

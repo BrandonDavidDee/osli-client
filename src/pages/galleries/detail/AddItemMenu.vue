@@ -35,21 +35,13 @@
     <DialogMaster
       v-model="dialogBucketSource"
       size="full"
+      close-header
+      close-footer
     >
       <template
         v-if="selectedBucketSourceId"
         #content="{ closeDialog }"
       >
-        <q-bar class="bg-grey-9">
-          <q-space />
-          <q-btn
-            size="sm"
-            flat
-            icon="close"
-            text-color="white"
-            @click="closeDialog"
-          />
-        </q-bar>
         <q-card-section>
           <ItemListBucket
             :source-id="selectedBucketSourceId"
@@ -57,33 +49,19 @@
             @selected="onSelectedBucketItem($event, closeDialog)"
           />
         </q-card-section>
-        <q-card-actions align="right">
-          <q-btn
-            label="Close"
-            @click="closeDialog"
-          />
-        </q-card-actions>
       </template>
     </DialogMaster>
 
     <DialogMaster
       v-model="dialogVimeoSource"
       size="full"
+      close-header
+      close-footer
     >
       <template
         v-if="selectedVimeoSourceId"
         #content="{ closeDialog }"
       >
-        <q-bar class="bg-grey-9">
-          <q-space />
-          <q-btn
-            size="sm"
-            flat
-            icon="close"
-            text-color="white"
-            @click="closeDialog"
-          />
-        </q-bar>
         <q-card-section>
           <ItemListVimeo
             :source-id="selectedVimeoSourceId"
@@ -91,12 +69,6 @@
             @selected="onSelectedVimeoItem($event, closeDialog)"
           />
         </q-card-section>
-        <q-card-actions align="right">
-          <q-btn
-            label="Close"
-            @click="closeDialog"
-          />
-        </q-card-actions>
       </template>
     </DialogMaster>
   </q-bar>

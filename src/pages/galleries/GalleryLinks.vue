@@ -125,7 +125,10 @@
       </q-markup-table>
     </div>
 
-    <DialogMaster v-model="dialog">
+    <DialogMaster
+      v-model="dialog"
+      close-header
+    >
       <template
         v-if="selected"
         #content="{ closeDialog }"
@@ -164,6 +167,7 @@
               label="Is Active"
             />
           </q-card-section>
+          <q-separator />
           <q-card-actions align="right">
             <q-btn
               label="Close"

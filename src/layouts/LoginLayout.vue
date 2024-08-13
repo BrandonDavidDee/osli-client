@@ -16,7 +16,7 @@
             v-model="username"
             label="Username"
             color="black"
-            outlined
+            filled
             :rules="[(v) => !!v || 'Required']"
             :loading="loading"
           />
@@ -24,7 +24,7 @@
             v-model="password"
             label="Password"
             color="black"
-            outlined
+            filled
             type="password"
             :rules="[(v) => !!v || 'Required']"
             :loading="loading"

@@ -5,12 +5,35 @@
       :full-width="screen.lt.md || size === 'full'"
     >
       <q-card :style="cardStyle">
+        <q-bar
+          v-if="closeHeader"
+          class="bg-white"
+        >
+          <q-space />
+          <q-btn
+            size="sm"
+            flat
+            icon="close"
+            @click="closeDialog"
+          />
+        </q-bar>
+        <q-separator v-if="closeHeader" />
         <slot
           name="content"
           :close-dialog="closeDialog"
         >
           <q-card-section>Default Content</q-card-section>
         </slot>
+        <q-separator v-if="closeFooter" />
+        <q-card-actions
+          v-if="closeFooter"
+          align="right"
+        >
+          <q-btn
+            label="Close"
+            @click="closeDialog"
+          />
+        </q-card-actions>
       </q-card>
     </q-dialog>
   </Teleport>
@@ -32,6 +55,14 @@ export default defineComponent({
       type: String,
       validator: (value: string) => ['large', 'small', 'full'].includes(value),
       default: 'large',
+    },
+    closeHeader: {
+      type: Boolean,
+      default: false,
+    },
+    closeFooter: {
+      type: Boolean,
+      default: false,
     },
   },
   emits: ['update:modelValue'],

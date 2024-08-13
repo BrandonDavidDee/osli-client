@@ -15,8 +15,12 @@
         </div>
       </template>
     </ImageDetail>
-    <DialogMaster v-model="dialog">
-      <template #content="{ closeDialog }">
+    <DialogMaster
+      v-model="dialog"
+      close-header
+      close-footer
+    >
+      <template #content>
         <q-card-section
           v-if="item.title"
           class="text-subtitle2"
@@ -26,13 +30,6 @@
         <q-card-section>
           <VimeoPlayer :video-id="item.video_id" />
         </q-card-section>
-        <q-card-actions align="right">
-          <q-btn
-            label="Close"
-            flat
-            @click="closeDialog"
-          />
-        </q-card-actions>
       </template>
     </DialogMaster>
   </div>

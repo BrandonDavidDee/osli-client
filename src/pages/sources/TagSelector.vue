@@ -8,8 +8,12 @@
     >
       {{ label }}
     </q-chip>
-    <q-dialog v-model="dialog">
-      <q-card style="width: 800px; max-width: 80vw;">
+    <DialogMaster
+      v-model="dialog"
+      close-header
+      close-footer
+    >
+      <template #content>
         <q-card-section>
           <q-input
             v-model="model"
@@ -31,15 +35,8 @@
             {{ t.title }}
           </q-chip>
         </q-card-section>
-        <q-separator />
-        <q-card-actions align="right">
-          <q-btn
-            v-close-popup
-            label="Close"
-          />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
+      </template>
+    </DialogMaster>
   </div>
 </template>
 
@@ -50,15 +47,18 @@ import {
 import { Tag } from 'src/models/tag';
 import { tagList } from 'src/api/tags';
 import { useSearchStore } from 'stores/search';
+import DialogMaster from 'src/components/DialogMaster.vue';
 
 export default defineComponent({
+  components: { DialogMaster },
   setup() {
-    const model = ref();
-    const data = ref<Tag[]>([]);
-    const dialog = ref(false);
     const store = useSearchStore();
 
-    async function fetchTags() {
+    const data = ref<Tag[]>([]);
+    const dialog = ref(false);
+    const model = ref();
+
+    async function fetchData() {
       const res = await tagList();
       if (res && res.data) {
         data.value = res.data;
@@ -89,7 +89,7 @@ export default defineComponent({
       dialog,
       (val) => {
         if (val && !data.value.length) {
-          fetchTags();
+          fetchData();
         }
       },
     );

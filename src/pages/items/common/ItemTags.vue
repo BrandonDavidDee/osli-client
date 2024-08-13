@@ -38,8 +38,12 @@
         </q-chip>
       </q-card-section>
     </q-card>
-    <DialogMaster v-model="dialog">
-      <template #content="{ closeDialog }">
+    <DialogMaster
+      v-model="dialog"
+      close-header
+      close-footer
+    >
+      <template #content>
         <q-card-section>
           <q-input
             v-model="model"
@@ -62,12 +66,6 @@
           </q-chip>
         </q-card-section>
         <q-separator />
-        <q-card-actions align="right">
-          <q-btn
-            label="Close"
-            @click="closeDialog"
-          />
-        </q-card-actions>
       </template>
     </DialogMaster>
   </div>
