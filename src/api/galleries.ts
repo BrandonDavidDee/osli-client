@@ -4,6 +4,14 @@ import errorHandler from './error-handler';
 
 const path = `${process.env.API}/api/galleries`;
 
+export async function galleryCreate(payload: Gallery) {
+  try {
+    return await api.post(path, payload);
+  } catch (err) {
+    return errorHandler(err);
+  }
+}
+
 export async function galleryList() {
   try {
     return await api.get(path);

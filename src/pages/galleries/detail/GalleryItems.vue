@@ -6,7 +6,20 @@
       :last-order-value="lastOrderValue"
       @refresh="$emit('refresh')"
     />
-    <q-list bordered>
+    <q-card
+      v-if="!gallery.items.length"
+      flat
+      bordered
+      square
+    >
+      <q-card-section>
+        No Items
+      </q-card-section>
+    </q-card>
+    <q-list
+      v-if="gallery.items.length"
+      bordered
+    >
       <q-item
         v-for="(item, index) in gallery.items"
         :key="`${index}_${item.id}`"
@@ -93,7 +106,10 @@ export default defineComponent({
     const loading = ref(false);
     const selectedItemId = ref<number | null>(null);
 
-    const lastOrderValue = computed(() => props.gallery.items.reduce((max, item) => (item.item_order > max ? item.item_order : max), props.gallery.items[0].item_order));
+    const lastOrderValue = computed(() => {
+      if (!props.gallery.items.length) { return 0; }
+      return props.gallery.items.reduce((max, item) => (item.item_order > max ? item.item_order : max), props.gallery.items[0].item_order);
+    });
 
     function getBucketThumb(v: ItemBucket) {
       // TODO: handle bucket sources with no media prefix

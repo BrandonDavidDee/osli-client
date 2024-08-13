@@ -132,6 +132,7 @@
             v-close-popup
             label="Cancel"
             flat
+            :disable="loading"
           />
           <q-btn
             label="Create"

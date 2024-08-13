@@ -22,6 +22,19 @@
       >
         <thead>
           <tr>
+            <th
+              class="text-right"
+              colspan="3"
+            >
+              <q-btn
+                icon="add"
+                size="sm"
+                flat
+                @click="addNew"
+              />
+            </th>
+          </tr>
+          <tr>
             <th class="text-left">
               Title
             </th>
@@ -56,6 +69,45 @@
           </tr>
         </tbody>
       </q-markup-table>
+      <q-dialog v-model="dialog">
+        <q-card
+          v-if="selected"
+          style="width: 800px; max-width: 80vw;"
+        >
+          <q-form @submit="onSubmit">
+            <q-card-section>
+              <q-input
+                v-model="selected.title"
+                label="Title"
+                filled
+                color="black"
+                :rules="[(v) => !!v || 'Required']"
+              />
+              <q-input
+                v-model="selected.description"
+                label="Description"
+                filled
+                color="black"
+                type="textarea"
+              />
+            </q-card-section>
+            <q-card-actions align="right">
+              <q-btn
+                v-close-popup
+                label="Cancel"
+                :disable="loading"
+                flat
+              />
+              <q-btn
+                label="Save"
+                type="submit"
+                color="green"
+                :loading="loading"
+              />
+            </q-card-actions>
+          </q-form>
+        </q-card>
+      </q-dialog>
     </div>
   </div>
 </template>
@@ -63,22 +115,55 @@
 <script lang="ts">
 import { defineComponent, ref, onMounted } from 'vue';
 import { Gallery } from 'src/models/gallery';
-import { galleryList } from 'src/api/galleries';
+import { positiveNotification } from 'src/services/notify';
+import { galleryCreate, galleryList } from 'src/api/galleries';
 import { getDateTimeDisplay } from 'src/services/date-master';
+
+const model = {
+  id: 0,
+  title: '',
+  description: null,
+};
 
 export default defineComponent({
   setup() {
     const data = ref<Gallery[]>();
+    const dialog = ref(false);
+    const loading = ref(false);
+    const selected = ref<Gallery | null>(null);
+
     async function fetchData() {
       const res = await galleryList();
       if (res && res.data) {
         data.value = res.data;
       }
     }
+
+    function addNew() {
+      selected.value = JSON.parse(JSON.stringify(model));
+      dialog.value = true;
+    }
+
+    async function onSubmit() {
+      if (selected.value) {
+        const res = await galleryCreate(selected.value);
+        if (res && res.status === 200) {
+          positiveNotification('Added Gallery');
+          fetchData();
+        }
+      }
+      dialog.value = false;
+      selected.value = null;
+    }
     onMounted(() => fetchData());
     return {
+      addNew,
       data,
+      dialog,
       getDateTimeDisplay,
+      loading,
+      onSubmit,
+      selected,
     };
   },
 });

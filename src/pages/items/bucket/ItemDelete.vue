@@ -13,7 +13,8 @@
           <q-btn
             v-close-popup
             label="Cancel"
-            :loading="loading"
+            :diable="loading"
+            flat
           />
           <q-btn
             label="Delete"
