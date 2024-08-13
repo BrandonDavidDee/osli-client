@@ -69,6 +69,7 @@
         <ItemListPreview
           :item="item"
           :use-router="isRoute"
+          @selected="onSelected"
         />
       </div>
     </div>
@@ -182,7 +183,8 @@ export default defineComponent({
       required: true,
     },
   },
-  setup(props) {
+  emits: ['selected'],
+  setup(props, { emit }) {
     const keyStore = useKeyStore();
     const store = useSearchStore();
 
@@ -253,6 +255,10 @@ export default defineComponent({
       keyStore.removeKey(props.sourceId, 'bucket');
     }
 
+    function onSelected(v: number) {
+      emit('selected', v);
+    }
+
     watch(filter, () => {
       fetchItemsData();
     }, { immediate: true });
@@ -293,6 +299,7 @@ export default defineComponent({
       itemsData,
       page,
       maxPages,
+      onSelected,
       onUploaded,
       onUploadError,
       showUploader,

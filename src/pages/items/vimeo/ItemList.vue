@@ -69,6 +69,7 @@
         <ItemListPreview
           :item="item"
           :use-router="isRoute"
+          @selected="onSelected"
         />
       </div>
     </div>
@@ -195,7 +196,8 @@ export default defineComponent({
       required: true,
     },
   },
-  setup(props) {
+  emits: ['selected'],
+  setup(props, { emit }) {
     const store = useSearchStore();
     const keyStore = useKeyStore();
 
@@ -271,6 +273,10 @@ export default defineComponent({
       }
     }
 
+    function onSelected(v: number) {
+      emit('selected', v);
+    }
+
     watch(filter, () => {
       fetchItemsData();
     }, { immediate: true });
@@ -313,6 +319,7 @@ export default defineComponent({
       loading,
       maxPages,
       newVimeoId,
+      onSelected,
       page,
       showNewVideoDialog,
       sourceData,
