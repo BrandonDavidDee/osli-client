@@ -7,13 +7,13 @@ import { api } from 'boot/axios';
 export interface DecodedToken {
   exp: number;
   scopes: string[];
-  sub: number;
+  sub: string;
 }
 
 interface AuthState {
   accessToken: string | null
   refreshToken: string | null
-  userId: number | null
+  userId: string | null
 }
 
 interface ResponseData {

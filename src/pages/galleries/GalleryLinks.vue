@@ -95,7 +95,7 @@
               <q-btn-group flat>
                 <q-btn
                   size="sm"
-                  icon="edit"
+                  icon="visibility"
                   round
                   @click="selectLink(link)"
                 />
@@ -116,7 +116,8 @@
                   size="sm"
                   icon="delete"
                   round
-                  disable
+                  :disable="isDisabled(link)"
+                  @click="deleteWarn(link)"
                 />
               </q-btn-group>
             </td>
@@ -178,20 +179,48 @@
               color="green"
               label="Save"
               type="submit"
+              :disable="isDisabled(selected)"
             />
           </q-card-actions>
         </q-form>
+      </template>
+    </DialogMaster>
+    <DialogMaster
+      v-model="dialogDelete"
+      close-header
+      size="small"
+    >
+      <template #content="{ closeDialog }">
+        <q-card-section>Are you sure? This is permanent.</q-card-section>
+        <q-separator />
+        <q-card-actions align="right">
+          <q-btn
+            label="Cancel"
+            flat
+            @click="closeDialog"
+          />
+          <q-btn
+            label="Delete"
+            color="red"
+            @click="doLinkDelete(closeDialog)"
+          />
+        </q-card-actions>
       </template>
     </DialogMaster>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch } from 'vue';
+import {
+  defineComponent, ref, watch, computed,
+} from 'vue';
 import { copyToClipboard, openURL } from 'quasar';
-import { galleryLinks, galleryLinkCreate, galleryLinkUpdate } from 'src/api/galleries';
+import {
+  galleryLinks, galleryLinkCreate, galleryLinkUpdate, galleryLinkDelete,
+} from 'src/api/galleries';
 import { Gallery, GalleryLink } from 'src/models/gallery';
 import { getDateTimeDisplay } from 'src/services/date-master';
+import { useAuthStore } from 'src/stores/auth';
 import { positiveNotification, negativeNotification } from 'src/services/notify';
 import DialogMaster from 'src/components/DialogMaster.vue';
 
@@ -204,9 +233,14 @@ export default defineComponent({
     },
   },
   setup(props) {
+    const store = useAuthStore();
+
     const data = ref<Gallery>();
     const dialog = ref(false);
+    const dialogDelete = ref(false);
     const selected = ref<GalleryLink>();
+
+    const userId = computed(() => (store.userId !== null ? parseInt(store.userId, 10) : null));
 
     async function fetchData() {
       const res = await galleryLinks(props.galleryId);
@@ -278,8 +312,32 @@ export default defineComponent({
         created_by: null,
         is_active: true,
       };
+      if (userId.value) {
+        model.created_by = { id: userId.value, username: '', is_active: true };
+      }
       selected.value = model;
       dialog.value = true;
+    }
+
+    function isDisabled(v: GalleryLink) {
+      if (!v.created_by) { return true; }
+      return v.created_by.id !== userId.value;
+    }
+
+    function deleteWarn(v: GalleryLink) {
+      selected.value = v;
+      dialogDelete.value = true;
+    }
+
+    async function doLinkDelete(closeDialog: () => void) {
+      if (selected.value) {
+        const res = await galleryLinkDelete(props.galleryId, selected.value.id);
+        if (res && res.status === 200) {
+          positiveNotification('Deleted!');
+          fetchData();
+        }
+      }
+      closeDialog();
     }
 
     watch(
@@ -293,7 +351,11 @@ export default defineComponent({
     return {
       data,
       dialog,
+      dialogDelete,
+      deleteWarn,
+      doLinkDelete,
       getDateTimeDisplay,
+      isDisabled,
       selectLink,
       selected,
       onSubmit,
