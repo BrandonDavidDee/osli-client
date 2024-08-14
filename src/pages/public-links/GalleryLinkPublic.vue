@@ -35,7 +35,7 @@ import {
   defineComponent, ref, watch, computed,
 } from 'vue';
 import { useMeta } from 'quasar';
-import { galleryLinkDetail } from 'src/api/gallery-links';
+import { galleryLinkDetail } from 'src/api/public-gallery-links';
 import { Gallery } from 'src/models/gallery';
 import ItemBucketThumb from 'src/pages/galleries/ItemBucketThumb.vue';
 import ItemVimeoThumb from 'src/pages/galleries/ItemVimeoThumb.vue';

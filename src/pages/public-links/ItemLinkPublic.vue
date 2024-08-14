@@ -25,7 +25,7 @@ import {
   defineComponent, ref, watch, computed,
 } from 'vue';
 import { useMeta } from 'quasar';
-import { itemLinkDetail } from 'src/api/item-links';
+import { itemLinkDetail } from 'src/api/public-item-links';
 import { ItemBucket } from 'src/models/item-bucket';
 import { ItemVimeo } from 'src/models/item-vimeo';
 import VimeoPlayer from 'src/components/VimeoPlayer.vue';
