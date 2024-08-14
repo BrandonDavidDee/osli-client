@@ -40,7 +40,10 @@
         class="text-center cursor-pointer"
         @click="itemSelect(item.id)"
       >
-        <ImageDetail :src-url="item.thumbnail" />
+        <ImageDetail
+          :src-url="item.thumbnail"
+          :ratio="item.width/item.height"
+        />
       </q-card-section>
     </div>
   </q-card>

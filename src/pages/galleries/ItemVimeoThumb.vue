@@ -28,7 +28,11 @@
           {{ item.title }}
         </q-card-section>
         <q-card-section>
-          <VimeoPlayer :video-id="item.video_id" />
+          <VimeoPlayer
+            :video-id="item.video_id"
+            :width="item.width"
+            :height="item.height"
+          />
         </q-card-section>
       </template>
     </DialogMaster>

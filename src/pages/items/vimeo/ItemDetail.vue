@@ -22,7 +22,11 @@
       />
     </q-toolbar>
     <div class="col q-pa-md">
-      <VimeoPlayer :video-id="data.video_id" />
+      <VimeoPlayer
+        :video-id="data.video_id"
+        :width="data.width"
+        :height="data.height"
+      />
     </div>
     <div class="col q-pa-md">
       <div class="text-right">

@@ -13,6 +13,8 @@
       <VimeoPlayer
         v-if="data.item_vimeo"
         :video-id="data.item_vimeo.video_id"
+        :width="data.item_vimeo.width"
+        :height="data.item_vimeo.height"
       />
     </div>
   </div>
