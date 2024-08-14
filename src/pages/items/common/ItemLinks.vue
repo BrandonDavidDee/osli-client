@@ -30,7 +30,7 @@
                 icon="add"
                 size="sm"
                 flat
-                @click="newLink"
+                @click="addNewItemLink"
               />
             </th>
           </tr>
@@ -137,26 +137,10 @@
               class="q-mb-md"
               label="Title"
             />
-            <!-- <q-card
-              v-if="selected.id > 0"
-              flat
-              bordered
-              square
-            >
-              <q-card-section class="text-subtitle2">
-                Public Link
-              </q-card-section>
-              <q-separator />
-              <q-card-section
-                class="cursor-pointer"
-                @click="copyLink(selected?.link)"
-              >
-                {{ selected.link }}
-              </q-card-section>
-            </q-card> -->
             <PublicLink
               v-if="selected.id > 0"
               :item-link="selected"
+              @updated="onUpdatedLink(closeDialog)"
             />
             <q-checkbox
               v-model="selected.is_active"
@@ -306,7 +290,7 @@ export default defineComponent({
       dialog.value = true;
     }
 
-    function newLink() {
+    function addNewItemLink() {
       const model: ItemLink = {
         id: 0,
         title: null,
@@ -403,6 +387,12 @@ export default defineComponent({
       closeDialog();
     }
 
+    function onUpdatedLink(closeDialog: () => void) {
+      // TODO: actually replace in array instead of refetching
+      fetchData();
+      closeDialog();
+    }
+
     watch(
       () => props.itemId,
       () => {
@@ -425,7 +415,8 @@ export default defineComponent({
       onSubmit,
       copyLink,
       openLink,
-      newLink,
+      addNewItemLink,
+      onUpdatedLink,
     };
   },
 });

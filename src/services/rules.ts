@@ -9,3 +9,8 @@ export function charLengthRule(maxLength: number) {
     return `Only ${maxLength} characters allowed.`;
   };
 }
+
+export const urlFriendlyStringRule = (val: string): true | string => {
+  const pattern = /^[a-zA-Z0-9_-]+$/;
+  return pattern.test(val) || 'Only alphanumeric characters, hyphens, and underscores are allowed.';
+};
