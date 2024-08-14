@@ -42,7 +42,7 @@
       >
         <ImageDetail
           :src-url="item.thumbnail"
-          :ratio="item.width/item.height"
+          :ratio="getAspectRatio(item.width, item.height)"
         />
       </q-card-section>
     </div>
@@ -54,6 +54,7 @@ import { defineComponent, PropType } from 'vue';
 import { ItemVimeo } from 'src/models/item-vimeo';
 import { useRouter } from 'vue-router';
 import ImageDetail from 'src/components/ImageDetail.vue';
+import { getAspectRatio } from 'src/services/utils';
 
 export default defineComponent({
   components: { ImageDetail },
@@ -79,6 +80,7 @@ export default defineComponent({
     }
     return {
       itemSelect,
+      getAspectRatio,
     };
   },
 });

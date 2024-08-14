@@ -1,10 +1,22 @@
-export function getAspectRatio(width: number, height: number) {
+export function getAspectRatio(width: number, height: number): number {
   const gcd = (a: number, b: number): number => (b === 0 ? a : gcd(b, a % b));
   const commonDivisor = gcd(width, height);
   const reducedWidth = width / commonDivisor;
   const reducedHeight = height / commonDivisor;
-  return {
-    width: reducedWidth,
-    height: reducedHeight,
-  };
+  return reducedWidth / reducedHeight;
+}
+
+export function calculateSize(fileSize: number | undefined) {
+  if (!fileSize) { return 'No File Size'; }
+  const kilobytes = 1024;
+  const megabytes = kilobytes * 1024;
+  const gigabytes = megabytes * 1024;
+  if (fileSize >= gigabytes) {
+    return `${(fileSize / gigabytes).toFixed(2)} GB`;
+  } if (fileSize >= megabytes) {
+    return `${(fileSize / megabytes).toFixed(2)} MB`;
+  } if (fileSize >= kilobytes) {
+    return `${(fileSize / kilobytes).toFixed(2)} KB`;
+  }
+  return `${fileSize} bytes`;
 }

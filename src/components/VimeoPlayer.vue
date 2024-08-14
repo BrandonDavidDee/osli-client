@@ -1,6 +1,5 @@
 <template>
   <div>
-    <!-- {{ width }} | {{ height }} -->
     <div
       :class="['embed-container', { vertical }]"
     >

@@ -95,6 +95,7 @@ import { itemDetail, itemUpdate } from 'src/api/item-bucket';
 import { debounce } from 'quasar';
 import { ItemTag } from 'src/models/item';
 import { ItemBucket } from 'src/models/item-bucket';
+import { calculateSize } from 'src/services/utils';
 import LineItem from 'src/components/LineItem.vue';
 import ItemTags from 'src/pages/items/common/ItemTags.vue';
 import ItemDetailPreview from './ItemDetailPreview.vue';
@@ -133,22 +134,6 @@ export default defineComponent({
         loading.value = false;
       }
     }, 500);
-
-    function calculateSize(fileSize: number | undefined) {
-      // move to a reusable function
-      if (!fileSize) { return 'No File Size'; }
-      const kilobytes = 1024;
-      const megabytes = kilobytes * 1024;
-      const gigabytes = megabytes * 1024;
-      if (fileSize >= gigabytes) {
-        return `${(fileSize / gigabytes).toFixed(2)} GB`;
-      } if (fileSize >= megabytes) {
-        return `${(fileSize / megabytes).toFixed(2)} MB`;
-      } if (fileSize >= kilobytes) {
-        return `${(fileSize / kilobytes).toFixed(2)} KB`;
-      }
-      return `${fileSize} bytes`;
-    }
 
     function onNewTag(v: ItemTag) {
       data.value?.tags.push(v);
