@@ -208,14 +208,14 @@
 import {
   defineComponent, ref, watch, computed,
 } from 'vue';
-import { copyToClipboard, openURL } from 'quasar';
 import {
   galleryLinks, galleryLinkCreate, galleryLinkUpdate, galleryLinkDelete,
 } from 'src/api/galleries';
 import { Gallery, GalleryLink } from 'src/models/gallery';
 import { getDateTimeDisplay } from 'src/services/date-master';
 import { useAuthStore } from 'src/stores/auth';
-import { positiveNotification, negativeNotification } from 'src/services/notify';
+import { copyLink, openLink } from 'src/services/utils';
+import { positiveNotification } from 'src/services/notify';
 import DialogMaster from 'src/components/DialogMaster.vue';
 
 export default defineComponent({
@@ -246,24 +246,6 @@ export default defineComponent({
     function selectLink(v: GalleryLink) {
       selected.value = v;
       dialog.value = true;
-    }
-
-    function copyLink(link: string | undefined) {
-      if (link) {
-        copyToClipboard(link)
-          .then(() => {
-            positiveNotification('Copied link to Clipboard');
-          })
-          .catch(() => {
-            negativeNotification('Error Copying Link');
-          });
-      }
-    }
-
-    function openLink(link: string | undefined) {
-      if (link) {
-        openURL(link);
-      }
     }
 
     async function createNew() {

@@ -1,3 +1,6 @@
+import { copyToClipboard, openURL } from 'quasar';
+import { positiveNotification, negativeNotification } from 'src/services/notify';
+
 export function getAspectRatio(width: number, height: number): number {
   const gcd = (a: number, b: number): number => (b === 0 ? a : gcd(b, a % b));
   const commonDivisor = gcd(width, height);
@@ -19,4 +22,22 @@ export function calculateSize(fileSize: number | undefined) {
     return `${(fileSize / kilobytes).toFixed(2)} KB`;
   }
   return `${fileSize} bytes`;
+}
+
+export function copyLink(link: string | undefined) {
+  if (link) {
+    copyToClipboard(link)
+      .then(() => {
+        positiveNotification('Copied link to Clipboard');
+      })
+      .catch(() => {
+        negativeNotification('Error Copying Link');
+      });
+  }
+}
+
+export function openLink(link: string | undefined) {
+  if (link) {
+    openURL(link);
+  }
 }

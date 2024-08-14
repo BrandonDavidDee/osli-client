@@ -30,7 +30,7 @@
 
 <script lang="ts">
 import { computed } from 'vue';
-import { openURL } from 'quasar';
+import { openLink } from 'src/services/utils';
 
 export default {
   setup() {
@@ -40,7 +40,7 @@ export default {
     });
     function openCompanyUrl() {
       if (companyUrl.value) {
-        openURL(companyUrl.value);
+        openLink(companyUrl.value);
       }
     }
     return {

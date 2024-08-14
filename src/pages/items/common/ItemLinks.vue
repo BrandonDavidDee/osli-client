@@ -137,7 +137,7 @@
               class="q-mb-md"
               label="Title"
             />
-            <q-card
+            <!-- <q-card
               v-if="selected.id > 0"
               flat
               bordered
@@ -153,7 +153,11 @@
               >
                 {{ selected.link }}
               </q-card-section>
-            </q-card>
+            </q-card> -->
+            <PublicLink
+              v-if="selected.id > 0"
+              :item-link="selected"
+            />
             <q-checkbox
               v-model="selected.is_active"
               class="q-mt-md"
@@ -208,7 +212,6 @@
 import {
   defineComponent, ref, watch, computed,
 } from 'vue';
-import { copyToClipboard, openURL } from 'quasar';
 import {
   itemLinkCreate as itemLinkCreateBucket,
   itemLinks as itemLinksBucket,
@@ -226,11 +229,13 @@ import { ItemVimeo } from 'src/models/item-vimeo';
 import { ItemBucket } from 'src/models/item-bucket';
 import { getDateTimeDisplay } from 'src/services/date-master';
 import { useAuthStore } from 'src/stores/auth';
-import { positiveNotification, negativeNotification } from 'src/services/notify';
+import { copyLink, openLink } from 'src/services/utils';
+import { positiveNotification } from 'src/services/notify';
 import DialogMaster from 'src/components/DialogMaster.vue';
+import PublicLink from './PublicLink.vue';
 
 export default defineComponent({
-  components: { DialogMaster },
+  components: { DialogMaster, PublicLink },
   props: {
     sourceId: {
       type: [Number, String],
@@ -299,23 +304,6 @@ export default defineComponent({
     function selectLink(v: ItemLink) {
       selected.value = v;
       dialog.value = true;
-    }
-    function openLink(link: string | undefined) {
-      if (link) {
-        openURL(link);
-      }
-    }
-
-    function copyLink(link: string | undefined) {
-      if (link) {
-        copyToClipboard(link)
-          .then(() => {
-            positiveNotification('Copied link to Clipboard');
-          })
-          .catch(() => {
-            negativeNotification('Error Copying Link');
-          });
-      }
     }
 
     function newLink() {

@@ -3,7 +3,7 @@
     <span v-if="externalUrl">
       <span class="text-subtitle2">{{ label }}:</span> <span
         class="cursor-pointer"
-        @click="openLink"
+        @click="openLink(externalUrl)"
       >{{ text }}</span>
     </span>
     <span v-else>
@@ -15,7 +15,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue';
-import { openURL } from 'quasar';
+import { openLink } from 'src/services/utils';
 
 export default defineComponent({
   props: {
@@ -36,10 +36,7 @@ export default defineComponent({
       default: null,
     },
   },
-  setup(props) {
-    function openLink() {
-      openURL(props.externalUrl);
-    }
+  setup() {
     return {
       openLink,
     };
