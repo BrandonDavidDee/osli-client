@@ -4,6 +4,7 @@
       flat
       bordered
       square
+      class="bg-grey-2"
     >
       <q-card-section class="text-subtitle2">
         Public Link
@@ -20,6 +21,7 @@
           label="Edit"
           size="sm"
           flat
+          :disable="isDisabled"
           @click="dialog = true"
         />
       </q-card-actions>
@@ -71,14 +73,19 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, ref } from 'vue';
+import {
+  defineComponent, PropType, ref, computed,
+} from 'vue';
 import { debounce } from 'quasar';
-import { itemLinkAvailabilityCheck, itemLinkUpdate } from 'src/api/item-links';
+import { itemLinkAvailability, itemLinkUpdate } from 'src/api/item-links';
 import { warningNotification } from 'src/services/notify';
 import { urlFriendlyStringRule } from 'src/services/rules';
+import { useAuthStore } from 'src/stores/auth';
 import { ItemLink } from 'src/models/item';
 import { copyLink } from 'src/services/utils';
 import DialogMaster from 'src/components/DialogMaster.vue';
+
+const store = useAuthStore();
 
 export default defineComponent({
   components: { DialogMaster },
@@ -96,13 +103,20 @@ export default defineComponent({
     const loading = ref(false);
     const form = ref();
 
+    const userId = computed(() => (store.userId !== null ? parseInt(store.userId, 10) : null));
+
+    const isDisabled = computed(() => {
+      if (!props.itemLink.created_by) { return true; }
+      return props.itemLink.created_by.id !== userId.value;
+    });
+
     const debouncedCheckAvailability = debounce(async () => {
       if (form.value) {
         // Validate first so we don't do the check on an invalid string
         const isValid = await form.value.validate();
         if (isValid && newLink.value) {
           loading.value = true;
-          const res = await itemLinkAvailabilityCheck(newLink.value);
+          const res = await itemLinkAvailability(newLink.value);
           if (res) {
             existingLink.value = res.data;
           }
@@ -134,6 +148,7 @@ export default defineComponent({
       urlFriendlyStringRule,
       onSubmit,
       form,
+      isDisabled,
     };
   },
 });

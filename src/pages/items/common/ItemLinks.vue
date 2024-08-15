@@ -137,7 +137,7 @@
               class="q-mb-md"
               label="Title"
             />
-            <PublicLink
+            <ManageLink
               v-if="selected.id > 0"
               :item-link="selected"
               @updated="onUpdatedLink(closeDialog)"
@@ -216,10 +216,10 @@ import { useAuthStore } from 'src/stores/auth';
 import { copyLink, openLink } from 'src/services/utils';
 import { positiveNotification } from 'src/services/notify';
 import DialogMaster from 'src/components/DialogMaster.vue';
-import PublicLink from './PublicLink.vue';
+import ManageLink from './ManageLink.vue';
 
 export default defineComponent({
-  components: { DialogMaster, PublicLink },
+  components: { DialogMaster, ManageLink },
   props: {
     sourceId: {
       type: [Number, String],

@@ -4,7 +4,7 @@ import errorHandler from './error-handler';
 
 const path = `${process.env.API}/api/items/item-links`;
 
-export async function itemLinkAvailabilityCheck(link: string) {
+export async function itemLinkAvailability(link: string) {
   try {
     return await api.get(`${path}/availability/${link}`);
   } catch (err) {

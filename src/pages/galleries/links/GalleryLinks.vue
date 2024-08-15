@@ -138,23 +138,13 @@
               class="q-mb-md"
               label="Title"
             />
-            <q-card
+            <ManageLink
               v-if="selected.id > 0"
-              flat
-              bordered
-              square
-            >
-              <q-card-section class="text-subtitle2">
-                Public Link
-              </q-card-section>
-              <q-separator />
-              <q-card-section
-                class="cursor-pointer"
-                @click="copyLink(selected?.link)"
-              >
-                {{ selected.link }}
-              </q-card-section>
-            </q-card>
+              :gallery-id="galleryId"
+              :gallery-link="selected"
+              :user-id="userId"
+              @updated="onUpdatedLink(closeDialog)"
+            />
             <q-checkbox
               v-model="selected.is_active"
               class="q-mt-md"
@@ -217,9 +207,10 @@ import { useAuthStore } from 'src/stores/auth';
 import { copyLink, openLink } from 'src/services/utils';
 import { positiveNotification } from 'src/services/notify';
 import DialogMaster from 'src/components/DialogMaster.vue';
+import ManageLink from './ManageLink.vue';
 
 export default defineComponent({
-  components: { DialogMaster },
+  components: { DialogMaster, ManageLink },
   props: {
     galleryId: {
       type: [Number, String],
@@ -261,7 +252,7 @@ export default defineComponent({
 
     async function updateExisting() {
       if (selected.value) {
-        const res = await galleryLinkUpdate(props.galleryId, selected.value);
+        const res = await galleryLinkUpdate(props.galleryId, selected.value, false);
         if (res && res.status === 200) {
           positiveNotification('Updated!');
         }
@@ -316,6 +307,12 @@ export default defineComponent({
       closeDialog();
     }
 
+    function onUpdatedLink(closeDialog: () => void) {
+      // TODO: actually replace in array instead of refetching
+      fetchData();
+      closeDialog();
+    }
+
     watch(
       () => props.galleryId,
       () => {
@@ -332,12 +329,14 @@ export default defineComponent({
       doLinkDelete,
       getDateTimeDisplay,
       isDisabled,
+      onUpdatedLink,
       selectLink,
       selected,
       onSubmit,
       copyLink,
       openLink,
       newLink,
+      userId,
     };
   },
 });
