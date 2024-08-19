@@ -280,7 +280,9 @@ export default defineComponent({
         is_active: true,
       };
       if (userId.value) {
-        model.created_by = { id: userId.value, username: '', is_active: true };
+        model.created_by = {
+          id: userId.value, username: '', is_active: true, is_admin: false,
+        };
       }
       selected.value = model;
       dialog.value = true;

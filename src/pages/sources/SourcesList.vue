@@ -102,6 +102,20 @@
           <q-item-label>Galleries</q-item-label>
         </q-item-section>
       </q-item>
+      <q-item
+        v-ripple
+        clickable
+        :to="{name: 'user-list'}"
+      >
+        <q-item-section avatar>
+          <q-icon
+            name="account_circle"
+          />
+        </q-item-section>
+        <q-item-section>
+          <q-item-label>Users</q-item-label>
+        </q-item-section>
+      </q-item>
     </q-list>
   </div>
 </template>

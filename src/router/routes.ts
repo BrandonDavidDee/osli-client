@@ -115,6 +115,17 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/me/MySavedItems.vue'),
         name: 'my-saved',
       },
+      {
+        path: 'users',
+        component: () => import('pages/users/UserList.vue'),
+        name: 'user-list',
+      },
+      {
+        path: 'users/:userId',
+        component: () => import('pages/users/UserDetail.vue'),
+        name: 'user-detail',
+        props: true,
+      },
     ],
   },
   // Always leave this as last one,
