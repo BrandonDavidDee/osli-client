@@ -1,7 +1,11 @@
 import { copyToClipboard, openURL } from 'quasar';
 import { positiveNotification, negativeNotification } from 'src/services/notify';
 
-export function getAspectRatio(width: number, height: number): number {
+export function getAspectRatio(width: number, height: number): number | undefined {
+  if (width <= 0 || height <= 0) {
+    // handle situations where the dimensions are null
+    return undefined;
+  }
   const gcd = (a: number, b: number): number => (b === 0 ? a : gcd(b, a % b));
   const commonDivisor = gcd(width, height);
   const reducedWidth = width / commonDivisor;

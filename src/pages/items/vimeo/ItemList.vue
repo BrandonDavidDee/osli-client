@@ -1,180 +1,184 @@
 <template>
   <div>
-    <q-toolbar class="bg-grey-9 text-white">
-      <q-btn
-        v-if="isRoute"
-        dense
-        icon="arrow_back"
-        color="white"
-        text-color="black"
-        size="sm"
-        :to="{name: 'home'}"
-      />
-      <q-toolbar-title>
-        {{ sourceData?.title }}
-      </q-toolbar-title>
-      <TagSelector />
-      <q-input
-        v-model="filterLocal"
-        class="GPL__toolbar-input"
-        dense
-        square
-        outlined
-        color="white"
-        bg-color="white"
-        placeholder="Search"
-        debounce="500"
-      >
-        <template #prepend>
-          <q-icon
-            v-if="filterLocal === ''"
-            name="search"
-          />
-          <q-icon
-            v-else
-            name="clear"
-            class="cursor-pointer"
-            @click="filterLocal = ''"
-          />
-        </template>
-      </q-input>
-      <q-btn
-        v-if="isRoute"
-        class="q-ml-sm"
-        icon="add"
-        color="white"
-        text-color="black"
-        size="sm"
-        @click="showNewVideoDialog"
-      />
-    </q-toolbar>
-    <q-card
-      v-if="!itemsData.length"
-      class="q-ma-sm"
-      flat
-      bordered
-      square
-    >
-      <q-card-section>No Results</q-card-section>
-    </q-card>
-    <div
-      v-if="gridView"
-      class="row"
-    >
-      <div
-        v-for="item in itemsData"
-        :key="item.id"
-        class="col-xs-12 col-sm-6 col-md-4 col-lg-3 col-xl-2"
-      >
-        <ItemListPreview
-          :item="item"
-          :use-router="isRoute"
-          @selected="onSelected"
+    <div v-if="authorized">
+      <q-toolbar class="bg-grey-9 text-white">
+        <q-btn
+          v-if="isRoute"
+          dense
+          icon="arrow_back"
+          color="white"
+          text-color="black"
+          size="sm"
+          :to="{name: 'home'}"
         />
-      </div>
-    </div>
-    <div v-else>
-      <q-list
+        <q-toolbar-title>
+          {{ sourceData?.title }}
+        </q-toolbar-title>
+        <TagSelector />
+        <q-input
+          v-model="filterLocal"
+          class="GPL__toolbar-input"
+          dense
+          square
+          outlined
+          color="white"
+          bg-color="white"
+          placeholder="Search"
+          debounce="500"
+        >
+          <template #prepend>
+            <q-icon
+              v-if="filterLocal === ''"
+              name="search"
+            />
+            <q-icon
+              v-else
+              name="clear"
+              class="cursor-pointer"
+              @click="filterLocal = ''"
+            />
+          </template>
+        </q-input>
+        <q-btn
+          v-if="isRoute"
+          class="q-ml-sm"
+          icon="add"
+          color="white"
+          text-color="black"
+          size="sm"
+          @click="showNewVideoDialog"
+        />
+      </q-toolbar>
+      <LoadingItems v-if="loading" />
+      <q-card
+        v-if="!itemsData.length && !loading"
+        class="q-ma-sm"
+        flat
         bordered
-        separator
-        class="q-ma-md"
+        square
       >
-        <q-item
+        <q-card-section>No Results</q-card-section>
+      </q-card>
+      <div
+        v-if="gridView"
+        class="row"
+      >
+        <div
           v-for="item in itemsData"
           :key="item.id"
+          class="col-xs-12 col-sm-6 col-md-4 col-lg-3 col-xl-2"
         >
-          <q-item-section>
-            <q-item-label>
-              <router-link
-                :to="{
-                  name: 'item-detail-vimeo',
-                  params: { sourceId: sourceId, itemId: item.id }
-                }"
-              >
-                {{ item.title }}
-              </router-link>
-            </q-item-label>
-            <q-item-label caption>
-              {{ item.video_id }}
-            </q-item-label>
-          </q-item-section>
-        </q-item>
-      </q-list>
+          <ItemListPreview
+            :item="item"
+            :use-router="isRoute"
+            @selected="onSelected"
+          />
+        </div>
+      </div>
+      <div v-else>
+        <q-list
+          bordered
+          separator
+          class="q-ma-md"
+        >
+          <q-item
+            v-for="item in itemsData"
+            :key="item.id"
+          >
+            <q-item-section>
+              <q-item-label>
+                <router-link
+                  :to="{
+                    name: 'item-detail-vimeo',
+                    params: { sourceId: sourceId, itemId: item.id }
+                  }"
+                >
+                  {{ item.title }}
+                </router-link>
+              </q-item-label>
+              <q-item-label caption>
+                {{ item.video_id }}
+              </q-item-label>
+            </q-item-section>
+          </q-item>
+        </q-list>
+      </div>
+      <div
+        v-if="itemsData.length"
+        class="q-pa-lg flex flex-center"
+      >
+        <q-pagination
+          v-model="page"
+          :max="maxPages"
+          :max-pages="6"
+          boundary-links
+          color="teal"
+        />
+      </div>
+      <DialogMaster
+        v-model="dialog"
+        close-header
+      >
+        <template #content="{ closeDialog }">
+          <q-card-section>
+            <q-input
+              v-model="newVimeoId"
+              filled
+              color="black"
+              label="Vimeo Video ID"
+              :rules="[(v) => !!v || 'Required']"
+              :loading="loading"
+            />
+          </q-card-section>
+          <q-separator />
+          <q-card-actions align="right">
+            <q-btn
+              label="Cancel"
+              flat
+              :disable="loading"
+              @click="closeDialog"
+            />
+            <q-btn
+              label="Create"
+              color="green"
+              :loading="loading"
+              :disable="!newVimeoId"
+              @click="createNewItem(closeDialog)"
+            />
+          </q-card-actions>
+        </template>
+      </DialogMaster>
+      <DialogMaster
+        v-model="dialogEncryptKey"
+        close-header
+      >
+        <template #content="{ closeDialog }">
+          <q-card-section>
+            <q-input
+              v-model="encryptionKey"
+              label="Encryption Key"
+              filled
+              color="black"
+              type="password"
+            />
+          </q-card-section>
+          <q-separator />
+          <q-card-actions align="right">
+            <q-btn
+              label="Cancel"
+              flat
+              @click="closeDialog"
+            />
+            <q-btn
+              label="Continue"
+              :disable="!encryptionKey"
+              @click="addEncryptionKey(closeDialog)"
+            />
+          </q-card-actions>
+        </template>
+      </DialogMaster>
     </div>
-    <div
-      v-if="itemsData.length"
-      class="q-pa-lg flex flex-center"
-    >
-      <q-pagination
-        v-model="page"
-        :max="maxPages"
-        :max-pages="6"
-        boundary-links
-        color="teal"
-      />
-    </div>
-    <DialogMaster
-      v-model="dialog"
-      close-header
-    >
-      <template #content="{ closeDialog }">
-        <q-card-section>
-          <q-input
-            v-model="newVimeoId"
-            filled
-            color="black"
-            label="Vimeo Video ID"
-            :rules="[(v) => !!v || 'Required']"
-            :loading="loading"
-          />
-        </q-card-section>
-        <q-separator />
-        <q-card-actions align="right">
-          <q-btn
-            label="Cancel"
-            flat
-            :disable="loading"
-            @click="closeDialog"
-          />
-          <q-btn
-            label="Create"
-            color="green"
-            :loading="loading"
-            :disable="!newVimeoId"
-            @click="createNewItem(closeDialog)"
-          />
-        </q-card-actions>
-      </template>
-    </DialogMaster>
-    <DialogMaster
-      v-model="dialogEncryptKey"
-      close-header
-    >
-      <template #content="{ closeDialog }">
-        <q-card-section>
-          <q-input
-            v-model="encryptionKey"
-            label="Encryption Key"
-            filled
-            color="black"
-            type="password"
-          />
-        </q-card-section>
-        <q-separator />
-        <q-card-actions align="right">
-          <q-btn
-            label="Cancel"
-            flat
-            @click="closeDialog"
-          />
-          <q-btn
-            label="Continue"
-            :disable="!encryptionKey"
-            @click="addEncryptionKey(closeDialog)"
-          />
-        </q-card-actions>
-      </template>
-    </DialogMaster>
+    <ErrorNotAuthorized v-if="!authorized" />
   </div>
 </template>
 
@@ -190,10 +194,14 @@ import { useSearchStore } from 'stores/search';
 import { useKeyStore } from 'src/stores/keys';
 import TagSelector from 'src/pages/sources/TagSelector.vue';
 import DialogMaster from 'src/components/DialogMaster.vue';
+import ErrorNotAuthorized from 'src/pages/ErrorNotAuthorized.vue';
+import LoadingItems from 'src/pages/items/common/LoadingItems.vue';
 import ItemListPreview from './ItemListPreview.vue';
 
 export default defineComponent({
-  components: { TagSelector, ItemListPreview, DialogMaster },
+  components: {
+    TagSelector, ItemListPreview, DialogMaster, ErrorNotAuthorized, LoadingItems,
+  },
   props: {
     sourceId: {
       type: [Number, String],
@@ -209,6 +217,7 @@ export default defineComponent({
     const store = useSearchStore();
     const keyStore = useKeyStore();
 
+    const authorized = ref(true);
     const dialog = ref(false);
     const dialogEncryptKey = ref(false);
     const encryptionKey = ref();
@@ -228,6 +237,7 @@ export default defineComponent({
     const selectedTagIds = computed(() => store.selectedTagIds);
 
     async function fetchItemsData() {
+      loading.value = true;
       itemsData.value = [];
       const payload: SearchPayload = {
         source: sourceData.value,
@@ -237,12 +247,16 @@ export default defineComponent({
         tag_ids: selectedTagIds.value,
       };
       const res = await itemList(props.sourceId, payload);
-      if (res && res.data) {
+      if (res && res.data && res.status === 200) {
+        authorized.value = true;
         sourceData.value = res.data.source;
         itemsData.value = res.data.items;
         totalCount.value = res.data.total_count;
         maxPages.value = Math.ceil(totalCount.value / limit.value);
+      } else {
+        authorized.value = false;
       }
+      loading.value = false;
     }
 
     function addEncryptionKey(closeDialog: () => void) {
@@ -318,6 +332,7 @@ export default defineComponent({
     });
 
     return {
+      authorized,
       addEncryptionKey,
       createNewItem,
       filterLocal,

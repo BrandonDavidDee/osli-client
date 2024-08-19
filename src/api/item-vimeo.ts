@@ -22,7 +22,7 @@ export async function itemList(sourceId: number | string, payload: SearchPayload
   try {
     return await api.post(`${path}/search?source_id=${sourceId}`, payload);
   } catch (err) {
-    return errorHandler(err);
+    return errorHandler(err, false);
   }
 }
 

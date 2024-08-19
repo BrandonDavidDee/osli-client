@@ -1,22 +1,18 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import { negativeNotification } from 'src/services/notify';
 
-const message = 'There was an error!';
+const defaultErrorMessage = 'There was an error!';
 
-export default function errorHandler(error: AxiosError|unknown): AxiosResponse | undefined {
+export default function errorHandler(error: AxiosError | unknown, notify = true): AxiosResponse | undefined {
   if (axios.isAxiosError(error)) {
-    const axiosError: AxiosError = error;
-    if (axiosError.response) {
-      if (axiosError.response.status !== 404) {
-        negativeNotification(message);
-      }
-      return axiosError.response;
-    } if (axiosError.request) {
-      negativeNotification(message);
-      return axiosError.request;
+    const { response, request } = error;
+    if (notify && (!response || response.status !== 404)) {
+      negativeNotification(defaultErrorMessage);
     }
-    negativeNotification(message);
-    return undefined;
+    return response ?? request;
+  }
+  if (notify) {
+    negativeNotification(defaultErrorMessage);
   }
   return undefined;
 }
