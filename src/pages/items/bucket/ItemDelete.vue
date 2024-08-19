@@ -189,7 +189,6 @@ export default defineComponent({
         positiveNotification('Deleted!');
         router.push({ name: 'item-list-bucket', params: { sourceId: props.sourceId } });
       }
-      // dialog.value = false;
       closeDialog();
       loading.value = false;
     }
@@ -200,13 +199,12 @@ export default defineComponent({
       if (!keyInStore) {
         dialogEncryptKey.value = true;
       } else if (closeDialog) {
-        // dialog.value = true;
         closeDialog();
       }
     }
 
     async function deletePrecheck() {
-      const res = await itemRelated(props.item.id);
+      const res = await itemRelated(props.sourceId, props.item.id);
       if (res && res.data) {
         const relatedData: RelatedData = res.data;
         relatedGalleries.value = relatedData.galleries;
@@ -221,7 +219,6 @@ export default defineComponent({
 
     function addEncryptionKey(closeDialog: () => void) {
       dialog.value = true;
-      // dialogEncryptKey.value = false;
       closeDialog();
       keyStore.addKey(props.sourceId, 'bucket', encryptionKey.value);
     }

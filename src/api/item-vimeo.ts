@@ -34,25 +34,25 @@ export async function itemDetail(sourceId: number | string, itemId: number | str
   }
 }
 
-export async function itemUpdate(itemId: number | string, payload: ItemVimeo) {
+export async function itemUpdate(sourceId: number | string, itemId: number | string, payload: ItemVimeo) {
   try {
-    return await api.put(`${path}/${itemId}`, payload);
+    return await api.put(`${path}/${itemId}?source_id=${sourceId}`, payload);
   } catch (err) {
     return errorHandler(err);
   }
 }
 
-export async function itemTagCreate(itemId: number | string, payload: ItemTag) {
+export async function itemTagCreate(sourceId: number | string, itemId: number | string, payload: ItemTag) {
   try {
-    return await api.post(`${path}/${itemId}/tags`, payload);
+    return await api.post(`${path}/${itemId}/tags?source_id=${sourceId}`, payload);
   } catch (err) {
     return errorHandler(err);
   }
 }
 
-export async function itemTagDelete(itemId: number | string, tagItemBucketId: number) {
+export async function itemTagDelete(sourceId: number | string, itemId: number | string, tagItemBucketId: number) {
   try {
-    return await api.delete(`${path}/${itemId}/tags/${tagItemBucketId}`);
+    return await api.delete(`${path}/${itemId}/tags/${tagItemBucketId}?source_id=${sourceId}`);
   } catch (err) {
     return errorHandler(err);
   }

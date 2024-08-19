@@ -72,6 +72,7 @@
         @update:model-value="debouncedItemUpdate"
       />
       <ItemTags
+        :source-id="sourceId"
         :item="data"
         source-type="vimeo"
         class="q-mt-md"
@@ -80,7 +81,11 @@
       />
     </div>
   </div>
-  <ErrorNotAuthorized v-if="!authorized" />
+  <ErrorNotAuthorized
+    v-if="!authorized"
+    home-button
+    full-screen
+  />
   <ErrorNotFound v-if="notFound" />
 </template>
 
@@ -139,7 +144,7 @@ export default defineComponent({
     const debouncedItemUpdate = debounce(async () => {
       if (data.value) {
         loading.value = true;
-        await itemUpdate(props.itemId, data.value);
+        await itemUpdate(props.sourceId, props.itemId, data.value);
         loading.value = false;
       }
     }, 500);

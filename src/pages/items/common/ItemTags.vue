@@ -93,6 +93,10 @@ import DialogMaster from 'src/components/DialogMaster.vue';
 export default defineComponent({
   components: { DialogMaster },
   props: {
+    sourceId: {
+      type: [Number, String],
+      required: true,
+    },
     item: {
       type: Object as PropType<ItemBucket | ItemVimeo>,
       required: true,
@@ -146,10 +150,10 @@ export default defineComponent({
 
     async function itemTagCreate(itemId: number, payload: ItemTag) {
       if (props.sourceType === 'bucket') {
-        return itemTagCreateBucket(itemId, payload);
+        return itemTagCreateBucket(props.sourceId, itemId, payload);
       }
       if (props.sourceType === 'vimeo') {
-        return itemTagCreateVimeo(itemId, payload);
+        return itemTagCreateVimeo(props.sourceId, itemId, payload);
       }
       throw new Error(`Unknown sourceType: ${props.sourceType}`);
     }
@@ -167,10 +171,10 @@ export default defineComponent({
 
     async function itemTagDelete(itemId: number, itemTagId: number) {
       if (props.sourceType === 'bucket') {
-        return itemTagDeleteBucket(itemId, itemTagId);
+        return itemTagDeleteBucket(props.sourceId, itemId, itemTagId);
       }
       if (props.sourceType === 'vimeo') {
-        return itemTagDeleteVimeo(itemId, itemTagId);
+        return itemTagDeleteVimeo(props.sourceId, itemId, itemTagId);
       }
       throw new Error(`Unknown sourceType: ${props.sourceType}`);
     }

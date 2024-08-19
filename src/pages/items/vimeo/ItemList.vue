@@ -178,7 +178,11 @@
         </template>
       </DialogMaster>
     </div>
-    <ErrorNotAuthorized v-if="!authorized" />
+    <ErrorNotAuthorized
+      v-if="!authorized"
+      :home-button="isRoute"
+      :full-screen="isRoute"
+    />
   </div>
 </template>
 

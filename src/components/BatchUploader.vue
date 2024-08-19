@@ -56,8 +56,15 @@ export default defineComponent({
       emit('uploaded');
     }
 
-    function onFailure() {
-      negativeNotification('Error Uploading');
+    function onFailure(e) {
+      let msg = 'Error!';
+      try {
+        const response = JSON.parse(e.xhr.response);
+        msg = response.detail;
+      } catch (err) {
+        msg = 'Error Uploading!';
+      }
+      negativeNotification(msg);
       emit('error');
     }
 

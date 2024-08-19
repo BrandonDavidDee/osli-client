@@ -1,5 +1,8 @@
 <template>
-  <div class="fullscreen bg-black text-white text-center q-pa-md flex flex-center">
+  <div
+    class="bg-black text-white text-center q-pa-md flex flex-center"
+    :class="fullScreen ? 'fullscreen' : ''"
+  >
     <div>
       <div
         style="font-size: 30vh"
@@ -15,6 +18,7 @@
       </div>
 
       <q-btn
+        v-if="homeButton"
         class="q-mt-xl"
         color="white"
         text-color="black"
@@ -26,3 +30,20 @@
     </div>
   </div>
 </template>
+
+<script lang="ts">
+import { defineComponent } from 'vue';
+
+export default defineComponent({
+  props: {
+    fullScreen: {
+      type: Boolean,
+      default: false,
+    },
+    homeButton: {
+      type: Boolean,
+      default: false,
+    },
+  },
+});
+</script>

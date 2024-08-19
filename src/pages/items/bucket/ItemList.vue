@@ -161,7 +161,11 @@
         </template>
       </DialogMaster>
     </div>
-    <ErrorNotAuthorized v-if="!authorized" />
+    <ErrorNotAuthorized
+      v-if="!authorized"
+      :home-button="isRoute"
+      :full-screen="isRoute"
+    />
   </div>
 </template>
 
@@ -244,7 +248,6 @@ export default defineComponent({
 
     function addEncryptionKey(closeDialog: () => void) {
       dialog.value = true;
-      // dialogEncryptKey.value = false;
       closeDialog();
       keyStore.addKey(props.sourceId, 'bucket', encryptionKey.value);
     }
@@ -258,7 +261,6 @@ export default defineComponent({
     function onUploaded(closeDialog: () => void) {
       resetSearchParams();
       fetchItemsData();
-      // dialog.value = false;
       closeDialog();
     }
 
@@ -272,7 +274,6 @@ export default defineComponent({
     }
 
     function onUploadError(closeDialog: () => void) {
-      // dialog.value = false;
       closeDialog();
       encryptionKey.value = null;
       keyStore.removeKey(props.sourceId, 'bucket');
