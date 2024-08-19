@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="data"
+    v-if="data && authorized"
     class="row"
   >
     <q-toolbar class="bg-grey-9 text-white">
@@ -85,6 +85,8 @@
       />
     </div>
   </div>
+  <ErrorNotAuthorized v-if="!authorized" />
+  <ErrorNotFound v-if="notFound" />
 </template>
 
 <script lang="ts">
@@ -98,13 +100,15 @@ import { ItemBucket } from 'src/models/item-bucket';
 import { calculateSize } from 'src/services/utils';
 import LineItem from 'src/components/LineItem.vue';
 import ItemTags from 'src/pages/items/common/ItemTags.vue';
+import ErrorNotAuthorized from 'src/pages/ErrorNotAuthorized.vue';
+import ErrorNotFound from 'src/pages/ErrorNotFound.vue';
 import ItemDetailPreview from './ItemDetailPreview.vue';
 import ItemSave from './ItemSave.vue';
 import ItemDelete from './ItemDelete.vue';
 
 export default defineComponent({
   components: {
-    ItemDetailPreview, LineItem, ItemTags, ItemSave, ItemDelete,
+    ItemDetailPreview, LineItem, ItemTags, ItemSave, ItemDelete, ErrorNotAuthorized, ErrorNotFound,
   },
   props: {
     sourceId: {
@@ -117,14 +121,26 @@ export default defineComponent({
     },
   },
   setup(props) {
+    const authorized = ref(true);
+    const notFound = ref(false);
     const data = ref<ItemBucket>();
     const loading = ref(false);
 
     async function fetchData() {
-      const res = await itemDetail(props.itemId);
-      if (res && res.data) {
+      loading.value = true;
+      const res = await itemDetail(props.sourceId, props.itemId);
+      if (res && res.data && res.status === 200) {
+        notFound.value = false;
+        authorized.value = true;
         data.value = res.data;
+      } else if (res && res.status === 404) {
+        notFound.value = true;
+        authorized.value = true;
+      } else {
+        notFound.value = false;
+        authorized.value = false;
       }
+      loading.value = false;
     }
 
     const debouncedItemUpdate = debounce(async () => {
@@ -157,6 +173,7 @@ export default defineComponent({
     }, { immediate: true });
 
     return {
+      authorized,
       data,
       loading,
       calculateSize,
@@ -164,6 +181,7 @@ export default defineComponent({
       onNewTag,
       onDeletedTagItem,
       onSaveUpdate,
+      notFound,
     };
   },
 });

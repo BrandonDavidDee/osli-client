@@ -17,11 +17,11 @@ export async function itemList(sourceId: number | string, payload: SearchPayload
   }
 }
 
-export async function itemDetail(itemId: number | string) {
+export async function itemDetail(sourceId: number | string, itemId: number | string) {
   try {
-    return await api.get(`${path}/${itemId}`);
+    return await api.get(`${path}/${itemId}?source_id=${sourceId}`);
   } catch (err) {
-    return errorHandler(err);
+    return errorHandler(err, false);
   }
 }
 
