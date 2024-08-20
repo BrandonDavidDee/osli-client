@@ -143,7 +143,7 @@
               :gallery-id="galleryId"
               :gallery-link="selected"
               :user-id="userId"
-              @updated="onUpdatedLink(closeDialog)"
+              @updated="onUpdatedLink($event, closeDialog)"
             />
             <q-checkbox
               v-model="selected.is_active"
@@ -225,6 +225,7 @@ export default defineComponent({
     const dialogDelete = ref(false);
     const selected = ref<GalleryLink>();
 
+    const user = computed(() => store.user);
     const userId = computed(() => (store.userId !== null ? parseInt(store.userId, 10) : null));
 
     async function fetchData() {
@@ -244,8 +245,9 @@ export default defineComponent({
         const res = await galleryLinkCreate(props.galleryId, selected.value);
         if (res && res.status === 200) {
           positiveNotification('Created!');
-          // TODO: return object and unshift
-          fetchData();
+          const insertedLink = res.data;
+          insertedLink.created_by = user;
+          data.value?.links.unshift(insertedLink);
         }
       }
     }
@@ -280,16 +282,7 @@ export default defineComponent({
         is_active: true,
       };
       if (userId.value) {
-        model.created_by = {
-          id: userId.value,
-          username: '',
-          is_active: true,
-          is_admin: false,
-          date_created: '',
-          scopes: [],
-          permissions: [],
-          permission_groups: [],
-        };
+        model.created_by = user.value;
       }
       selected.value = model;
       dialog.value = true;
@@ -316,9 +309,11 @@ export default defineComponent({
       closeDialog();
     }
 
-    function onUpdatedLink(closeDialog: () => void) {
-      // TODO: actually replace in array instead of refetching
-      fetchData();
+    function onUpdatedLink(updatedLink: GalleryLink, closeDialog: () => void) {
+      const found = data.value?.links.find((v) => v.id === updatedLink.id);
+      if (found) {
+        found.link = updatedLink.link;
+      }
       closeDialog();
     }
 
