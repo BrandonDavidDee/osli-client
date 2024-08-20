@@ -28,11 +28,21 @@
             Admin
           </q-badge>{{ data.username }}
         </q-card-section>
-        <q-card-section>
-          <UserPermissions
-            :user-detail="data"
-            @updated="onUpdatedUser"
-          />
+        <q-card-section class="row">
+          <div class="col">
+            <PermissionGroups
+              class="q-ma-sm"
+              :user-detail="data"
+              @new-group="onNewGroup"
+              @remove-group="onRemoveGroup"
+            />
+          </div>
+          <div class="col">
+            <MiscPermissions
+              class="q-ma-sm"
+              :user-detail="data"
+            />
+          </div>
         </q-card-section>
       </q-card>
     </div>
@@ -46,13 +56,14 @@
 
 <script lang="ts">
 import { defineComponent, watch, ref } from 'vue';
-import { userDetail } from 'src/api/users';
+import { userDetail, userScopeUpdate } from 'src/api/users';
 import { User } from 'src/models/user';
 import ErrorNotAuthorized from 'src/pages/ErrorNotAuthorized.vue';
-import UserPermissions from './UserPermissions.vue';
+import PermissionGroups from 'src/pages/users/permissions/PermissionGroups.vue';
+import MiscPermissions from 'src/pages/users/permissions/MiscPermissions.vue';
 
 export default defineComponent({
-  components: { UserPermissions, ErrorNotAuthorized },
+  components: { ErrorNotAuthorized, PermissionGroups, MiscPermissions },
   props: {
     userId: {
       type: [Number, String],
@@ -73,8 +84,27 @@ export default defineComponent({
       }
     }
 
-    function onUpdatedUser(v: User) {
-      data.value = v;
+    async function onNewGroup(groupName: string) {
+      if (data.value) {
+        data.value.scopes.push(groupName);
+        const res = await userScopeUpdate(props.userId, data.value);
+        if (res && res.data) {
+          data.value = res.data;
+        }
+      }
+    }
+
+    async function onRemoveGroup(groupName: string) {
+      if (data.value) {
+        const idx = data.value.scopes.indexOf(groupName);
+        if (idx !== -1) {
+          data.value.scopes.splice(idx, 1);
+        }
+        const res = await userScopeUpdate(props.userId, data.value);
+        if (res && res.data && res.status === 200) {
+          data.value = res.data;
+        }
+      }
     }
 
     watch(
@@ -88,7 +118,8 @@ export default defineComponent({
     return {
       authorized,
       data,
-      onUpdatedUser,
+      onNewGroup,
+      onRemoveGroup,
     };
   },
 });
