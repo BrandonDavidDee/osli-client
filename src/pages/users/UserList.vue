@@ -26,11 +26,14 @@
           <td>
             <q-badge
               v-if="user.is_admin"
-              color="green"
+              color="grey-9"
+              class="q-mr-sm"
             >
               Admin
             </q-badge>
-            {{ user.username }}
+            <router-link :to="{ name: 'user-detail', params: { userId: user.id }}">
+              {{ user.username }}
+            </router-link>
           </td>
           <td>
             <q-badge :color="user.is_active ? 'green' : 'red'">

@@ -20,10 +20,19 @@
         bordered
       >
         <q-card-section class="text-subtitle2">
-          {{ data.username }}
+          <q-badge
+            v-if="data.is_admin"
+            color="grey-9"
+            class="q-mr-sm"
+          >
+            Admin
+          </q-badge>{{ data.username }}
         </q-card-section>
         <q-card-section>
-          <UserPermissions :user-detail="data" />
+          <UserPermissions
+            :user-detail="data"
+            @updated="onUpdatedUser"
+          />
         </q-card-section>
       </q-card>
     </div>
@@ -64,6 +73,10 @@ export default defineComponent({
       }
     }
 
+    function onUpdatedUser(v: User) {
+      data.value = v;
+    }
+
     watch(
       () => props.userId,
       () => {
@@ -75,6 +88,7 @@ export default defineComponent({
     return {
       authorized,
       data,
+      onUpdatedUser,
     };
   },
 });

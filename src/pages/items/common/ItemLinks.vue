@@ -308,6 +308,7 @@ export default defineComponent({
           is_active: true,
           is_admin: false,
           date_created: '',
+          scopes: [],
           permissions: [],
           permission_groups: [],
         };
