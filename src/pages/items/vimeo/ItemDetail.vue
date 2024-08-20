@@ -42,15 +42,41 @@
           />
         </q-btn-group>
       </div>
-      <LineItem
-        label="Video ID"
-        :text="data.video_id"
-        :external-url="`https://vimeo.com/manage/videos/${data.video_id}`"
-      />
-      <LineItem
-        label="Thumbnail"
-        :text="data.thumbnail"
-      />
+
+      <q-card
+        flat
+        square
+        bordered
+        class="q-mt-sm"
+      >
+        <q-card-section>
+          <LineItem
+            label="Video ID"
+            :text="data.video_id"
+            :external-url="`https://vimeo.com/manage/videos/${data.video_id}`"
+          />
+          <LineItem
+            label="Thumbnail"
+            :text="data.thumbnail"
+          />
+          <LineItem
+            label="Height"
+            :text="data.height"
+          />
+          <LineItem
+            label="Width"
+            :text="data.width"
+            :separator="false"
+          />
+        </q-card-section>
+        <q-card-actions align="right">
+          <MetaDataRefresh
+            :source-id="sourceId"
+            :item="data"
+            @update="onUpdateMeta"
+          />
+        </q-card-actions>
+      </q-card>
       <q-input
         v-model="data.title"
         filled
@@ -79,6 +105,12 @@
         @new="onNewTag"
         @deleted="onDeletedTagItem"
       />
+      <div class="text-right q-mt-md">
+        <ItemDelete
+          :source-id="sourceId"
+          :item="data"
+        />
+      </div>
     </div>
   </div>
   <ErrorNotAuthorized
@@ -103,10 +135,12 @@ import ErrorNotAuthorized from 'src/pages/ErrorNotAuthorized.vue';
 import ErrorNotFound from 'src/pages/ErrorNotFound.vue';
 import ItemTags from 'src/pages/items/common/ItemTags.vue';
 import ItemSave from './ItemSave.vue';
+import ItemDelete from './ItemDelete.vue';
+import MetaDataRefresh from './MetaDataRefresh.vue';
 
 export default defineComponent({
   components: {
-    LineItem, ItemTags, VimeoPlayer, ItemSave, ErrorNotAuthorized, ErrorNotFound,
+    LineItem, ItemTags, VimeoPlayer, ItemSave, ErrorNotAuthorized, ErrorNotFound, ItemDelete, MetaDataRefresh,
   },
   props: {
     sourceId: {
@@ -170,6 +204,10 @@ export default defineComponent({
       }
     }
 
+    function onUpdateMeta(v: ItemVimeo) {
+      data.value = v;
+    }
+
     return {
       authorized,
       data,
@@ -179,6 +217,7 @@ export default defineComponent({
       onDeletedTagItem,
       onSaveUpdate,
       notFound,
+      onUpdateMeta,
     };
   },
 });

@@ -38,19 +38,28 @@
           />
         </q-btn-group>
       </div>
-      <LineItem
-        label="File Path"
-        :text="data.file_path"
-      />
-      <LineItem
-        label="Mime Type"
-        :text="data.mime_type"
-      />
-      <LineItem
-        label="File Size"
-        :text="calculateSize(data.file_size)"
-        :separator="false"
-      />
+      <q-card
+        flat
+        square
+        bordered
+        class="q-mt-sm"
+      >
+        <q-card-section>
+          <LineItem
+            label="File Path"
+            :text="data.file_path"
+          />
+          <LineItem
+            label="Mime Type"
+            :text="data.mime_type"
+          />
+          <LineItem
+            label="File Size"
+            :text="calculateSize(data.file_size)"
+            :separator="false"
+          />
+        </q-card-section>
+      </q-card>
       <q-input
         v-model="data.title"
         filled
@@ -79,11 +88,12 @@
         @new="onNewTag"
         @deleted="onDeletedTagItem"
       />
-      <ItemDelete
-        class="q-mt-md"
-        :source-id="sourceId"
-        :item="data"
-      />
+      <div class="q-mt-md">
+        <ItemDelete
+          :source-id="sourceId"
+          :item="data"
+        />
+      </div>
     </div>
   </div>
   <ErrorNotAuthorized

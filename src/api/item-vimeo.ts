@@ -42,6 +42,14 @@ export async function itemUpdate(sourceId: number | string, itemId: number | str
   }
 }
 
+export async function itemUpdateVimeoMeta(sourceId: number | string, itemId: number | string, payload: ItemVimeo, encryptionKey: string) {
+  try {
+    return await api.put(`${path}/${itemId}/vimeo-meta?source_id=${sourceId}&encryption_key=${encryptionKey}`, payload);
+  } catch (err) {
+    return errorHandler(err);
+  }
+}
+
 export async function itemTagCreate(sourceId: number | string, itemId: number | string, payload: ItemTag) {
   try {
     return await api.post(`${path}/${itemId}/tags?source_id=${sourceId}`, payload);

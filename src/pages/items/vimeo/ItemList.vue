@@ -287,7 +287,6 @@ export default defineComponent({
         keyStore.removeKey(props.sourceId, 'vimeo');
       }
       newVimeoId.value = '';
-      // dialog.value = false;
       closeDialog();
       loading.value = false;
     }

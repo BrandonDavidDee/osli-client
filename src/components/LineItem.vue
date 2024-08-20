@@ -24,7 +24,7 @@ export default defineComponent({
       required: true,
     },
     text: {
-      type: [String, null] as PropType<string | null>,
+      type: [String, Number, null] as PropType<string | number | null>,
       default: '',
     },
     separator: {
