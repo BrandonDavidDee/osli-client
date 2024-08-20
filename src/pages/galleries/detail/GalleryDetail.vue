@@ -27,6 +27,7 @@
           :gallery="data"
           @update="updateGallery"
           @new="onNewGalleryItem"
+          @deleted="onItemDelete"
         />
       </div>
       <div class="col q-pa-md">
@@ -128,6 +129,16 @@ export default defineComponent({
       data.value?.items.push(v);
     }
 
+    function onItemDelete(v: number) {
+      const found = data.value?.items.find((item) => item.id === v);
+      if (found) {
+        const idx = data.value?.items.indexOf(found);
+        if (idx) {
+          data.value?.items.splice(idx, 1);
+        }
+      }
+    }
+
     watch(
       () => props.galleryId,
       () => {
@@ -145,6 +156,7 @@ export default defineComponent({
       debouncedGalleryUpdate,
       fetchData,
       onNewGalleryItem,
+      onItemDelete,
     };
   },
 });

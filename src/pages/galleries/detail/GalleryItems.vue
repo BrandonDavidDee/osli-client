@@ -115,7 +115,7 @@ export default defineComponent({
       required: true,
     },
   },
-  emits: ['update', 'new', 'refresh'],
+  emits: ['update', 'new', 'deleted'],
   setup(props, { emit }) {
     const dialog = ref(false);
     const draggedIndex = ref<number | null>(null);
@@ -183,13 +183,12 @@ export default defineComponent({
     }
 
     async function doItemDelete(closeDialog: () => void) {
-      // TODO: remove this value from the array instead of refreshing
       if (selectedItemId.value) {
         const res = await galleryItemDelete(props.galleryId, selectedItemId.value);
         if (res && res.status === 200) {
           positiveNotification('Deleted');
+          emit('deleted', selectedItemId.value);
           selectedItemId.value = null;
-          emit('refresh');
         }
         closeDialog();
       }
