@@ -3,6 +3,7 @@ import { Cookies, Notify } from 'quasar';
 import { AxiosResponse } from 'axios';
 import { jwtDecode } from 'jwt-decode';
 import { api } from 'boot/axios';
+import { User } from 'src/models/user';
 
 export interface DecodedToken {
   exp: number;
@@ -14,11 +15,13 @@ interface AuthState {
   accessToken: string | null
   refreshToken: string | null
   userId: string | null
+  user: User | null,
 }
 
 interface ResponseData {
   access_token: string
   refresh_token: string
+  user: User
 }
 
 const loginPath = '/api/authentication/login';
@@ -29,6 +32,7 @@ export const useAuthStore = defineStore('auth', {
     accessToken: null,
     refreshToken: null,
     userId: null,
+    user: null,
   }),
   getters: {
     refreshTokenCookie(): string | null {
@@ -40,7 +44,7 @@ export const useAuthStore = defineStore('auth', {
     }),
   },
   actions: {
-    inflateUser() {
+    getUserIdFromToken() {
       if (this.accessToken) {
         const decodedToken: DecodedToken = jwtDecode(this.accessToken);
         this.userId = decodedToken.sub;
@@ -54,6 +58,9 @@ export const useAuthStore = defineStore('auth', {
     storeRefreshTokenCookie(refreshToken: string) {
       Cookies.set('refresh_token', refreshToken, { expires: 365, secure: true, sameSite: 'Strict' });
     },
+    setUser(value: User) {
+      this.user = value;
+    },
     setTokens(accessToken: string, refreshToken: string) {
       this.accessToken = accessToken;
       this.refreshToken = refreshToken;
@@ -63,8 +70,9 @@ export const useAuthStore = defineStore('auth', {
       try {
         const res: AxiosResponse = await api.post(loginPath, { username, password });
         const responseData: ResponseData = res.data;
+        this.setUser(responseData.user);
         this.setTokens(responseData.access_token, responseData.refresh_token);
-        this.inflateUser();
+        this.getUserIdFromToken();
         return res;
       } catch (err) {
         Notify.create({
@@ -78,8 +86,9 @@ export const useAuthStore = defineStore('auth', {
       try {
         const res: AxiosResponse = await api.post(refreshPath, {}, { headers: { Authorization: `Bearer ${this.refreshTokenCookie}` } });
         const responseData: ResponseData = res.data;
+        this.setUser(responseData.user);
         this.setTokens(responseData.access_token, responseData.refresh_token);
-        this.inflateUser();
+        this.getUserIdFromToken();
         return responseData;
       } catch (err) {
         this.clearTokens();

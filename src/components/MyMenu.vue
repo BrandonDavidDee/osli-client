@@ -1,7 +1,8 @@
 <template>
   <q-btn
-    icon="account_circle"
+    icon-right="account_circle"
     flat
+    :label="userName"
   >
     <q-menu>
       <q-list style="min-width: 200px">
@@ -43,7 +44,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, computed } from 'vue';
+import { useAuthStore } from 'src/stores/auth';
 
 interface MenuItem {
   label: string;
@@ -53,6 +55,7 @@ interface MenuItem {
 export default defineComponent({
   emits: ['logout'],
   setup() {
+    const store = useAuthStore();
     const menuItems: MenuItem[] = [
       // {
       //   label: 'Profile',
@@ -70,8 +73,12 @@ export default defineComponent({
       //   icon: 'link',
       // },
     ];
+
+    const userName = computed(() => store.user?.username);
+
     return {
       menuItems,
+      userName,
     };
   },
 });
