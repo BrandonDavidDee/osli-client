@@ -1,5 +1,5 @@
 import { api } from 'src/boot/axios';
-import { Gallery, GalleryLink, GalleryItemCreate } from 'src/models/gallery';
+import { Gallery, GalleryLink, GalleryItem } from 'src/models/gallery';
 import errorHandler from './error-handler';
 
 const path = `${process.env.API}/api/galleries`;
@@ -36,7 +36,7 @@ export async function galleryUpdate(galleryId: number | string, payload: Gallery
   }
 }
 
-export async function galleryItemCreate(galleryId: number | string, payload: GalleryItemCreate) {
+export async function galleryItemCreate(galleryId: number | string, payload: GalleryItem) {
   try {
     return await api.post(`${path}/${galleryId}/items`, payload);
   } catch (err) {

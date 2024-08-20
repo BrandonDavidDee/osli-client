@@ -24,7 +24,7 @@
       <div
         v-else
         class="cursor-pointer"
-        @click="itemSelect(item.id)"
+        @click="itemSelect(item)"
       >
         <div
           v-if="item.title"
@@ -41,21 +41,21 @@
       <q-card-section
         v-if="itemType === 'image'"
         class="text-center cursor-pointer"
-        @click="itemSelect(item.id)"
+        @click="itemSelect(item)"
       >
         <ImageDetail :src-url="mediaUrl" />
       </q-card-section>
       <q-card-section
         v-else-if="itemType === 'video'"
         class="text-center cursor-pointer"
-        @click="itemSelect(item.id)"
+        @click="itemSelect(item)"
       >
         <VideoDetail :src-url="mediaUrl" />
       </q-card-section>
       <q-card-section
         v-else
         class="text-center cursor-pointer"
-        @click="itemSelect(item.id)"
+        @click="itemSelect(item)"
       >
         <q-icon
           name="mdi-file-question"
@@ -117,11 +117,11 @@ export default defineComponent({
       }
     });
 
-    function itemSelect(itemId: number) {
+    function itemSelect(item: ItemBucket) {
       if (props.useRouter) {
-        router.push({ name: 'item-detail-bucket', params: { itemId } });
+        router.push({ name: 'item-detail-bucket', params: { itemId: item.id } });
       } else {
-        emit('selected', itemId);
+        emit('selected', item);
       }
     }
     return {

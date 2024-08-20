@@ -300,7 +300,7 @@ export default defineComponent({
       }
     }
 
-    function onSelected(v: number) {
+    function onSelected(v: ItemVimeo) {
       emit('selected', v);
     }
 

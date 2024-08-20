@@ -22,7 +22,7 @@
       <div
         v-else
         class="cursor-pointer"
-        @click="itemSelect(item.id)"
+        @click="itemSelect(item)"
       >
         <div
           v-if="item.title"
@@ -38,7 +38,7 @@
     <div v-if="item.thumbnail">
       <q-card-section
         class="text-center cursor-pointer"
-        @click="itemSelect(item.id)"
+        @click="itemSelect(item)"
       >
         <ImageDetail
           :src-url="item.thumbnail"
@@ -71,11 +71,11 @@ export default defineComponent({
   emits: ['selected'],
   setup(props, { emit }) {
     const router = useRouter();
-    function itemSelect(itemId: number) {
+    function itemSelect(item: ItemVimeo) {
       if (props.useRouter) {
-        router.push({ name: 'item-detail-vimeo', params: { itemId } });
+        router.push({ name: 'item-detail-vimeo', params: { itemId: item.id } });
       } else {
-        emit('selected', itemId);
+        emit('selected', item);
       }
     }
     return {

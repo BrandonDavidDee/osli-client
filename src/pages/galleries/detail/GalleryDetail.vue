@@ -26,7 +26,7 @@
           :gallery-id="galleryId"
           :gallery="data"
           @update="updateGallery"
-          @refresh="fetchData"
+          @new="onNewGalleryItem"
         />
       </div>
       <div class="col q-pa-md">
@@ -36,14 +36,24 @@
             :to="{ name: 'gallery-links', params: { galleryId: galleryId}}"
           />
         </div>
-        <LineItem
-          label="Date Created"
-          :text="getDateTimeDisplay(data.date_created)"
-        />
-        <LineItem
-          label="Created By"
-          :text="data.created_by?.username"
-        />
+        <q-card
+          flat
+          square
+          bordered
+          class="q-mt-sm q-mb-md"
+        >
+          <q-card-section>
+            <LineItem
+              label="Date Created"
+              :text="getDateTimeDisplay(data.date_created)"
+            />
+            <LineItem
+              label="Created By"
+              :text="data.created_by?.username"
+              :separator="false"
+            />
+          </q-card-section>
+        </q-card>
         <q-input
           v-model="data.title"
           color="black"
@@ -72,7 +82,7 @@ import {
   defineComponent, ref, watch, computed,
 } from 'vue';
 import { debounce } from 'quasar';
-import { Gallery } from 'src/models/gallery';
+import { Gallery, GalleryItem } from 'src/models/gallery';
 import { galleryDetail, galleryUpdate } from 'src/api/galleries';
 import LineItem from 'src/components/LineItem.vue';
 import { getDateTimeDisplay } from 'src/services/date-master';
@@ -114,6 +124,10 @@ export default defineComponent({
       }
     }, 500);
 
+    function onNewGalleryItem(v: GalleryItem) {
+      data.value?.items.push(v);
+    }
+
     watch(
       () => props.galleryId,
       () => {
@@ -130,6 +144,7 @@ export default defineComponent({
       updateGallery,
       debouncedGalleryUpdate,
       fetchData,
+      onNewGalleryItem,
     };
   },
 });

@@ -279,7 +279,7 @@ export default defineComponent({
       keyStore.removeKey(props.sourceId, 'bucket');
     }
 
-    function onSelected(v: number) {
+    function onSelected(v: ItemBucket) {
       emit('selected', v);
     }
 

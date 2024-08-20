@@ -4,7 +4,7 @@
       :gallery-id="galleryId"
       :item-count="gallery.items.length"
       :last-order-value="lastOrderValue"
-      @refresh="$emit('refresh')"
+      @new="onNewGalleryItem"
     />
     <q-card
       v-if="!gallery.items.length"
@@ -115,7 +115,7 @@ export default defineComponent({
       required: true,
     },
   },
-  emits: ['update', 'refresh'],
+  emits: ['update', 'new', 'refresh'],
   setup(props, { emit }) {
     const dialog = ref(false);
     const draggedIndex = ref<number | null>(null);
@@ -214,6 +214,10 @@ export default defineComponent({
       return { name: routeName, params: { sourceId, itemId } };
     }
 
+    function onNewGalleryItem(v: GalleryItem) {
+      emit('new', v);
+    }
+
     return {
       dialog,
       doItemDelete,
@@ -228,6 +232,7 @@ export default defineComponent({
       lastOrderValue,
       getDateTimeDisplay,
       makeRouteObject,
+      onNewGalleryItem,
     };
   },
 });

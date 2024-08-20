@@ -79,17 +79,23 @@ import {
   defineComponent, computed, onMounted, ref,
 } from 'vue';
 import { galleryItemCreate } from 'src/api/galleries';
-import { GalleryItemCreate } from 'src/models/gallery';
+import { GalleryItem } from 'src/models/gallery';
 import { useSourceStore } from 'src/stores/sources';
 import { positiveNotification } from 'src/services/notify';
 import DialogMaster from 'src/components/DialogMaster.vue';
 import ItemListBucket from 'src/pages/items/bucket/ItemList.vue';
 import ItemListVimeo from 'src/pages/items/vimeo/ItemList.vue';
+import { ItemBucket } from 'src/models/item-bucket';
+import { ItemVimeo } from 'src/models/item-vimeo';
 
-const newItem: GalleryItemCreate = {
+const newItem: GalleryItem = {
+  id: 0,
   item_order: 0,
-  item_id: null,
-  source_type: null,
+  source_type: 'bucket',
+  item_bucket: null,
+  item_vimeo: null,
+  date_created: null,
+  source_id: null,
 };
 
 export default defineComponent({
@@ -108,7 +114,7 @@ export default defineComponent({
       default: 0,
     },
   },
-  emits: ['refresh'],
+  emits: ['new'],
   setup(props, { emit }) {
     const dialogBucketSource = ref(false);
     const dialogVimeoSource = ref(false);
@@ -140,29 +146,27 @@ export default defineComponent({
       dropDown.value.hide();
     }
 
-    async function saveGalleryItem(payload: GalleryItemCreate) {
+    async function saveGalleryItem(payload: GalleryItem) {
       payload.item_order = props.lastOrderValue + 1;
       const res = await galleryItemCreate(props.galleryId, payload);
-      // TODO: return inserted id and apply to entire item,
-      // this will require emitting the entire item so it is here on scope
       if (res && res.status === 200) {
-        emit('refresh');
+        emit('new', res.data);
         positiveNotification('Added Item');
       }
     }
 
-    function onSelectedBucketItem(v: number, closeDialog: () => void) {
-      const payload: GalleryItemCreate = JSON.parse(JSON.stringify(newItem));
+    function onSelectedBucketItem(v: ItemBucket, closeDialog: () => void) {
+      const payload: GalleryItem = JSON.parse(JSON.stringify(newItem));
       payload.source_type = 'bucket';
-      payload.item_id = v;
+      payload.item_bucket = v;
       closeDialog();
       saveGalleryItem(payload);
     }
 
-    function onSelectedVimeoItem(v: number, closeDialog: () => void) {
-      const payload: GalleryItemCreate = JSON.parse(JSON.stringify(newItem));
+    function onSelectedVimeoItem(v: ItemVimeo, closeDialog: () => void) {
+      const payload: GalleryItem = JSON.parse(JSON.stringify(newItem));
       payload.source_type = 'vimeo';
-      payload.item_id = v;
+      payload.item_vimeo = v;
       closeDialog();
       saveGalleryItem(payload);
     }
