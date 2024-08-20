@@ -281,7 +281,13 @@ export default defineComponent({
       };
       if (userId.value) {
         model.created_by = {
-          id: userId.value, username: '', is_active: true, is_admin: false,
+          id: userId.value,
+          username: '',
+          is_active: true,
+          is_admin: false,
+          date_created: '',
+          permissions: [],
+          permission_groups: [],
         };
       }
       selected.value = model;

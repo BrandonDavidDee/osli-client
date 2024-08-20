@@ -1,5 +1,5 @@
 <template>
-  <div v-if="authorized">
+  <div v-if="data && authorized">
     <q-toolbar class="bg-grey-9 text-white q-mb-md">
       <q-btn
         dense
@@ -10,11 +10,22 @@
         :to="{ name: 'user-list'}"
       />
       <q-toolbar-title>
-        Users
+        Users: {{ data.username }}
       </q-toolbar-title>
     </q-toolbar>
     <div class="q-ma-md">
-      <pre>{{ data }}</pre>
+      <q-card
+        flat
+        square
+        bordered
+      >
+        <q-card-section class="text-subtitle2">
+          {{ data.username }}
+        </q-card-section>
+        <q-card-section>
+          <UserPermissions :user-detail="data" />
+        </q-card-section>
+      </q-card>
     </div>
   </div>
   <ErrorNotAuthorized
@@ -29,9 +40,10 @@ import { defineComponent, watch, ref } from 'vue';
 import { userDetail } from 'src/api/users';
 import { User } from 'src/models/user';
 import ErrorNotAuthorized from 'src/pages/ErrorNotAuthorized.vue';
+import UserPermissions from './UserPermissions.vue';
 
 export default defineComponent({
-  components: { ErrorNotAuthorized },
+  components: { UserPermissions, ErrorNotAuthorized },
   props: {
     userId: {
       type: [Number, String],
