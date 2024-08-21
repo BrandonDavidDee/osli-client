@@ -55,7 +55,7 @@
                   size="sm"
                   flat
                   icon="delete"
-                  @click="$emit('removeGroup', pg.name)"
+                  @click="$emit('removeScope', pg.name)"
                 />
               </q-btn-group>
             </q-item-section>
@@ -151,7 +151,7 @@ export default defineComponent({
       required: true,
     },
   },
-  emits: ['removeGroup', 'newGroup'],
+  emits: ['removeScope', 'newScope'],
   setup(props, { emit }) {
     const dialog = ref(false);
     const dialogPermGroups = ref(false);
@@ -188,7 +188,7 @@ export default defineComponent({
     }
 
     function addGroupToUser(group: PermissionGroup, closeDialog: () => void) {
-      emit('newGroup', group.name);
+      emit('newScope', group.name);
       closeDialog();
     }
 

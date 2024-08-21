@@ -16,16 +16,20 @@
     <div class="row">
       <div class="col q-pa-md">
         {{ data.username }}
+        <hr>
+        <pre>{{ data }}</pre>
       </div>
       <div class="col q-pa-md">
         <PermissionGroups
           :user-detail="data"
-          @new-group="onNewGroup"
-          @remove-group="onRemoveGroup"
+          @new-scope="onNewScope"
+          @remove-scope="onRemoveScope"
         />
         <MiscPermissions
           class="q-mt-md"
           :user-detail="data"
+          @new-scope="onNewScope"
+          @remove-scope="onRemoveScope"
         />
       </div>
     </div>
@@ -69,7 +73,7 @@ export default defineComponent({
       }
     }
 
-    async function onNewGroup(groupName: string) {
+    async function onNewScope(groupName: string) {
       if (data.value) {
         data.value.scopes.push(groupName);
         const res = await userScopeUpdate(userId, data.value);
@@ -79,7 +83,7 @@ export default defineComponent({
       }
     }
 
-    async function onRemoveGroup(groupName: string) {
+    async function onRemoveScope(groupName: string) {
       if (data.value) {
         const idx = data.value.scopes.indexOf(groupName);
         if (idx !== -1) {
@@ -103,8 +107,8 @@ export default defineComponent({
     return {
       authorized,
       data,
-      onNewGroup,
-      onRemoveGroup,
+      onNewScope,
+      onRemoveScope,
     };
   },
 });

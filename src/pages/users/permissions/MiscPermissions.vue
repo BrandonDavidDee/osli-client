@@ -28,6 +28,36 @@
             No Permissions
           </div>
         </div>
+        <div v-else>
+          <q-list
+            bordered
+          >
+            <q-item
+              v-for="perm in userDetail.permissions"
+              :key="perm.name"
+            >
+              <q-item-section>
+                {{ perm.description }}
+                <q-item-label
+                  v-show="perm.source_id"
+                  caption
+                >
+                  For Source ID {{ perm.source_id }}
+                </q-item-label>
+              </q-item-section>
+              <q-item-section side>
+                <q-btn-group flat>
+                  <q-btn
+                    size="sm"
+                    flat
+                    icon="delete"
+                    @click="removePermission(perm)"
+                  />
+                </q-btn-group>
+              </q-item-section>
+            </q-item>
+          </q-list>
+        </div>
       </q-card-section>
     </q-card>
     <DialogMaster
@@ -35,7 +65,7 @@
       close-footer
       close-header
     >
-      <template #content>
+      <template #content="{ closeDialog }">
         <q-card-section>
           <q-card
             v-for="bs in dataBuckets"
@@ -75,6 +105,7 @@
                         size="sm"
                         flat
                         label="Add"
+                        @click="addPermission(bs.id, p, closeDialog)"
                       />
                     </q-btn-group>
                   </q-item-section>
@@ -122,6 +153,7 @@
                         size="sm"
                         flat
                         label="Add"
+                        @click="addPermission(vim.id, p, closeDialog)"
                       />
                     </q-btn-group>
                   </q-item-section>
@@ -167,6 +199,7 @@
                         size="sm"
                         flat
                         label="Add"
+                        @click="addPermission(null, p, closeDialog)"
                       />
                     </q-btn-group>
                   </q-item-section>
@@ -204,7 +237,8 @@ export default defineComponent({
       required: true,
     },
   },
-  setup() {
+  emits: ['newScope', 'removeScope'],
+  setup(_, { emit }) {
     const store = useSourceStore();
     const dialog = ref(false);
 
@@ -231,12 +265,41 @@ export default defineComponent({
       dialog.value = true;
     }
 
+    function replaceSourceId(sourceId: number, permissionName: string) {
+      return permissionName.replace('{source_id}', sourceId.toString());
+    }
+
+    // function addDynamicPermission(sourceId: number, permission: Permission, closeDialog: () => void) {
+    //   const scopeName = replaceSourceId(sourceId, permission.name);
+    //   emit('newScope', scopeName);
+    //   closeDialog();
+    // }
+
+    function addPermission(sourceId: number | null, permission: Permission, closeDialog: () => void) {
+      let scopeName = permission.name;
+      if (sourceId) {
+        scopeName = replaceSourceId(sourceId, permission.name);
+      }
+      emit('newScope', scopeName);
+      closeDialog();
+    }
+
+    function removePermission(permission: Permission) {
+      let scopeName = permission.name;
+      if (permission.source_id) {
+        scopeName = replaceSourceId(permission.source_id, permission.name);
+      }
+      emit('removeScope', scopeName);
+    }
+
     return {
       data,
       dialog,
       dataBuckets,
       dataVimeo,
       showDialog,
+      addPermission,
+      removePermission,
     };
   },
 });
