@@ -13,6 +13,7 @@
           icon="add"
           size="sm"
           flat
+          :disable="userDetail.is_admin"
           @click="showDialog"
         />
       </q-card-actions>
@@ -105,6 +106,7 @@
                         size="sm"
                         flat
                         label="Add"
+                        :disable="isDisabled(bs.id, p)"
                         @click="addPermission(bs.id, p, closeDialog)"
                       />
                     </q-btn-group>
@@ -153,6 +155,7 @@
                         size="sm"
                         flat
                         label="Add"
+                        :disable="isDisabled(vim.id, p)"
                         @click="addPermission(vim.id, p, closeDialog)"
                       />
                     </q-btn-group>
@@ -199,6 +202,7 @@
                         size="sm"
                         flat
                         label="Add"
+                        :disable="isDisabled(null, p)"
                         @click="addPermission(null, p, closeDialog)"
                       />
                     </q-btn-group>
@@ -238,7 +242,7 @@ export default defineComponent({
     },
   },
   emits: ['newScope', 'removeScope'],
-  setup(_, { emit }) {
+  setup(props, { emit }) {
     const store = useSourceStore();
     const dialog = ref(false);
 
@@ -269,11 +273,13 @@ export default defineComponent({
       return permissionName.replace('{source_id}', sourceId.toString());
     }
 
-    // function addDynamicPermission(sourceId: number, permission: Permission, closeDialog: () => void) {
-    //   const scopeName = replaceSourceId(sourceId, permission.name);
-    //   emit('newScope', scopeName);
-    //   closeDialog();
-    // }
+    function isDisabled(sourceId: number | null, permission: Permission) {
+      let scopeName = permission.name;
+      if (sourceId) {
+        scopeName = replaceSourceId(sourceId, permission.name);
+      }
+      return props.userDetail.scopes.includes(scopeName);
+    }
 
     function addPermission(sourceId: number | null, permission: Permission, closeDialog: () => void) {
       let scopeName = permission.name;
@@ -300,6 +306,7 @@ export default defineComponent({
       showDialog,
       addPermission,
       removePermission,
+      isDisabled,
     };
   },
 });

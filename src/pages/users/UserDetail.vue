@@ -14,19 +14,17 @@
       </q-toolbar-title>
     </q-toolbar>
     <div class="row">
-      <div class="col q-pa-md">
-        {{ data.username }}
-        <hr>
-        <pre>{{ data }}</pre>
-      </div>
-      <div class="col q-pa-md">
+      <div class="col">
         <PermissionGroups
+          class="q-ma-sm"
           :user-detail="data"
           @new-scope="onNewScope"
           @remove-scope="onRemoveScope"
         />
+      </div>
+      <div class="col">
         <MiscPermissions
-          class="q-mt-md"
+          class="q-ma-sm"
           :user-detail="data"
           @new-scope="onNewScope"
           @remove-scope="onRemoveScope"

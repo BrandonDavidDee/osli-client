@@ -27,9 +27,6 @@
         >
           <q-item-section>
             <q-item-label>{{ p.description }}</q-item-label>
-            <q-item-label caption>
-              {{ p.name }}
-            </q-item-label>
           </q-item-section>
         </q-item>
       </q-list>
@@ -39,6 +36,7 @@
         label="Add"
         size="sm"
         flat
+        :disable="disable"
         @click="$emit('add')"
       />
     </q-card-actions>
@@ -51,6 +49,10 @@ import { PermissionGroup } from 'src/models/permission';
 
 export default defineComponent({
   props: {
+    disable: {
+      type: Boolean,
+      required: true,
+    },
     permGroup: {
       type: Object as PropType<PermissionGroup>,
       required: true,

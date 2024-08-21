@@ -99,9 +99,6 @@
             >
               <q-item-section>
                 <q-item-label>{{ p.description }}</q-item-label>
-                <q-item-label caption>
-                  {{ p.name }}
-                </q-item-label>
               </q-item-section>
             </q-item>
           </q-list>
@@ -115,16 +112,17 @@
     >
       <template #content="{ closeDialog }">
         <q-card-section
-          v-if="!groupsFiltered.length"
+          v-if="!dataGroups.length"
           class="text-caption"
         >
           No available permission groups.
         </q-card-section>
-        <q-card-section v-if="groupsFiltered.length">
+        <q-card-section v-if="dataGroups.length">
           <PermGroupDetail
-            v-for="group in groupsFiltered"
+            v-for="group in dataGroups"
             :key="group.name"
             :perm-group="group"
+            :disable="isDisabled(group)"
             @add="addGroupToUser(group, closeDialog)"
           />
         </q-card-section>
@@ -163,11 +161,6 @@ export default defineComponent({
       return userCopy.permission_groups.sort((a: PermissionGroup, b: PermissionGroup) => ((a.name > b.name) ? 1 : -1));
     });
 
-    const groupsFiltered = computed(() => dataGroups.value.filter((group) => {
-      const exists = props.userDetail.permission_groups.find((v) => v.name === group.name);
-      return !exists ? group : null;
-    }));
-
     function selectGroup(v: PermissionGroup) {
       selectedGroup.value = v;
       dialog.value = true;
@@ -192,6 +185,10 @@ export default defineComponent({
       closeDialog();
     }
 
+    function isDisabled(group: PermissionGroup) {
+      return props.userDetail.scopes.includes(group.name);
+    }
+
     return {
       dialog,
       existingGroupsSorted,
@@ -201,7 +198,7 @@ export default defineComponent({
       dataGroups,
       showAvailableGroups,
       addGroupToUser,
-      groupsFiltered,
+      isDisabled,
     };
   },
 });
