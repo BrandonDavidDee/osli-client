@@ -18,7 +18,12 @@
       square
       bordered
     >
-      <tbody>
+      <LoadingTableBody
+        :loading="loading"
+        :rows="10"
+        :columns="3"
+      />
+      <tbody v-if="!loading">
         <tr
           v-for="user in data"
           :key="user.id"
@@ -58,16 +63,21 @@
 import { defineComponent, onMounted, ref } from 'vue';
 import { userList } from 'src/api/users';
 import { User } from 'src/models/user';
+import LoadingTableBody from 'src/components/LoadingTableBody.vue';
 
 export default defineComponent({
+  components: { LoadingTableBody },
   setup() {
     const data = ref<User[]>([]);
+    const loading = ref(false);
 
     async function fetchData() {
+      loading.value = true;
       const res = await userList();
       if (res && res.data) {
         data.value = res.data;
       }
+      loading.value = false;
     }
 
     function activeLabel(v: boolean) {
@@ -78,6 +88,7 @@ export default defineComponent({
     return {
       data,
       activeLabel,
+      loading,
     };
   },
 });

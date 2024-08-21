@@ -30,6 +30,7 @@
                 icon="add"
                 size="sm"
                 flat
+                :disable="loading"
                 @click="newLink"
               />
             </th>
@@ -50,7 +51,12 @@
             <th />
           </tr>
         </thead>
-        <tbody>
+        <LoadingTableBody
+          :loading="loading"
+          :rows="10"
+          :columns="5"
+        />
+        <tbody v-if="!loading">
           <tr v-if="!data?.links.length">
             <td
               colspan="4"
@@ -207,10 +213,11 @@ import { useAuthStore } from 'src/stores/auth';
 import { copyLink, openLink, numeralizeId } from 'src/services/utils';
 import { positiveNotification } from 'src/services/notify';
 import DialogMaster from 'src/components/DialogMaster.vue';
+import LoadingTableBody from 'src/components/LoadingTableBody.vue';
 import ManageLink from './ManageLink.vue';
 
 export default defineComponent({
-  components: { DialogMaster, ManageLink },
+  components: { DialogMaster, ManageLink, LoadingTableBody },
   props: {
     galleryId: {
       type: String,
@@ -224,16 +231,19 @@ export default defineComponent({
     const data = ref<Gallery>();
     const dialog = ref(false);
     const dialogDelete = ref(false);
+    const loading = ref(false);
     const selected = ref<GalleryLink>();
 
     const user = computed(() => store.user);
     const userId = computed(() => (store.userId !== null ? parseInt(store.userId, 10) : null));
 
     async function fetchData() {
+      loading.value = true;
       const res = await galleryLinks(galleryIdAsNumber);
       if (res && res.data) {
         data.value = res.data;
       }
+      loading.value = false;
     }
 
     function selectLink(v: GalleryLink) {
@@ -334,6 +344,7 @@ export default defineComponent({
       doLinkDelete,
       getDateTimeDisplay,
       isDisabled,
+      loading,
       onUpdatedLink,
       selectLink,
       selected,

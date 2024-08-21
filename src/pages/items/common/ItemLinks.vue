@@ -30,6 +30,7 @@
                 icon="add"
                 size="sm"
                 flat
+                :disable="loading"
                 @click="addNewItemLink"
               />
             </th>
@@ -50,7 +51,12 @@
             <th />
           </tr>
         </thead>
-        <tbody>
+        <LoadingTableBody
+          :loading="loading"
+          :rows="10"
+          :columns="5"
+        />
+        <tbody v-if="!loading">
           <tr v-if="!data?.links.length">
             <td
               colspan="4"
@@ -216,10 +222,11 @@ import { useAuthStore } from 'src/stores/auth';
 import { copyLink, openLink, numeralizeId } from 'src/services/utils';
 import { positiveNotification } from 'src/services/notify';
 import DialogMaster from 'src/components/DialogMaster.vue';
+import LoadingTableBody from 'src/components/LoadingTableBody.vue';
 import ManageLink from './ManageLink.vue';
 
 export default defineComponent({
-  components: { DialogMaster, ManageLink },
+  components: { DialogMaster, ManageLink, LoadingTableBody },
   props: {
     sourceId: {
       type: String,
@@ -239,12 +246,11 @@ export default defineComponent({
     // TODO: get this on path in api ?
     // const sourceId = numeralizeId(props.sourceId);
     const itemId = numeralizeId(props.itemId);
-
     const store = useAuthStore();
-
     const data = ref<ItemBucket | ItemVimeo>();
     const dialog = ref(false);
     const dialogDelete = ref(false);
+    const loading = ref(false);
     const selected = ref<ItemLink>();
 
     const user = computed(() => store.user);
@@ -254,7 +260,6 @@ export default defineComponent({
       return (item as ItemBucket).file_path !== undefined;
     }
 
-    // Type guard function for ItemVimeo
     function isItemVimeo(item: ItemBucket | ItemVimeo): item is ItemVimeo {
       return (item as ItemVimeo).video_id !== undefined;
     }
@@ -284,10 +289,12 @@ export default defineComponent({
     }
 
     async function fetchData() {
+      loading.value = true;
       const res = await itemLinks();
       if (res && res.data) {
         data.value = res.data;
       }
+      loading.value = false;
     }
 
     function selectLink(v: ItemLink) {
@@ -418,6 +425,7 @@ export default defineComponent({
       doLinkDelete,
       getDateTimeDisplay,
       isDisabled,
+      loading,
       selectLink,
       selected,
       onSubmit,

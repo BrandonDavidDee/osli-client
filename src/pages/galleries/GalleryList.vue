@@ -31,6 +31,7 @@
                 :label="myGalleries ? 'My Galleries' : 'All Galleries'"
                 size="sm"
                 flat
+                :disable="loading"
                 @click="myGalleries = !myGalleries"
               />
             </th>
@@ -41,6 +42,7 @@
                 icon="add"
                 size="sm"
                 flat
+                :disable="loading"
                 @click="addNew"
               />
             </th>
@@ -57,8 +59,13 @@
             </th>
           </tr>
         </thead>
-        <tbody>
-          <tr v-if="!data">
+        <LoadingTableBody
+          :loading="loading"
+          :rows="10"
+          :columns="3"
+        />
+        <tbody v-if="!loading">
+          <tr v-if="!data.length">
             <td
               class="text-caption text-grey-8"
               colspan="3"
@@ -135,8 +142,9 @@ import { Gallery } from 'src/models/gallery';
 import { positiveNotification } from 'src/services/notify';
 import { galleryCreate, galleryList } from 'src/api/galleries';
 import { getDateTimeDisplay } from 'src/services/date-master';
-import DialogMaster from 'src/components/DialogMaster.vue';
 import { useAuthStore } from 'src/stores/auth';
+import DialogMaster from 'src/components/DialogMaster.vue';
+import LoadingTableBody from 'src/components/LoadingTableBody.vue';
 
 const model = {
   id: 0,
@@ -145,10 +153,10 @@ const model = {
 };
 
 export default defineComponent({
-  components: { DialogMaster },
+  components: { DialogMaster, LoadingTableBody },
   setup() {
     const store = useAuthStore();
-    const data = ref<Gallery[]>();
+    const data = ref<Gallery[]>([]);
     const dialog = ref(false);
     const loading = ref(false);
     const myGalleries = ref(false);
@@ -162,10 +170,12 @@ export default defineComponent({
     });
 
     async function fetchData() {
+      loading.value = true;
       const res = await galleryList();
       if (res && res.data) {
         data.value = res.data;
       }
+      loading.value = false;
     }
 
     function addNew() {
