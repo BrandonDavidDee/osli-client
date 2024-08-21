@@ -3,7 +3,7 @@ import errorHandler from './error-handler';
 
 const path = `${process.env.API}/api/authentication`;
 
-export async function getPermissions() {
+export async function getIndividualPermissions() {
   try {
     return await api.get(`${path}/permissions`);
   } catch (err) {

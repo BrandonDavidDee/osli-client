@@ -13,38 +13,21 @@
         Users: {{ data.username }}
       </q-toolbar-title>
     </q-toolbar>
-    <div class="q-ma-md">
-      <q-card
-        flat
-        square
-        bordered
-      >
-        <q-card-section class="text-subtitle2">
-          <q-badge
-            v-if="data.is_admin"
-            color="grey-9"
-            class="q-mr-sm"
-          >
-            Admin
-          </q-badge>{{ data.username }}
-        </q-card-section>
-        <q-card-section class="row">
-          <div class="col">
-            <PermissionGroups
-              class="q-ma-sm"
-              :user-detail="data"
-              @new-group="onNewGroup"
-              @remove-group="onRemoveGroup"
-            />
-          </div>
-          <div class="col">
-            <MiscPermissions
-              class="q-ma-sm"
-              :user-detail="data"
-            />
-          </div>
-        </q-card-section>
-      </q-card>
+    <div class="row">
+      <div class="col q-pa-md">
+        {{ data.username }}
+      </div>
+      <div class="col q-pa-md">
+        <PermissionGroups
+          :user-detail="data"
+          @new-group="onNewGroup"
+          @remove-group="onRemoveGroup"
+        />
+        <MiscPermissions
+          class="q-mt-md"
+          :user-detail="data"
+        />
+      </div>
     </div>
   </div>
   <ErrorNotAuthorized
