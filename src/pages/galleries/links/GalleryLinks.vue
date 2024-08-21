@@ -140,7 +140,7 @@
             />
             <ManageLink
               v-if="selected.id > 0"
-              :gallery-id="galleryId"
+              :gallery-id="galleryIdAsNumber"
               :gallery-link="selected"
               :user-id="userId"
               @updated="onUpdatedLink($event, closeDialog)"
@@ -204,7 +204,7 @@ import {
 import { Gallery, GalleryLink } from 'src/models/gallery';
 import { getDateTimeDisplay } from 'src/services/date-master';
 import { useAuthStore } from 'src/stores/auth';
-import { copyLink, openLink } from 'src/services/utils';
+import { copyLink, openLink, numeralizeId } from 'src/services/utils';
 import { positiveNotification } from 'src/services/notify';
 import DialogMaster from 'src/components/DialogMaster.vue';
 import ManageLink from './ManageLink.vue';
@@ -213,11 +213,12 @@ export default defineComponent({
   components: { DialogMaster, ManageLink },
   props: {
     galleryId: {
-      type: [Number, String],
+      type: String,
       required: true,
     },
   },
   setup(props) {
+    const galleryIdAsNumber = numeralizeId(props.galleryId);
     const store = useAuthStore();
 
     const data = ref<Gallery>();
@@ -229,7 +230,7 @@ export default defineComponent({
     const userId = computed(() => (store.userId !== null ? parseInt(store.userId, 10) : null));
 
     async function fetchData() {
-      const res = await galleryLinks(props.galleryId);
+      const res = await galleryLinks(galleryIdAsNumber);
       if (res && res.data) {
         data.value = res.data;
       }
@@ -242,7 +243,7 @@ export default defineComponent({
 
     async function createNew() {
       if (selected.value) {
-        const res = await galleryLinkCreate(props.galleryId, selected.value);
+        const res = await galleryLinkCreate(galleryIdAsNumber, selected.value);
         if (res && res.status === 200) {
           positiveNotification('Created!');
           const insertedLink = res.data;
@@ -254,7 +255,7 @@ export default defineComponent({
 
     async function updateExisting() {
       if (selected.value) {
-        const res = await galleryLinkUpdate(props.galleryId, selected.value, false);
+        const res = await galleryLinkUpdate(galleryIdAsNumber, selected.value, false);
         if (res && res.status === 200) {
           positiveNotification('Updated!');
         }
@@ -300,7 +301,7 @@ export default defineComponent({
 
     async function doLinkDelete(closeDialog: () => void) {
       if (selected.value) {
-        const res = await galleryLinkDelete(props.galleryId, selected.value.id);
+        const res = await galleryLinkDelete(galleryIdAsNumber, selected.value.id);
         if (res && res.status === 200) {
           positiveNotification('Deleted!');
           fetchData();
@@ -341,6 +342,7 @@ export default defineComponent({
       openLink,
       newLink,
       userId,
+      galleryIdAsNumber,
     };
   },
 });

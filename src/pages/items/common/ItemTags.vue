@@ -94,7 +94,7 @@ export default defineComponent({
   components: { DialogMaster },
   props: {
     sourceId: {
-      type: [Number, String],
+      type: Number,
       required: true,
     },
     item: {

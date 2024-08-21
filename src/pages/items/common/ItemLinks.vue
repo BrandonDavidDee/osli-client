@@ -213,7 +213,7 @@ import { ItemVimeo } from 'src/models/item-vimeo';
 import { ItemBucket } from 'src/models/item-bucket';
 import { getDateTimeDisplay } from 'src/services/date-master';
 import { useAuthStore } from 'src/stores/auth';
-import { copyLink, openLink } from 'src/services/utils';
+import { copyLink, openLink, numeralizeId } from 'src/services/utils';
 import { positiveNotification } from 'src/services/notify';
 import DialogMaster from 'src/components/DialogMaster.vue';
 import ManageLink from './ManageLink.vue';
@@ -222,11 +222,11 @@ export default defineComponent({
   components: { DialogMaster, ManageLink },
   props: {
     sourceId: {
-      type: [Number, String],
+      type: String,
       required: true,
     },
     itemId: {
-      type: [Number, String],
+      type: String,
       required: true,
     },
     sourceType: {
@@ -236,6 +236,10 @@ export default defineComponent({
     },
   },
   setup(props) {
+    // TODO: get this on path in api ?
+    // const sourceId = numeralizeId(props.sourceId);
+    const itemId = numeralizeId(props.itemId);
+
     const store = useAuthStore();
 
     const data = ref<ItemBucket | ItemVimeo>();
@@ -269,7 +273,7 @@ export default defineComponent({
       return '';
     });
 
-    async function itemLinks(itemId: number | string) {
+    async function itemLinks() {
       if (props.sourceType === 'bucket') {
         return itemLinksBucket(itemId);
       }
@@ -280,7 +284,7 @@ export default defineComponent({
     }
 
     async function fetchData() {
-      const res = await itemLinks(props.itemId);
+      const res = await itemLinks();
       if (res && res.data) {
         data.value = res.data;
       }
@@ -309,7 +313,7 @@ export default defineComponent({
       dialog.value = true;
     }
 
-    async function itemLinkCreate(itemId: number | string, selectedItemLink: ItemLink) {
+    async function itemLinkCreate(selectedItemLink: ItemLink) {
       if (props.sourceType === 'bucket') {
         return itemLinkCreateBucket(itemId, selectedItemLink);
       }
@@ -321,7 +325,7 @@ export default defineComponent({
 
     async function createNew() {
       if (selected.value) {
-        const res = await itemLinkCreate(props.itemId, selected.value);
+        const res = await itemLinkCreate(selected.value);
         if (res && res.status === 200) {
           positiveNotification('Created!');
           const insertedLink = res.data;
@@ -330,7 +334,7 @@ export default defineComponent({
         }
       }
     }
-    async function itemLinkUpdate(itemId: number | string, selectedItemLink: ItemLink) {
+    async function itemLinkUpdate(selectedItemLink: ItemLink) {
       if (props.sourceType === 'bucket') {
         return itemLinkUpdateBucket(itemId, selectedItemLink);
       }
@@ -342,7 +346,7 @@ export default defineComponent({
 
     async function updateExisting() {
       if (selected.value) {
-        const res = await itemLinkUpdate(props.itemId, selected.value);
+        const res = await itemLinkUpdate(selected.value);
         if (res && res.status === 200) {
           positiveNotification('Updated!');
         }
@@ -368,7 +372,7 @@ export default defineComponent({
       return v.created_by.id !== userId.value;
     }
 
-    async function itemLinkDelete(itemId: number | string, itemLinkId: number) {
+    async function itemLinkDelete(itemLinkId: number) {
       if (props.sourceType === 'bucket') {
         return itemLinkDeleteBucket(itemId, itemLinkId);
       }
@@ -380,7 +384,7 @@ export default defineComponent({
 
     async function doLinkDelete(closeDialog: () => void) {
       if (selected.value) {
-        const res = await itemLinkDelete(props.itemId, selected.value.id);
+        const res = await itemLinkDelete(selected.value.id);
         if (res && res.status === 200) {
           positiveNotification('Deleted!');
           fetchData();

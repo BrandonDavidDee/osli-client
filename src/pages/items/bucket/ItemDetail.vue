@@ -32,7 +32,7 @@
             :to="{ name: 'item-links-bucket', params: { sourceId, itemId}}"
           />
           <ItemSave
-            :item-id="itemId"
+            :item-id="itemIdAsNumber"
             :saved="data.saved"
             @update="onSaveUpdate"
           />
@@ -81,7 +81,7 @@
         @update:model-value="debouncedItemUpdate"
       />
       <ItemTags
-        :source-id="sourceId"
+        :source-id="sourceIdAsNumber"
         :item="data"
         source-type="bucket"
         class="q-mt-md"
@@ -90,7 +90,7 @@
       />
       <div class="q-mt-md">
         <ItemDelete
-          :source-id="sourceId"
+          :source-id="sourceIdAsNumber"
           :item="data"
         />
       </div>
@@ -112,7 +112,7 @@ import { itemDetail, itemUpdate } from 'src/api/item-bucket';
 import { debounce } from 'quasar';
 import { ItemTag } from 'src/models/item';
 import { ItemBucket } from 'src/models/item-bucket';
-import { calculateSize } from 'src/services/utils';
+import { calculateSize, numeralizeId } from 'src/services/utils';
 import LineItem from 'src/components/LineItem.vue';
 import ItemTags from 'src/pages/items/common/ItemTags.vue';
 import ErrorNotAuthorized from 'src/pages/ErrorNotAuthorized.vue';
@@ -127,15 +127,18 @@ export default defineComponent({
   },
   props: {
     sourceId: {
-      type: [Number, String],
+      type: String,
       required: true,
     },
     itemId: {
-      type: [Number, String],
+      type: String,
       required: true,
     },
   },
   setup(props) {
+    const sourceIdAsNumber = numeralizeId(props.sourceId);
+    const itemIdAsNumber = numeralizeId(props.itemId);
+
     const authorized = ref(true);
     const notFound = ref(false);
     const data = ref<ItemBucket>();
@@ -143,7 +146,7 @@ export default defineComponent({
 
     async function fetchData() {
       loading.value = true;
-      const res = await itemDetail(props.sourceId, props.itemId);
+      const res = await itemDetail(sourceIdAsNumber, itemIdAsNumber);
       if (res && res.data && res.status === 200) {
         notFound.value = false;
         authorized.value = true;
@@ -161,7 +164,7 @@ export default defineComponent({
     const debouncedItemUpdate = debounce(async () => {
       if (data.value) {
         loading.value = true;
-        await itemUpdate(props.sourceId, props.itemId, data.value);
+        await itemUpdate(sourceIdAsNumber, itemIdAsNumber, data.value);
         loading.value = false;
       }
     }, 500);
@@ -197,6 +200,8 @@ export default defineComponent({
       onDeletedTagItem,
       onSaveUpdate,
       notFound,
+      itemIdAsNumber,
+      sourceIdAsNumber,
     };
   },
 });

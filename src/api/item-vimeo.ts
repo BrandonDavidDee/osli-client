@@ -9,7 +9,7 @@ interface NewItem {
   video_id: string;
 }
 
-export async function itemCreate(sourceId: number | string, videoId: string, encryptionKey: string) {
+export async function itemCreate(sourceId: number, videoId: string, encryptionKey: string) {
   try {
     const payload: NewItem = { video_id: videoId };
     return await api.post(`${path}?source_id=${sourceId}&encryption_key=${encryptionKey}`, payload);
@@ -18,7 +18,7 @@ export async function itemCreate(sourceId: number | string, videoId: string, enc
   }
 }
 
-export async function itemList(sourceId: number | string, payload: SearchPayload) {
+export async function itemList(sourceId: number, payload: SearchPayload) {
   try {
     return await api.post(`${path}/search?source_id=${sourceId}`, payload);
   } catch (err) {
@@ -26,7 +26,7 @@ export async function itemList(sourceId: number | string, payload: SearchPayload
   }
 }
 
-export async function itemDetail(sourceId: number | string, itemId: number | string) {
+export async function itemDetail(sourceId: number, itemId: number) {
   try {
     return await api.get(`${path}/${itemId}?source_id=${sourceId}`);
   } catch (err) {
@@ -34,7 +34,7 @@ export async function itemDetail(sourceId: number | string, itemId: number | str
   }
 }
 
-export async function itemUpdate(sourceId: number | string, itemId: number | string, payload: ItemVimeo) {
+export async function itemUpdate(sourceId: number, itemId: number, payload: ItemVimeo) {
   try {
     return await api.put(`${path}/${itemId}?source_id=${sourceId}`, payload);
   } catch (err) {
@@ -42,7 +42,7 @@ export async function itemUpdate(sourceId: number | string, itemId: number | str
   }
 }
 
-export async function itemUpdateVimeoMeta(sourceId: number | string, itemId: number | string, payload: ItemVimeo, encryptionKey: string) {
+export async function itemUpdateVimeoMeta(sourceId: number, itemId: number, payload: ItemVimeo, encryptionKey: string) {
   try {
     return await api.put(`${path}/${itemId}/vimeo-meta?source_id=${sourceId}&encryption_key=${encryptionKey}`, payload);
   } catch (err) {
@@ -50,7 +50,7 @@ export async function itemUpdateVimeoMeta(sourceId: number | string, itemId: num
   }
 }
 
-export async function itemTagCreate(sourceId: number | string, itemId: number | string, payload: ItemTag) {
+export async function itemTagCreate(sourceId: number, itemId: number, payload: ItemTag) {
   try {
     return await api.post(`${path}/${itemId}/tags?source_id=${sourceId}`, payload);
   } catch (err) {
@@ -58,7 +58,7 @@ export async function itemTagCreate(sourceId: number | string, itemId: number | 
   }
 }
 
-export async function itemTagDelete(sourceId: number | string, itemId: number | string, tagItemBucketId: number) {
+export async function itemTagDelete(sourceId: number, itemId: number, tagItemBucketId: number) {
   try {
     return await api.delete(`${path}/${itemId}/tags/${tagItemBucketId}?source_id=${sourceId}`);
   } catch (err) {
@@ -66,7 +66,7 @@ export async function itemTagDelete(sourceId: number | string, itemId: number | 
   }
 }
 
-export async function itemLinkCreate(itemId: number | string, payload: ItemLink) {
+export async function itemLinkCreate(itemId: number, payload: ItemLink) {
   try {
     return await api.post(`${path}/${itemId}/links`, payload);
   } catch (err) {
@@ -74,7 +74,7 @@ export async function itemLinkCreate(itemId: number | string, payload: ItemLink)
   }
 }
 
-export async function itemLinks(itemId: number | string) {
+export async function itemLinks(itemId: number) {
   try {
     return await api.get(`${path}/${itemId}/links`);
   } catch (err) {
@@ -82,7 +82,7 @@ export async function itemLinks(itemId: number | string) {
   }
 }
 
-export async function itemLinkUpdate(itemId: number | string, payload: ItemLink) {
+export async function itemLinkUpdate(itemId: number, payload: ItemLink) {
   try {
     return await api.put(`${path}/${itemId}/links/${payload.id}`, payload);
   } catch (err) {
@@ -90,7 +90,7 @@ export async function itemLinkUpdate(itemId: number | string, payload: ItemLink)
   }
 }
 
-export async function itemLinkDelete(itemId: number | string, itemLinkId: number) {
+export async function itemLinkDelete(itemId: number, itemLinkId: number) {
   try {
     return await api.delete(`${path}/${itemId}/links/${itemLinkId}`);
   } catch (err) {
@@ -98,7 +98,7 @@ export async function itemLinkDelete(itemId: number | string, itemLinkId: number
   }
 }
 
-export async function saveItem(itemId: number | string) {
+export async function saveItem(itemId: number) {
   try {
     return await api.post(`${path}/${itemId}/save`);
   } catch (err) {
@@ -106,7 +106,7 @@ export async function saveItem(itemId: number | string) {
   }
 }
 
-export async function deleteSavedItem(itemId: number | string) {
+export async function deleteSavedItem(itemId: number) {
   try {
     return await api.delete(`${path}/${itemId}/save`);
   } catch (err) {

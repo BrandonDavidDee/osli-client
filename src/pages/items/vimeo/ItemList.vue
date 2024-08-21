@@ -194,6 +194,7 @@ import { itemList, itemCreate } from 'src/api/item-vimeo';
 import { SourceVimeo } from 'src/models/source-vimeo';
 import { SearchPayload } from 'src/models/item';
 import { ItemVimeo } from 'src/models/item-vimeo';
+import { numeralizeId } from 'src/services/utils';
 import { useSearchStore } from 'stores/search';
 import { useKeyStore } from 'src/stores/keys';
 import TagSelector from 'src/pages/sources/TagSelector.vue';
@@ -218,6 +219,8 @@ export default defineComponent({
   },
   emits: ['selected'],
   setup(props, { emit }) {
+    const sourceIdAsNumber = numeralizeId(props.sourceId);
+
     const store = useSearchStore();
     const keyStore = useKeyStore();
 
@@ -250,7 +253,7 @@ export default defineComponent({
         filter: filter.value,
         tag_ids: selectedTagIds.value,
       };
-      const res = await itemList(props.sourceId, payload);
+      const res = await itemList(sourceIdAsNumber, payload);
       if (res && res.data && res.status === 200) {
         authorized.value = true;
         sourceData.value = res.data.source;
@@ -267,7 +270,7 @@ export default defineComponent({
       dialog.value = true;
       // dialogEncryptKey.value = false;
       closeDialog();
-      keyStore.addKey(props.sourceId, 'vimeo', encryptionKey.value);
+      keyStore.addKey(sourceIdAsNumber, 'vimeo', encryptionKey.value);
     }
 
     function resetSearchParams() {
@@ -278,13 +281,13 @@ export default defineComponent({
 
     async function createNewItem(closeDialog: () => void) {
       loading.value = true;
-      const res = await itemCreate(props.sourceId, newVimeoId.value, encryptionKey.value);
+      const res = await itemCreate(sourceIdAsNumber, newVimeoId.value, encryptionKey.value);
       if (res && res.status === 200) {
         resetSearchParams();
         fetchItemsData();
       } else {
         encryptionKey.value = null;
-        keyStore.removeKey(props.sourceId, 'vimeo');
+        keyStore.removeKey(sourceIdAsNumber, 'vimeo');
       }
       newVimeoId.value = '';
       closeDialog();
@@ -292,7 +295,7 @@ export default defineComponent({
     }
 
     function showNewVideoDialog() {
-      const keyInStore = keyStore.getKey(props.sourceId, 'vimeo');
+      const keyInStore = keyStore.getKey(sourceIdAsNumber, 'vimeo');
       if (!keyInStore) {
         dialogEncryptKey.value = true;
       } else {
@@ -328,7 +331,7 @@ export default defineComponent({
           filterLocal.value = filter.value;
         }
       }
-      const keyInStore = keyStore.getKey(props.sourceId, 'vimeo');
+      const keyInStore = keyStore.getKey(sourceIdAsNumber, 'vimeo');
       if (keyInStore) {
         encryptionKey.value = keyInStore;
       }

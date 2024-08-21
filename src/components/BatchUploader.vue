@@ -34,7 +34,7 @@ export default defineComponent({
       required: true,
     },
     sourceId: {
-      type: [Number, String],
+      type: Number,
       required: true,
     },
   },

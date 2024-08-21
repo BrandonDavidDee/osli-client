@@ -36,7 +36,7 @@
             :to="{ name: 'item-links-vimeo', params: { sourceId, itemId}}"
           />
           <ItemSave
-            :item-id="itemId"
+            :item-id="itemIdAsNumber"
             :saved="data.saved"
             @update="onSaveUpdate"
           />
@@ -71,7 +71,7 @@
         </q-card-section>
         <q-card-actions align="right">
           <MetaDataRefresh
-            :source-id="sourceId"
+            :source-id="sourceIdAsNumber"
             :item="data"
             @update="onUpdateMeta"
           />
@@ -98,7 +98,7 @@
         @update:model-value="debouncedItemUpdate"
       />
       <ItemTags
-        :source-id="sourceId"
+        :source-id="sourceIdAsNumber"
         :item="data"
         source-type="vimeo"
         class="q-mt-md"
@@ -107,7 +107,7 @@
       />
       <div class="text-right q-mt-md">
         <ItemDelete
-          :source-id="sourceId"
+          :source-id="sourceIdAsNumber"
           :item="data"
         />
       </div>
@@ -127,6 +127,7 @@ import {
 } from 'vue';
 import { itemDetail, itemUpdate } from 'src/api/item-vimeo';
 import { debounce } from 'quasar';
+import { numeralizeId } from 'src/services/utils';
 import { ItemTag } from 'src/models/item';
 import { ItemVimeo } from 'src/models/item-vimeo';
 import LineItem from 'src/components/LineItem.vue';
@@ -144,15 +145,18 @@ export default defineComponent({
   },
   props: {
     sourceId: {
-      type: [Number, String],
+      type: String,
       required: true,
     },
     itemId: {
-      type: [Number, String],
+      type: String,
       required: true,
     },
   },
   setup(props) {
+    const sourceIdAsNumber = numeralizeId(props.sourceId);
+    const itemIdAsNumber = numeralizeId(props.itemId);
+
     const authorized = ref(true);
     const notFound = ref(false);
     const data = ref<ItemVimeo>();
@@ -160,7 +164,7 @@ export default defineComponent({
 
     async function fetchData() {
       loading.value = true;
-      const res = await itemDetail(props.sourceId, props.itemId);
+      const res = await itemDetail(sourceIdAsNumber, itemIdAsNumber);
       if (res && res.data && res.status === 200) {
         notFound.value = false;
         authorized.value = true;
@@ -178,7 +182,7 @@ export default defineComponent({
     const debouncedItemUpdate = debounce(async () => {
       if (data.value) {
         loading.value = true;
-        await itemUpdate(props.sourceId, props.itemId, data.value);
+        await itemUpdate(sourceIdAsNumber, itemIdAsNumber, data.value);
         loading.value = false;
       }
     }, 500);
@@ -218,6 +222,8 @@ export default defineComponent({
       onSaveUpdate,
       notFound,
       onUpdateMeta,
+      itemIdAsNumber,
+      sourceIdAsNumber,
     };
   },
 });

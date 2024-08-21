@@ -88,7 +88,7 @@ export default defineComponent({
   components: { DialogMaster },
   props: {
     galleryId: {
-      type: [Number, String],
+      type: Number,
       required: true,
     },
     galleryLink: {

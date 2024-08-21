@@ -1,6 +1,10 @@
 import { copyToClipboard, openURL } from 'quasar';
 import { positiveNotification, negativeNotification } from 'src/services/notify';
 
+export function numeralizeId(value: string | number): number {
+  return Number(value);
+}
+
 export function getAspectRatio(width: number, height: number): number | undefined {
   if (width <= 0 || height <= 0) {
     // handle situations where the dimensions are null

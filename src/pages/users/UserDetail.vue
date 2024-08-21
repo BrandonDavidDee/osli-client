@@ -41,6 +41,7 @@
 import { defineComponent, watch, ref } from 'vue';
 import { userDetail, userScopeUpdate } from 'src/api/users';
 import { User } from 'src/models/user';
+import { numeralizeId } from 'src/services/utils';
 import ErrorNotAuthorized from 'src/pages/ErrorNotAuthorized.vue';
 import PermissionGroups from 'src/pages/users/permissions/PermissionGroups.vue';
 import MiscPermissions from 'src/pages/users/permissions/MiscPermissions.vue';
@@ -49,16 +50,17 @@ export default defineComponent({
   components: { ErrorNotAuthorized, PermissionGroups, MiscPermissions },
   props: {
     userId: {
-      type: [Number, String],
+      type: String,
       required: true,
     },
   },
   setup(props) {
+    const userId = numeralizeId(props.userId);
     const authorized = ref(true);
     const data = ref<User | null>(null);
 
     async function fetchData() {
-      const res = await userDetail(props.userId);
+      const res = await userDetail(userId);
       if (res && res.data && res.status === 200) {
         authorized.value = true;
         data.value = res.data;
@@ -70,7 +72,7 @@ export default defineComponent({
     async function onNewGroup(groupName: string) {
       if (data.value) {
         data.value.scopes.push(groupName);
-        const res = await userScopeUpdate(props.userId, data.value);
+        const res = await userScopeUpdate(userId, data.value);
         if (res && res.data) {
           data.value = res.data;
         }
@@ -83,7 +85,7 @@ export default defineComponent({
         if (idx !== -1) {
           data.value.scopes.splice(idx, 1);
         }
-        const res = await userScopeUpdate(props.userId, data.value);
+        const res = await userScopeUpdate(userId, data.value);
         if (res && res.data && res.status === 200) {
           data.value = res.data;
         }

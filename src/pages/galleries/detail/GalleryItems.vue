@@ -107,7 +107,7 @@ export default defineComponent({
   components: { AddItemMenu, DialogMaster },
   props: {
     galleryId: {
-      type: [Number, String],
+      type: Number,
       required: true,
     },
     gallery: {

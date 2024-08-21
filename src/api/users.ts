@@ -12,7 +12,7 @@ export async function userList() {
   }
 }
 
-export async function userDetail(userId: number | string) {
+export async function userDetail(userId: number) {
   try {
     return await api.get(`${path}/${userId}`);
   } catch (err) {
@@ -20,7 +20,7 @@ export async function userDetail(userId: number | string) {
   }
 }
 
-export async function userScopeUpdate(userId: number | string, payload: User) {
+export async function userScopeUpdate(userId: number, payload: User) {
   try {
     return await api.put(`${path}/${userId}/scopes`, payload);
   } catch (err) {

@@ -177,6 +177,7 @@ import { itemList } from 'src/api/item-bucket';
 import { ItemBucket } from 'src/models/item-bucket';
 import { SourceBucket } from 'src/models/source-bucket';
 import { SearchPayload } from 'src/models/item';
+import { numeralizeId } from 'src/services/utils';
 import { useKeyStore } from 'src/stores/keys';
 import { useSearchStore } from 'stores/search';
 import BatchUploader from 'src/components/BatchUploader.vue';
@@ -202,6 +203,8 @@ export default defineComponent({
   },
   emits: ['selected'],
   setup(props, { emit }) {
+    const sourceIdAsNumber = numeralizeId(props.sourceId);
+
     const keyStore = useKeyStore();
     const store = useSearchStore();
 
@@ -233,7 +236,7 @@ export default defineComponent({
         filter: filter.value,
         tag_ids: selectedTagIds.value,
       };
-      const res = await itemList(props.sourceId, payload);
+      const res = await itemList(sourceIdAsNumber, payload);
       if (res && res.data && res.status === 200) {
         authorized.value = true;
         sourceData.value = res.data.source;
@@ -249,7 +252,7 @@ export default defineComponent({
     function addEncryptionKey(closeDialog: () => void) {
       dialog.value = true;
       closeDialog();
-      keyStore.addKey(props.sourceId, 'bucket', encryptionKey.value);
+      keyStore.addKey(sourceIdAsNumber, 'bucket', encryptionKey.value);
     }
 
     function resetSearchParams() {
@@ -265,7 +268,7 @@ export default defineComponent({
     }
 
     function showUploader() {
-      const keyInStore = keyStore.getKey(props.sourceId, 'bucket');
+      const keyInStore = keyStore.getKey(sourceIdAsNumber, 'bucket');
       if (!keyInStore) {
         dialogEncryptKey.value = true;
       } else {
@@ -276,7 +279,7 @@ export default defineComponent({
     function onUploadError(closeDialog: () => void) {
       closeDialog();
       encryptionKey.value = null;
-      keyStore.removeKey(props.sourceId, 'bucket');
+      keyStore.removeKey(sourceIdAsNumber, 'bucket');
     }
 
     function onSelected(v: ItemBucket) {
@@ -307,7 +310,7 @@ export default defineComponent({
           filterLocal.value = filter.value;
         }
       }
-      const keyInStore = keyStore.getKey(props.sourceId, 'bucket');
+      const keyInStore = keyStore.getKey(sourceIdAsNumber, 'bucket');
       if (keyInStore) {
         encryptionKey.value = keyInStore;
       }

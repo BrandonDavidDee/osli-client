@@ -13,7 +13,7 @@ import { saveItem, deleteSavedItem } from 'src/api/item-vimeo';
 export default defineComponent({
   props: {
     itemId: {
-      type: [Number, String],
+      type: Number,
       required: true,
     },
     saved: {

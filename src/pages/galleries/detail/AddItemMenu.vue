@@ -102,7 +102,7 @@ export default defineComponent({
   components: { DialogMaster, ItemListBucket, ItemListVimeo },
   props: {
     galleryId: {
-      type: [Number, String],
+      type: Number,
       required: true,
     },
     itemCount: {

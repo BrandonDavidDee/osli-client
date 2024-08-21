@@ -15,24 +15,21 @@ export const useKeyStore = defineStore('keyStore', {
     keys: [],
   }),
   actions: {
-    addKey(sourceId: number | string, sourceType: string, encryptionKey: string) {
-      const needle = typeof sourceId === 'string' ? parseInt(sourceId, 10) : sourceId;
-      const found = this.keys.find((v: StoredKey) => v.sourceId === needle && v.sourceType === sourceType);
+    addKey(sourceId: number, sourceType: string, encryptionKey: string) {
+      const found = this.keys.find((v: StoredKey) => v.sourceId === sourceId && v.sourceType === sourceType);
       if (!found) {
-        this.keys.push({ sourceId: needle, sourceType, encryptionKey });
+        this.keys.push({ sourceId, sourceType, encryptionKey });
       }
     },
-    getKey(sourceId: number | string, sourceType: string) {
-      const needle = typeof sourceId === 'string' ? parseInt(sourceId, 10) : sourceId;
-      const found = this.keys.find((v: StoredKey) => v.sourceId === needle && v.sourceType === sourceType);
+    getKey(sourceId: number, sourceType: string) {
+      const found = this.keys.find((v: StoredKey) => v.sourceId === sourceId && v.sourceType === sourceType);
       if (found) {
         return found.encryptionKey;
       }
       return null;
     },
-    removeKey(sourceId: number | string, sourceType: string) {
-      const needle = typeof sourceId === 'string' ? parseInt(sourceId, 10) : sourceId;
-      const found = this.keys.find((v: StoredKey) => v.sourceId === needle && v.sourceType === sourceType);
+    removeKey(sourceId: number, sourceType: string) {
+      const found = this.keys.find((v: StoredKey) => v.sourceId === sourceId && v.sourceType === sourceType);
       if (found) {
         const idx = this.keys.indexOf(found);
         this.keys.splice(idx, 1);

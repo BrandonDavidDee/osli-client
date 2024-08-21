@@ -18,7 +18,7 @@ import { ItemVimeo } from 'src/models/item-vimeo';
 export default defineComponent({
   props: {
     sourceId: {
-      type: [Number, String],
+      type: Number,
       required: true,
     },
     item: {

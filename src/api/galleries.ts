@@ -20,7 +20,7 @@ export async function galleryList() {
   }
 }
 
-export async function galleryDetail(galleryId: number | string) {
+export async function galleryDetail(galleryId: number) {
   try {
     return await api.get(`${path}/${galleryId}`);
   } catch (err) {
@@ -28,7 +28,7 @@ export async function galleryDetail(galleryId: number | string) {
   }
 }
 
-export async function galleryUpdate(galleryId: number | string, payload: Gallery) {
+export async function galleryUpdate(galleryId: number, payload: Gallery) {
   try {
     return await api.put(`${path}/${galleryId}`, payload);
   } catch (err) {
@@ -36,7 +36,7 @@ export async function galleryUpdate(galleryId: number | string, payload: Gallery
   }
 }
 
-export async function galleryItemCreate(galleryId: number | string, payload: GalleryItem) {
+export async function galleryItemCreate(galleryId: number, payload: GalleryItem) {
   try {
     return await api.post(`${path}/${galleryId}/items`, payload);
   } catch (err) {
@@ -44,7 +44,7 @@ export async function galleryItemCreate(galleryId: number | string, payload: Gal
   }
 }
 
-export async function galleryItemDelete(galleryId: number | string, galleryItemId: number) {
+export async function galleryItemDelete(galleryId: number, galleryItemId: number) {
   try {
     return await api.delete(`${path}/${galleryId}/items/${galleryItemId}`);
   } catch (err) {
@@ -52,7 +52,7 @@ export async function galleryItemDelete(galleryId: number | string, galleryItemI
   }
 }
 
-export async function galleryLinkCreate(galleryId: number | string, payload: GalleryLink) {
+export async function galleryLinkCreate(galleryId: number, payload: GalleryLink) {
   try {
     return await api.post(`${path}/${galleryId}/links`, payload);
   } catch (err) {
@@ -60,7 +60,7 @@ export async function galleryLinkCreate(galleryId: number | string, payload: Gal
   }
 }
 
-export async function galleryLinks(galleryId: number | string) {
+export async function galleryLinks(galleryId: number) {
   try {
     return await api.get(`${path}/${galleryId}/links`);
   } catch (err) {
@@ -68,7 +68,7 @@ export async function galleryLinks(galleryId: number | string) {
   }
 }
 
-export async function galleryLinkUpdate(galleryId: number | string, payload: GalleryLink, linkOnly: boolean) {
+export async function galleryLinkUpdate(galleryId: number, payload: GalleryLink, linkOnly: boolean) {
   try {
     return await api.put(`${path}/${galleryId}/links/${payload.id}?link_only=${linkOnly}`, payload);
   } catch (err) {
@@ -76,7 +76,7 @@ export async function galleryLinkUpdate(galleryId: number | string, payload: Gal
   }
 }
 
-export async function galleryLinkDelete(galleryId: number | string, galleryLinkId: number) {
+export async function galleryLinkDelete(galleryId: number, galleryLinkId: number) {
   try {
     return await api.delete(`${path}/${galleryId}/links/${galleryLinkId}`);
   } catch (err) {

@@ -23,7 +23,7 @@
     <div class="row">
       <div class="col q-pa-md">
         <GalleryItems
-          :gallery-id="galleryId"
+          :gallery-id="galleryIdAsNumber"
           :gallery="data"
           @update="updateGallery"
           @new="onNewGalleryItem"
@@ -83,6 +83,7 @@ import {
   defineComponent, ref, watch, computed,
 } from 'vue';
 import { debounce } from 'quasar';
+import { numeralizeId } from 'src/services/utils';
 import { Gallery, GalleryItem } from 'src/models/gallery';
 import { galleryDetail, galleryUpdate } from 'src/api/galleries';
 import LineItem from 'src/components/LineItem.vue';
@@ -95,17 +96,18 @@ export default defineComponent({
   },
   props: {
     galleryId: {
-      type: [Number, String],
+      type: String,
       required: true,
     },
   },
   setup(props) {
+    const galleryIdAsNumber = numeralizeId(props.galleryId);
     const data = ref<Gallery>();
     const loading = ref(false);
 
     const itemsSorted = computed(() => data.value?.items.slice().sort((a, b) => a.item_order - b.item_order));
     async function fetchData() {
-      const res = await galleryDetail(props.galleryId);
+      const res = await galleryDetail(galleryIdAsNumber);
       if (res && res.data) {
         data.value = res.data;
       }
@@ -113,14 +115,14 @@ export default defineComponent({
 
     async function updateGallery() {
       if (data.value) {
-        await galleryUpdate(props.galleryId, data.value);
+        await galleryUpdate(galleryIdAsNumber, data.value);
       }
     }
 
     const debouncedGalleryUpdate = debounce(async () => {
       if (data.value) {
         loading.value = true;
-        await galleryUpdate(props.galleryId, data.value);
+        await galleryUpdate(galleryIdAsNumber, data.value);
         loading.value = false;
       }
     }, 500);
@@ -157,6 +159,7 @@ export default defineComponent({
       fetchData,
       onNewGalleryItem,
       onItemDelete,
+      galleryIdAsNumber,
     };
   },
 });
