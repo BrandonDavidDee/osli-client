@@ -1,13 +1,15 @@
 <template>
   <div>
     <AddItemMenu
+      :loading="loading"
       :gallery-id="galleryId"
       :item-count="gallery.items.length"
       :last-order-value="lastOrderValue"
       @new="onNewGalleryItem"
     />
+    <LoadingList v-if="loading" />
     <q-card
-      v-if="!gallery.items.length"
+      v-if="!loading && !gallery.items.length"
       flat
       bordered
       square
@@ -17,7 +19,7 @@
       </q-card-section>
     </q-card>
     <q-list
-      v-if="gallery.items.length"
+      v-if="!loading && gallery.items.length"
       bordered
     >
       <q-item
@@ -101,11 +103,16 @@ import { getDateTimeDisplay } from 'src/services/date-master';
 import { ItemBucket } from 'src/models/item-bucket';
 import { ItemVimeo } from 'src/models/item-vimeo';
 import DialogMaster from 'src/components/DialogMaster.vue';
+import LoadingList from 'src/components/LoadingList.vue';
 import AddItemMenu from './AddItemMenu.vue';
 
 export default defineComponent({
-  components: { AddItemMenu, DialogMaster },
+  components: { AddItemMenu, DialogMaster, LoadingList },
   props: {
+    loading: {
+      type: Boolean,
+      required: true,
+    },
     galleryId: {
       type: Number,
       required: true,
@@ -119,7 +126,6 @@ export default defineComponent({
   setup(props, { emit }) {
     const dialog = ref(false);
     const draggedIndex = ref<number | null>(null);
-    const loading = ref(false);
     const selectedItemId = ref<number | null>(null);
 
     const lastOrderValue = computed(() => {
@@ -227,7 +233,6 @@ export default defineComponent({
       onDrop,
       selectedItemId,
       deleteWarn,
-      loading,
       lastOrderValue,
       getDateTimeDisplay,
       makeRouteObject,

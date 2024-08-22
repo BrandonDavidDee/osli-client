@@ -1,13 +1,20 @@
 <template>
   <q-bar>
-    {{ barTitle }}
+    <q-skeleton
+      v-if="loading"
+      width="150px"
+      type="text"
+    />
+    <span v-if="!loading">
+      {{ barTitle }}
+    </span>
     <q-space />
     <q-btn-dropdown
       ref="dropDown"
       flat
       size="sm"
       icon="add"
-      :disable="noSources"
+      :disable="noSources || loading"
     >
       <q-list>
         <q-item
@@ -101,6 +108,10 @@ const newItem: GalleryItem = {
 export default defineComponent({
   components: { DialogMaster, ItemListBucket, ItemListVimeo },
   props: {
+    loading: {
+      type: Boolean,
+      required: true,
+    },
     galleryId: {
       type: Number,
       required: true,

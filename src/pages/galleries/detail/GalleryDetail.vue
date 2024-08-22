@@ -23,6 +23,7 @@
     <div class="row">
       <div class="col q-pa-md">
         <GalleryItems
+          :loading="loading"
           :gallery-id="galleryIdAsNumber"
           :gallery="data"
           @update="updateGallery"
@@ -34,6 +35,7 @@
         <div class="text-right">
           <q-btn
             label="Links"
+            :disable="loading"
             :to="{ name: 'gallery-links', params: { galleryId: galleryId}}"
           />
         </div>
@@ -107,10 +109,12 @@ export default defineComponent({
 
     const itemsSorted = computed(() => data.value?.items.slice().sort((a, b) => a.item_order - b.item_order));
     async function fetchData() {
+      loading.value = true;
       const res = await galleryDetail(galleryIdAsNumber);
       if (res && res.data) {
         data.value = res.data;
       }
+      loading.value = false;
     }
 
     async function updateGallery() {
