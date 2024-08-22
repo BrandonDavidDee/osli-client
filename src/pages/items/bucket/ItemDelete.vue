@@ -4,6 +4,7 @@
       label="Delete"
       size="sm"
       color="grey-9"
+      :disable="loading"
       @click="deletePrecheck"
     />
     <DialogMaster
@@ -17,14 +18,14 @@
         <q-card-actions align="right">
           <q-btn
             label="Cancel"
-            :diable="loading"
+            :diable="internalLoading"
             flat
             @click="closeDialog"
           />
           <q-btn
             label="Delete"
             color="red"
-            :loading="loading"
+            :loading="internalLoading"
             @click="doDelete(closeDialog)"
           />
         </q-card-actions>
@@ -157,6 +158,10 @@ interface RelatedData {
 export default defineComponent({
   components: { DialogMaster },
   props: {
+    loading: {
+      type: Boolean,
+      required: true,
+    },
     sourceId: {
       type: Number,
       required: true,
@@ -169,7 +174,7 @@ export default defineComponent({
   setup(props) {
     const keyStore = useKeyStore();
     const router = useRouter();
-    const loading = ref(false);
+    const internalLoading = ref(false);
 
     const dialog = ref(false);
     const dialogEncryptKey = ref(false);
@@ -180,7 +185,7 @@ export default defineComponent({
     const savedUsers = ref<string[]>([]);
 
     async function doDelete(closeDialog: () => void) {
-      loading.value = true;
+      internalLoading.value = true;
       const res = await itemDelete(encryptionKey.value, props.sourceId, props.item);
       if (res && res.status !== 200) {
         encryptionKey.value = null;
@@ -190,7 +195,7 @@ export default defineComponent({
         router.push({ name: 'item-list-bucket', params: { sourceId: props.sourceId } });
       }
       closeDialog();
-      loading.value = false;
+      internalLoading.value = false;
     }
 
     function showDeleteDialog(closeDialog?: () => void) {
@@ -239,7 +244,7 @@ export default defineComponent({
       deletePrecheck,
       showDeleteDialog,
       addEncryptionKey,
-      loading,
+      internalLoading,
       relatedGalleries,
       savedUsers,
       getDateTimeDisplay,

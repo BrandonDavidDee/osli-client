@@ -13,17 +13,15 @@
           icon="add"
           size="sm"
           flat
+          :disable="loading"
           @click="showDialog"
         />
       </q-card-actions>
-      <q-card-section
-        v-if="!item.tags.length"
-        class="text-caption text-grey-8"
-      >
-        No Tags
+      <q-card-section v-if="loading">
+        <q-skeleton type="text" />
       </q-card-section>
       <q-card-section
-        v-else
+        v-else-if="!loading && item.tags.length"
         class="q-pt-none"
       >
         <q-chip
@@ -36,6 +34,12 @@
         >
           {{ itemTag.tag.title }}
         </q-chip>
+      </q-card-section>
+      <q-card-section
+        v-else
+        class="text-caption text-grey-8"
+      >
+        No Tags
       </q-card-section>
     </q-card>
     <DialogMaster
@@ -93,6 +97,10 @@ import DialogMaster from 'src/components/DialogMaster.vue';
 export default defineComponent({
   components: { DialogMaster },
   props: {
+    loading: {
+      type: Boolean,
+      required: true,
+    },
     sourceId: {
       type: Number,
       required: true,

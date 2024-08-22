@@ -1,5 +1,6 @@
 <template>
   <q-btn
+    :disable="loading"
     icon="bookmark"
     :text-color="saved ? 'amber' : 'grey'"
     @click="saved ? remove() : add()"
@@ -12,6 +13,10 @@ import { saveItem, deleteSavedItem } from 'src/api/item-bucket';
 
 export default defineComponent({
   props: {
+    loading: {
+      type: Boolean,
+      required: true,
+    },
     itemId: {
       type: Number,
       required: true,

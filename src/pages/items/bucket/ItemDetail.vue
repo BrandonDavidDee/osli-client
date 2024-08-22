@@ -29,16 +29,24 @@
         <q-btn-group>
           <q-btn
             label="Links"
+            :disable="loading"
             :to="{ name: 'item-links-bucket', params: { sourceId, itemId}}"
           />
           <ItemSave
+            :loading="loading"
             :item-id="itemIdAsNumber"
             :saved="data.saved"
             @update="onSaveUpdate"
           />
         </q-btn-group>
       </div>
+      <LoadingDetailCard
+        v-if="loading"
+        class="q-mt-sm"
+        :rows="3"
+      />
       <q-card
+        v-if="!loading"
         flat
         square
         bordered
@@ -60,27 +68,43 @@
           />
         </q-card-section>
       </q-card>
-      <q-input
-        v-model="data.title"
-        filled
-        square
-        label="Title"
-        color="black"
-        class="q-mt-md"
-        hint="Optional"
-        @update:model-value="debouncedItemUpdate"
+      <LoadingInputs
+        v-if="loading"
+        :rows="2"
+        class="q-mt-sm"
       />
-      <q-input
-        v-model="data.notes"
-        filled
+      <q-card
+        v-if="!loading"
+        flat
         square
-        type="textarea"
-        label="Notes"
-        color="black"
-        class="q-mt-md"
-        @update:model-value="debouncedItemUpdate"
-      />
+        bordered
+        class="q-mt-sm"
+      >
+        <q-card-section>
+          <q-input
+            v-model="data.title"
+            filled
+            square
+            label="Title"
+            color="black"
+            class="q-mt-md"
+            hint="Optional"
+            @update:model-value="debouncedItemUpdate"
+          />
+          <q-input
+            v-model="data.notes"
+            filled
+            square
+            type="textarea"
+            label="Notes"
+            color="black"
+            class="q-mt-md"
+            @update:model-value="debouncedItemUpdate"
+          />
+        </q-card-section>
+      </q-card>
       <ItemTags
+        :loading="loading"
         :source-id="sourceIdAsNumber"
         :item="data"
         source-type="bucket"
@@ -90,6 +114,7 @@
       />
       <div class="q-mt-md">
         <ItemDelete
+          :loading="loading"
           :source-id="sourceIdAsNumber"
           :item="data"
         />
@@ -117,13 +142,23 @@ import LineItem from 'src/components/LineItem.vue';
 import ItemTags from 'src/pages/items/common/ItemTags.vue';
 import ErrorNotAuthorized from 'src/pages/ErrorNotAuthorized.vue';
 import ErrorNotFound from 'src/pages/ErrorNotFound.vue';
+import LoadingDetailCard from 'src/components/LoadingDetailCard.vue';
+import LoadingInputs from 'src/components/LoadingInputs.vue';
 import ItemDetailPreview from './ItemDetailPreview.vue';
 import ItemSave from './ItemSave.vue';
 import ItemDelete from './ItemDelete.vue';
 
 export default defineComponent({
   components: {
-    ItemDetailPreview, LineItem, ItemTags, ItemSave, ItemDelete, ErrorNotAuthorized, ErrorNotFound,
+    ItemDetailPreview,
+    LineItem,
+    ItemTags,
+    ItemSave,
+    ItemDelete,
+    ErrorNotAuthorized,
+    ErrorNotFound,
+    LoadingDetailCard,
+    LoadingInputs,
   },
   props: {
     sourceId: {
