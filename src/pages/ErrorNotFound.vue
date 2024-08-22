@@ -15,7 +15,7 @@
       </div>
 
       <q-btn
-        v-if="companyUrl"
+        v-if="companyUrl && public"
         class="q-mt-xl"
         color="white"
         text-color="black"
@@ -23,6 +23,16 @@
         label="Go Home"
         no-caps
         @click="openCompanyUrl"
+      />
+      <q-btn
+        v-else
+        class="q-mt-xl"
+        color="white"
+        text-color="black"
+        unelevated
+        label="Go Home"
+        no-caps
+        :to="{ name: 'home' }"
       />
     </div>
   </div>
@@ -33,6 +43,12 @@ import { computed } from 'vue';
 import { openLink } from 'src/services/utils';
 
 export default {
+  props: {
+    public: {
+      type: Boolean,
+      default: false,
+    },
+  },
   setup() {
     const companyUrl = computed(() => {
       const url = process.env.COMPANY_URL;

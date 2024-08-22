@@ -180,11 +180,11 @@ import { SearchPayload } from 'src/models/item';
 import { numeralizeId } from 'src/services/utils';
 import { useKeyStore } from 'src/stores/keys';
 import { useSearchStore } from 'stores/search';
-import BatchUploader from 'src/components/BatchUploader.vue';
 import TagSelector from 'src/pages/sources/TagSelector.vue';
 import DialogMaster from 'src/components/DialogMaster.vue';
 import ErrorNotAuthorized from 'src/pages/ErrorNotAuthorized.vue';
-import LoadingItems from 'src/pages/items/common/LoadingItems.vue';
+import LoadingItems from 'src/components/LoadingItems.vue';
+import BatchUploader from './BatchUploader.vue';
 import ItemListPreview from './ItemListPreview.vue';
 
 export default defineComponent({

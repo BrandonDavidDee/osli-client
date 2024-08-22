@@ -1,5 +1,8 @@
 <template>
-  <ErrorNotFound v-if="notFound" />
+  <ErrorNotFound
+    v-if="notFound"
+    public
+  />
   <div v-if="!notFound && data">
     <div class="text-h6 q-ma-md text-grey-9">
       {{ data.title }}
