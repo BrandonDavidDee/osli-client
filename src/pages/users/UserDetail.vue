@@ -71,11 +71,16 @@ export default defineComponent({
       }
     }
 
+    function makeDataCopy() {
+      return JSON.parse(JSON.stringify(data.value));
+    }
+
     async function onNewScope(groupName: string) {
       if (data.value) {
-        data.value.scopes.push(groupName);
-        const res = await userScopeUpdate(userId, data.value);
-        if (res && res.data) {
+        const copy = makeDataCopy();
+        copy.scopes.push(groupName);
+        const res = await userScopeUpdate(userId, copy);
+        if (res && res.data && res.status === 200) {
           data.value = res.data;
         }
       }
@@ -83,11 +88,12 @@ export default defineComponent({
 
     async function onRemoveScope(groupName: string) {
       if (data.value) {
-        const idx = data.value.scopes.indexOf(groupName);
+        const copy = makeDataCopy();
+        const idx = copy.scopes.indexOf(groupName);
         if (idx !== -1) {
-          data.value.scopes.splice(idx, 1);
+          copy.scopes.splice(idx, 1);
         }
-        const res = await userScopeUpdate(userId, data.value);
+        const res = await userScopeUpdate(userId, copy);
         if (res && res.data && res.status === 200) {
           data.value = res.data;
         }
