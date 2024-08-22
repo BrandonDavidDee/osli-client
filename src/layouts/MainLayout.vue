@@ -23,7 +23,12 @@
         </q-toolbar-title>
         <q-space />
         <div class="q-gutter-sm row items-center no-wrap">
-          <MyMenu @logout="onLogout" />
+          <q-badge
+            v-if="isAdmin"
+            color="grey-9"
+          >
+            Admin
+          </q-badge><MyMenu @logout="onLogout" />
         </div>
       </q-toolbar>
     </q-header>
@@ -44,6 +49,8 @@ export default {
   setup() {
     const store = useAuthStore();
     const router = useRouter();
+
+    const isAdmin = computed(() => store.user?.is_admin);
     const logoUrl = computed(() => {
       const envLogo = process.env.COMPANY_LOGO;
       return (typeof envLogo === 'string' && envLogo) || 'https://dummyimage.com/200x80/262626/fff&text=OSLI';
@@ -56,6 +63,7 @@ export default {
     return {
       logoUrl,
       onLogout,
+      isAdmin,
     };
   },
 };

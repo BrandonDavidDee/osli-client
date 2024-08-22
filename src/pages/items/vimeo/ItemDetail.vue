@@ -1,6 +1,12 @@
 <template>
+  <ErrorNotAuthorized
+    v-if="!authorized"
+    home-button
+    full-screen
+  />
+  <ErrorNotFound v-else-if="notFound" />
   <div
-    v-if="data && authorized"
+    v-else-if="data"
     class="row"
   >
     <q-toolbar class="bg-grey-9 text-white">
@@ -137,12 +143,6 @@
       </div>
     </div>
   </div>
-  <ErrorNotAuthorized
-    v-if="!authorized"
-    home-button
-    full-screen
-  />
-  <ErrorNotFound v-if="notFound" />
 </template>
 
 <script lang="ts">
@@ -199,19 +199,28 @@ export default defineComponent({
 
     async function fetchData() {
       loading.value = true;
-      const res = await itemDetail(sourceIdAsNumber, itemIdAsNumber);
-      if (res && res.data && res.status === 200) {
-        notFound.value = false;
-        authorized.value = true;
-        data.value = res.data;
-      } else if (res && res.status === 404) {
-        notFound.value = true;
-        authorized.value = true;
-      } else {
+      try {
+        const res = await itemDetail(sourceIdAsNumber, itemIdAsNumber);
+        if (res && res.data && res.status === 200) {
+          notFound.value = false;
+          authorized.value = true;
+          data.value = res.data;
+        } else if (res && res.status === 404) {
+          notFound.value = true;
+          authorized.value = true;
+        } else if (res && res.status === 403) {
+          notFound.value = false;
+          authorized.value = false;
+        } else {
+          notFound.value = false;
+          authorized.value = false;
+        }
+      } catch (error) {
         notFound.value = false;
         authorized.value = false;
+      } finally {
+        loading.value = false;
       }
-      loading.value = false;
     }
 
     const debouncedItemUpdate = debounce(async () => {
