@@ -176,29 +176,24 @@ export default defineComponent({
 
     const authorized = ref(true);
     const notFound = ref(false);
-    const data = ref<ItemBucket>();
+    const data = ref<ItemBucket | null>(null);
     const loading = ref(false);
 
     async function fetchData() {
       loading.value = true;
+      authorized.value = true;
+      notFound.value = false;
+      data.value = null;
       try {
         const res = await itemDetail(sourceIdAsNumber, itemIdAsNumber);
-        if (res && res.data && res.status === 200) {
-          notFound.value = false;
-          authorized.value = true;
+        if (res && res.status === 200 && res.data) {
           data.value = res.data;
         } else if (res && res.status === 404) {
           notFound.value = true;
-          authorized.value = true;
         } else if (res && res.status === 403) {
-          notFound.value = false;
-          authorized.value = false;
-        } else {
-          notFound.value = false;
           authorized.value = false;
         }
       } catch (error) {
-        notFound.value = false;
         authorized.value = false;
       } finally {
         loading.value = false;
