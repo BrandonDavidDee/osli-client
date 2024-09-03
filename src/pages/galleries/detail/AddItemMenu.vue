@@ -90,8 +90,8 @@ import { GalleryItem } from 'src/models/gallery';
 import { useSourceStore } from 'src/stores/sources';
 import { positiveNotification } from 'src/services/notify';
 import DialogMaster from 'src/components/DialogMaster.vue';
-import ItemListBucket from 'src/pages/items/bucket/ItemList.vue';
-import ItemListVimeo from 'src/pages/items/vimeo/ItemList.vue';
+import ItemListBucket from 'src/pages/items/bucket/item-list/ItemList.vue';
+import ItemListVimeo from 'src/pages/items/vimeo/item-list/ItemList.vue';
 import { ItemBucket } from 'src/models/item-bucket';
 import { ItemVimeo } from 'src/models/item-vimeo';
 
