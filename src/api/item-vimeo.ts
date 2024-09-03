@@ -42,6 +42,22 @@ export async function itemUpdate(sourceId: number, itemId: number, payload: Item
   }
 }
 
+export async function itemDelete(sourceId: number, itemId: number) {
+  try {
+    return await api.delete(`${path}/${itemId}?source_id=${sourceId}`);
+  } catch (err) {
+    return errorHandler(err);
+  }
+}
+
+export async function itemRelated(sourceId: number, itemId: number) {
+  try {
+    return await api.get(`${path}/${itemId}/related?source_id=${sourceId}`);
+  } catch (err) {
+    return errorHandler(err);
+  }
+}
+
 export async function itemUpdateVimeoMeta(sourceId: number, itemId: number, payload: ItemVimeo, encryptionKey: string) {
   try {
     return await api.put(`${path}/${itemId}/vimeo-meta?source_id=${sourceId}&encryption_key=${encryptionKey}`, payload);

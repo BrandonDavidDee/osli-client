@@ -99,7 +99,7 @@
             </tbody>
           </q-markup-table>
         </q-card-section>
-        <q-card-section>
+        <q-card-section v-if="savedUsers.length">
           <q-banner class="bg-grey-3">
             The following users have this item saved.
           </q-banner>
@@ -205,6 +205,8 @@ export default defineComponent({
         dialogEncryptKey.value = true;
       } else if (closeDialog) {
         closeDialog();
+      } else {
+        dialog.value = true;
       }
     }
 
