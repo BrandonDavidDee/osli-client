@@ -14,6 +14,12 @@
       close-footer
     >
       <template #content>
+        <q-card-actions align="right">
+          <TagCreate
+            :existing-tags="data"
+            @new="onNewTag"
+          />
+        </q-card-actions>
         <q-card-section>
           <q-input
             v-model="model"
@@ -48,9 +54,10 @@ import { Tag } from 'src/models/tag';
 import { tagList } from 'src/api/tags';
 import { useSearchStore } from 'stores/search';
 import DialogMaster from 'src/components/DialogMaster.vue';
+import TagCreate from 'src/components/TagCreate.vue';
 
 export default defineComponent({
-  components: { DialogMaster },
+  components: { DialogMaster, TagCreate },
   setup() {
     const store = useSearchStore();
 
@@ -108,6 +115,10 @@ export default defineComponent({
       return isSelected ? 'grey' : 'teal';
     }
 
+    function onNewTag(value: Tag) {
+      data.value.push(value);
+    }
+
     return {
       model,
       data,
@@ -115,6 +126,7 @@ export default defineComponent({
       dataFiltered,
       onSelected,
       getTagColor,
+      onNewTag,
       selectedTagIds,
       label,
       dialog,

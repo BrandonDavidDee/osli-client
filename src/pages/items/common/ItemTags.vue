@@ -48,6 +48,12 @@
       close-footer
     >
       <template #content>
+        <q-card-actions align="right">
+          <TagCreate
+            :existing-tags="data"
+            @new="onNewTag"
+          />
+        </q-card-actions>
         <q-card-section>
           <q-input
             v-model="model"
@@ -93,9 +99,10 @@ import { ItemTag } from 'src/models/item';
 import { ItemVimeo } from 'src/models/item-vimeo';
 import { Tag } from 'src/models/tag';
 import DialogMaster from 'src/components/DialogMaster.vue';
+import TagCreate from 'src/components/TagCreate.vue';
 
 export default defineComponent({
-  components: { DialogMaster },
+  components: { DialogMaster, TagCreate },
   props: {
     loading: {
       type: Boolean,
@@ -194,13 +201,19 @@ export default defineComponent({
       }
     }
 
+    function onNewTag(value: Tag) {
+      data.value.push(value);
+    }
+
     return {
+      data,
       dataFiltered,
       deleteTag,
       dialog,
       getTagColor,
       isClickable,
       model,
+      onNewTag,
       onSelected,
       showDialog,
       tagsSorted,
