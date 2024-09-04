@@ -14,7 +14,7 @@
       <template #content="{ closeDialog }">
         <q-form
           ref="form"
-          @click="onSubmit"
+          @submit="onSubmit"
         >
           <q-card-section>
             <q-input
@@ -84,6 +84,7 @@ export default defineComponent({
           positiveNotification(`${model.value} added`);
           emit('new', res.data);
         }
+        model.value = '';
         loading.value = false;
         dialog.value = false;
       }
