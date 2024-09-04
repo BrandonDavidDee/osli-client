@@ -1,6 +1,12 @@
 <template>
   <div>
-    <div v-if="authorized">
+    <ErrorServer v-if="serverError" />
+    <ErrorNotAuthorized
+      v-else-if="!authorized"
+      :home-button="isRoute"
+      :full-screen="isRoute"
+    />
+    <div v-else>
       <q-toolbar class="bg-grey-9 text-white">
         <q-btn
           v-if="isRoute"
@@ -178,11 +184,6 @@
         </template>
       </DialogMaster>
     </div>
-    <ErrorNotAuthorized
-      v-if="!authorized"
-      :home-button="isRoute"
-      :full-screen="isRoute"
-    />
   </div>
 </template>
 
@@ -200,12 +201,13 @@ import { useKeyStore } from 'src/stores/keys';
 import TagSelector from 'src/pages/sources/TagSelector.vue';
 import DialogMaster from 'src/components/DialogMaster.vue';
 import ErrorNotAuthorized from 'src/pages/ErrorNotAuthorized.vue';
+import ErrorServer from 'src/pages/ErrorServer.vue';
 import LoadingItems from 'src/components/LoadingItems.vue';
 import ItemListPreview from './ItemListPreview.vue';
 
 export default defineComponent({
   components: {
-    TagSelector, ItemListPreview, DialogMaster, ErrorNotAuthorized, LoadingItems,
+    TagSelector, ItemListPreview, DialogMaster, ErrorNotAuthorized, LoadingItems, ErrorServer,
   },
   props: {
     sourceId: {
@@ -236,6 +238,7 @@ export default defineComponent({
     const newVimeoId = ref('');
     const offset = ref(0);
     const page = ref(1);
+    const serverError = ref(false);
     const sourceData = ref<SourceVimeo>();
     const totalCount = ref(0);
 
@@ -244,6 +247,7 @@ export default defineComponent({
     const selectedTagIds = computed(() => store.selectedTagIds);
 
     async function fetchItemsData() {
+      serverError.value = false;
       loading.value = true;
       itemsData.value = [];
       const payload: SearchPayload = {
@@ -260,8 +264,10 @@ export default defineComponent({
         itemsData.value = res.data.items;
         totalCount.value = res.data.total_count;
         maxPages.value = Math.ceil(totalCount.value / limit.value);
-      } else {
+      } else if (res && res.status === 403) {
         authorized.value = false;
+      } else {
+        serverError.value = true;
       }
       loading.value = false;
     }
@@ -352,6 +358,7 @@ export default defineComponent({
       newVimeoId,
       onSelected,
       page,
+      serverError,
       showNewVideoDialog,
       sourceData,
     };
