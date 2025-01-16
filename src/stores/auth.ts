@@ -93,7 +93,7 @@ export const useAuthStore = defineStore('auth', {
       } catch (err) {
         this.clearTokens();
         Notify.create({
-          type: 'negative', message: 'Error Refreshing Tokens',
+          type: 'negative', message: 'You have been logged out',
         });
         return null;
       }
