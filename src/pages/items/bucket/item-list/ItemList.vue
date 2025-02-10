@@ -297,6 +297,7 @@ export default defineComponent({
     }, { immediate: true });
 
     watch(filterLocal, (value) => {
+      page.value = 1;
       store.filter = value || '';
     });
 
