@@ -52,13 +52,13 @@ const routes: RouteRecordRaw[] = [
         }),
       },
       {
-        path: 'bucket/:sourceId/items/:itemId',
+        path: 'bucket/:sourceId/item/:itemId',
         component: () => import('pages/items/bucket/item-detail/ItemDetail.vue'),
         name: 'item-detail-bucket',
         props: true,
       },
       {
-        path: 'bucket/:sourceId/items/:itemId/links',
+        path: 'bucket/:sourceId/item/:itemId/links',
         component: () => import('pages/items/common/ItemLinks.vue'),
         name: 'item-links-bucket',
         props: (route) => ({
@@ -68,13 +68,13 @@ const routes: RouteRecordRaw[] = [
         }),
       },
       {
-        path: 'vimeo/:sourceId/items/:itemId',
+        path: 'vimeo/:sourceId/item/:itemId',
         component: () => import('pages/items/vimeo/item-detail/ItemDetail.vue'),
         name: 'item-detail-vimeo',
         props: true,
       },
       {
-        path: 'vimeo/:sourceId/items/:itemId/links',
+        path: 'vimeo/:sourceId/item/:itemId/links',
         component: () => import('pages/items/common/ItemLinks.vue'),
         name: 'item-links-vimeo',
         props: (route) => ({

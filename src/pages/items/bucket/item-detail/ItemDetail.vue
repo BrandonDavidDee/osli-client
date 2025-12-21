@@ -12,12 +12,19 @@
     <q-toolbar class="bg-grey-9 text-white">
       <q-btn
         dense
-        icon="arrow_back"
+        icon="list"
         color="white"
         text-color="black"
         size="sm"
-        :to="{name: 'item-list-bucket', params: { sourceId: data.source.id}}"
-      />
+        :to="{name: 'item-list-bucket', params: { sourceId: data.source.id, page: 1}}"
+      >
+        <q-tooltip
+          anchor="top end"
+          self="top middle"
+        >
+          Back to List
+        </q-tooltip>
+      </q-btn>
       <q-toolbar-title>
         {{ data.source.title }}
       </q-toolbar-title>
@@ -95,7 +102,6 @@
             color="black"
             class="q-mt-md"
             hint="Optional"
-            @update:model-value="debouncedItemUpdate"
           />
           <q-input
             v-model="data.notes"
@@ -105,9 +111,16 @@
             label="Notes"
             color="black"
             class="q-mt-md"
-            @update:model-value="debouncedItemUpdate"
           />
         </q-card-section>
+        <q-separator />
+        <q-card-actions align="right">
+          <q-btn
+            label="Save"
+            size="sm"
+            @click="onUpdateItem"
+          />
+        </q-card-actions>
       </q-card>
       <ItemTags
         :loading="loading"
@@ -134,10 +147,10 @@ import {
   defineComponent, ref, watch,
 } from 'vue';
 import { itemDetail, itemUpdate } from 'src/api/item-bucket';
-import { debounce } from 'quasar';
 import { ItemTag } from 'src/models/item';
 import { ItemBucket } from 'src/models/item-bucket';
 import { calculateSize, numeralizeId } from 'src/services/utils';
+import { positiveNotification } from 'src/services/notify';
 import LineItem from 'src/components/LineItem.vue';
 import ItemTags from 'src/pages/items/common/ItemTags.vue';
 import ErrorNotAuthorized from 'src/pages/ErrorNotAuthorized.vue';
@@ -200,13 +213,11 @@ export default defineComponent({
       }
     }
 
-    const debouncedItemUpdate = debounce(async () => {
-      if (data.value) {
-        loading.value = true;
-        await itemUpdate(sourceIdAsNumber, itemIdAsNumber, data.value);
-        loading.value = false;
-      }
-    }, 500);
+    async function onUpdateItem() {
+      if (!data.value) return;
+      const res = await itemUpdate(sourceIdAsNumber, itemIdAsNumber, data.value);
+      if (res) positiveNotification('Saved');
+    }
 
     function onNewTag(v: ItemTag) {
       data.value?.tags.push(v);
@@ -233,14 +244,14 @@ export default defineComponent({
       authorized,
       data,
       loading,
-      calculateSize,
-      debouncedItemUpdate,
-      onNewTag,
-      onDeletedTagItem,
-      onSaveUpdate,
       notFound,
       itemIdAsNumber,
       sourceIdAsNumber,
+      calculateSize,
+      onNewTag,
+      onDeletedTagItem,
+      onSaveUpdate,
+      onUpdateItem,
     };
   },
 });

@@ -8,15 +8,6 @@
     />
     <div v-else>
       <q-toolbar class="bg-grey-9 text-white">
-        <q-btn
-          v-if="isRoute"
-          dense
-          icon="arrow_back"
-          color="white"
-          text-color="black"
-          size="sm"
-          :to="{name: 'home'}"
-        />
         <q-toolbar-title>
           {{ sourceData?.title }}
         </q-toolbar-title>
