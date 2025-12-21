@@ -10,7 +10,7 @@ interface SearchState {
 
 export const useSearchStore = defineStore('search', {
   state: (): SearchState => ({
-    page: 1,
+    page: 1, // delete this it is no longer needed
     filter: '',
     tags: [],
     view: 'grid',

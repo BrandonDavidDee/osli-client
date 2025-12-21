@@ -53,6 +53,7 @@
           <ItemListBucket
             :source-id="selectedBucketSourceId"
             :is-route="false"
+            :page="1"
             @selected="onSelectedBucketItem($event, closeDialog)"
           />
         </q-card-section>

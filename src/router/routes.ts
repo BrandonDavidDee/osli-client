@@ -34,12 +34,12 @@ const routes: RouteRecordRaw[] = [
         name: 'home',
       },
       {
-        path: 'bucket/:sourceId/items',
-        component: () => import('pages/items/bucket/item-list/ItemList.vue'),
+        path: 'bucket/:sourceId/items/:page',
+        component: () => import('pages/items/bucket/item-list/ItemListRoute.vue'),
         name: 'item-list-bucket',
         props: (route) => ({
           sourceId: route.params.sourceId,
-          isRoute: true,
+          page: route.params.page,
         }),
       },
       {

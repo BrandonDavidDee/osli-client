@@ -56,6 +56,18 @@
         />
       </q-toolbar>
       <LoadingItems v-if="loading" />
+      <div
+        v-if="showTopPagination"
+        class="q-pa-lg flex flex-center"
+      >
+        <q-pagination
+          v-model="paginationModel"
+          :max="maxPages"
+          :max-pages="6"
+          boundary-links
+          color="teal"
+        />
+      </div>
       <q-card
         v-if="!itemsData.length && !loading"
         class="q-ma-sm"
@@ -114,7 +126,7 @@
         class="q-pa-lg flex flex-center"
       >
         <q-pagination
-          v-model="page"
+          v-model="paginationModel"
           :max="maxPages"
           :max-pages="6"
           boundary-links
@@ -174,13 +186,13 @@
 import {
   defineComponent, ref, onMounted, watch, computed,
 } from 'vue';
+import { useRouter } from 'vue-router';
 import { itemList } from 'src/api/item-bucket';
+import { useKeyStore } from 'src/stores/keys';
+import { useSearchStore } from 'stores/search';
 import { ItemBucket } from 'src/models/item-bucket';
 import { SourceBucket } from 'src/models/source-bucket';
 import { SearchPayload } from 'src/models/item';
-import { numeralizeId } from 'src/services/utils';
-import { useKeyStore } from 'src/stores/keys';
-import { useSearchStore } from 'stores/search';
 import TagSelector from 'src/pages/sources/TagSelector.vue';
 import DialogMaster from 'src/components/DialogMaster.vue';
 import ErrorNotAuthorized from 'src/pages/ErrorNotAuthorized.vue';
@@ -191,10 +203,20 @@ import ItemListPreview from './ItemListPreview.vue';
 
 export default defineComponent({
   components: {
-    ItemListPreview, TagSelector, BatchUploader, DialogMaster, LoadingItems, ErrorNotAuthorized, ErrorServer,
+    ItemListPreview,
+    TagSelector,
+    BatchUploader,
+    DialogMaster,
+    LoadingItems,
+    ErrorNotAuthorized,
+    ErrorServer,
   },
   props: {
     sourceId: {
+      type: [Number, String],
+      required: true,
+    },
+    page: {
       type: [Number, String],
       required: true,
     },
@@ -205,7 +227,8 @@ export default defineComponent({
   },
   emits: ['selected'],
   setup(props, { emit }) {
-    const sourceIdAsNumber = numeralizeId(props.sourceId);
+    const router = useRouter();
+    const sourceIdAsNumber = Number(props.sourceId);
 
     const keyStore = useKeyStore();
     const store = useSearchStore();
@@ -219,15 +242,17 @@ export default defineComponent({
     const loading = ref(false);
     const limit = ref(18);
     const maxPages = ref(0);
-    const offset = ref(0);
-    const page = ref(1);
     const serverError = ref(false);
     const sourceData = ref<SourceBucket>();
     const totalCount = ref(0);
 
+    // Pagination model gets synced with the page prop in a watcher
+    const paginationModel = ref(Number(props.page));
+
     const filter = computed(() => store.filter);
     const gridView = computed(() => sourceData.value?.grid_view);
     const selectedTagIds = computed(() => store.selectedTagIds);
+    const offset = computed(() => (paginationModel.value - 1) * limit.value);
 
     async function fetchItemsData() {
       serverError.value = false;
@@ -255,21 +280,28 @@ export default defineComponent({
       loading.value = false;
     }
 
+    const showTopPagination = computed(() => itemsData.value.length > 6);
+
     function addEncryptionKey(closeDialog: () => void) {
       dialog.value = true;
       closeDialog();
       keyStore.addKey(sourceIdAsNumber, 'bucket', encryptionKey.value);
     }
 
-    function resetSearchParams() {
-      page.value = 1;
-      filterLocal.value = '';
-      // TODO: reset tags and any search values in state too
+    function resetToFirstPage() {
+      if (props.isRoute) {
+        // go to route to page 1
+        router.push({ name: 'item-list-bucket', params: { sourceId: sourceIdAsNumber, page: 1 } });
+      } else {
+        // If being shown in dialog pagination still needs to be reset
+        paginationModel.value = 1;
+        fetchItemsData();
+      }
     }
 
     function onUploaded(closeDialog: () => void) {
-      resetSearchParams();
-      fetchItemsData();
+      filterLocal.value = '';
+      resetToFirstPage();
       closeDialog();
     }
 
@@ -292,31 +324,48 @@ export default defineComponent({
       emit('selected', v);
     }
 
-    watch(filter, () => {
+    // Watch the page prop and sync paginationModel
+    watch(() => props.page, (newPage: string | number) => {
+      const pageNum = Number(newPage);
+      if (paginationModel.value !== pageNum) {
+        paginationModel.value = pageNum;
+      }
       fetchItemsData();
     }, { immediate: true });
 
-    watch(filterLocal, (value) => {
-      page.value = 1;
-      store.filter = value || '';
+    // Watch paginationModel and change route accordingly
+    watch(paginationModel, (newPage: number) => {
+      if (props.isRoute) {
+        // Only update route if we're in route mode and the page actually changed
+        const currentPage = Number(props.page);
+        if (newPage !== currentPage) {
+          router.push({ name: 'item-list-bucket', params: { sourceId: sourceIdAsNumber, page: newPage } });
+        }
+      } else {
+        // In dialog mode, fetch data directly (the offset is calculated dynamically)
+        fetchItemsData();
+      }
     });
 
-    watch(page, (v) => {
-      offset.value = (v - 1) * limit.value;
+    watch(filterLocal, (value) => {
+      store.filter = value || '';
+      resetToFirstPage();
+    });
+
+    watch(filter, () => {
       fetchItemsData();
     });
 
     watch(selectedTagIds, () => {
-      fetchItemsData();
+      resetToFirstPage();
     }, { deep: true });
 
     onMounted(() => {
-      if (store.page) {
-        page.value = store.page;
-        if (filter.value) {
-          filterLocal.value = filter.value;
-        }
+      // Initialize local filter with value from store if it exists
+      if (store.filter) {
+        filterLocal.value = store.filter;
       }
+
       const keyInStore = keyStore.getKey(sourceIdAsNumber, 'bucket');
       if (keyInStore) {
         encryptionKey.value = keyInStore;
@@ -325,7 +374,6 @@ export default defineComponent({
 
     return {
       authorized,
-      addEncryptionKey,
       dialog,
       dialogEncryptKey,
       encryptionKey,
@@ -333,14 +381,16 @@ export default defineComponent({
       gridView,
       itemsData,
       loading,
-      page,
       maxPages,
+      paginationModel,
+      serverError,
+      showTopPagination,
+      sourceData,
+      addEncryptionKey,
       onSelected,
       onUploaded,
       onUploadError,
-      serverError,
       showUploader,
-      sourceData,
     };
   },
 });

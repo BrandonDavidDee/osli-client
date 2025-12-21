@@ -28,7 +28,7 @@
         :key="source.id"
         v-ripple
         clickable
-        :to="{ name: 'item-list-bucket', params: { sourceId: source.id}}"
+        :to="{ name: 'item-list-bucket', params: { sourceId: source.id, page: 1}}"
       >
         <q-item-section avatar>
           <q-icon
