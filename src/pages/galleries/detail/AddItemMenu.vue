@@ -74,6 +74,7 @@
           <ItemListVimeo
             :source-id="selectedVimeoSourceId"
             :is-route="false"
+            :page="1"
             @selected="onSelectedVimeoItem($event, closeDialog)"
           />
         </q-card-section>

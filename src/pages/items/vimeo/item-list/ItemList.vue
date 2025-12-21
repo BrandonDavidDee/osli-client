@@ -56,6 +56,18 @@
         />
       </q-toolbar>
       <LoadingItems v-if="loading" />
+      <div
+        v-if="showTopPagination"
+        class="q-pa-lg flex flex-center"
+      >
+        <q-pagination
+          v-model="paginationModel"
+          :max="maxPages"
+          :max-pages="6"
+          boundary-links
+          color="teal"
+        />
+      </div>
       <q-card
         v-if="!itemsData.length && !loading"
         class="q-ma-sm"
@@ -114,7 +126,7 @@
         class="q-pa-lg flex flex-center"
       >
         <q-pagination
-          v-model="page"
+          v-model="paginationModel"
           :max="maxPages"
           :max-pages="6"
           boundary-links
@@ -195,7 +207,6 @@ import { itemList, itemCreate } from 'src/api/item-vimeo';
 import { SourceVimeo } from 'src/models/source-vimeo';
 import { SearchPayload } from 'src/models/item';
 import { ItemVimeo } from 'src/models/item-vimeo';
-import { numeralizeId } from 'src/services/utils';
 import { useSearchStore } from 'stores/search';
 import { useKeyStore } from 'src/stores/keys';
 import TagSelector from 'src/pages/sources/TagSelector.vue';
@@ -203,6 +214,7 @@ import DialogMaster from 'src/components/DialogMaster.vue';
 import ErrorNotAuthorized from 'src/pages/ErrorNotAuthorized.vue';
 import ErrorServer from 'src/pages/ErrorServer.vue';
 import LoadingItems from 'src/components/LoadingItems.vue';
+import { useRouter } from 'vue-router';
 import ItemListPreview from './ItemListPreview.vue';
 
 export default defineComponent({
@@ -214,6 +226,10 @@ export default defineComponent({
       type: [Number, String],
       required: true,
     },
+    page: {
+      type: [Number, String],
+      required: true,
+    },
     isRoute: {
       type: Boolean,
       required: true,
@@ -221,7 +237,8 @@ export default defineComponent({
   },
   emits: ['selected'],
   setup(props, { emit }) {
-    const sourceIdAsNumber = numeralizeId(props.sourceId);
+    const router = useRouter();
+    const sourceIdAsNumber = Number(props.sourceId);
 
     const store = useSearchStore();
     const keyStore = useKeyStore();
@@ -236,15 +253,16 @@ export default defineComponent({
     const loading = ref(false);
     const maxPages = ref(0);
     const newVimeoId = ref('');
-    const offset = ref(0);
-    const page = ref(1);
     const serverError = ref(false);
     const sourceData = ref<SourceVimeo>();
     const totalCount = ref(0);
 
+    const paginationModel = ref(Number(props.page));
+
     const filter = computed(() => store.filter);
     const gridView = computed(() => sourceData.value?.grid_view);
     const selectedTagIds = computed(() => store.selectedTagIds);
+    const offset = computed(() => (paginationModel.value - 1) * limit.value);
 
     async function fetchItemsData() {
       serverError.value = false;
@@ -272,25 +290,28 @@ export default defineComponent({
       loading.value = false;
     }
 
+    const showTopPagination = computed(() => itemsData.value.length > 6);
+
     function addEncryptionKey(closeDialog: () => void) {
       dialog.value = true;
-      // dialogEncryptKey.value = false;
       closeDialog();
       keyStore.addKey(sourceIdAsNumber, 'vimeo', encryptionKey.value);
     }
 
-    function resetSearchParams() {
-      page.value = 1;
-      filterLocal.value = '';
-      // TODO: reset tags and any search values in state too
+    function resetToFirstPage() {
+      if (props.isRoute) {
+        router.push({ name: 'item-list-vimeo', params: { sourceId: sourceIdAsNumber, page: 1 } });
+      } else {
+        paginationModel.value = 1;
+        fetchItemsData();
+      }
     }
 
     async function createNewItem(closeDialog: () => void) {
       loading.value = true;
       const res = await itemCreate(sourceIdAsNumber, newVimeoId.value, encryptionKey.value);
       if (res && res.status === 200) {
-        resetSearchParams();
-        fetchItemsData();
+        resetToFirstPage();
       } else {
         encryptionKey.value = null;
         keyStore.removeKey(sourceIdAsNumber, 'vimeo');
@@ -313,31 +334,43 @@ export default defineComponent({
       emit('selected', v);
     }
 
-    watch(filter, () => {
+    watch(() => props.page, (newPage: string | number) => {
+      const pageNum = Number(newPage);
+      if (paginationModel.value !== pageNum) {
+        paginationModel.value = pageNum;
+      }
       fetchItemsData();
     }, { immediate: true });
 
-    watch(filterLocal, (value) => {
-      page.value = 1;
-      store.filter = value || '';
+    watch(paginationModel, (newPage: number) => {
+      if (props.isRoute) {
+        const currentPage = Number(props.page);
+        if (newPage !== currentPage) {
+          router.push({ name: 'item-list-vimeo', params: { sourceId: sourceIdAsNumber, page: newPage } });
+        }
+      } else {
+        fetchItemsData();
+      }
     });
 
-    watch(page, (v) => {
-      offset.value = (v - 1) * limit.value;
+    watch(filterLocal, (value) => {
+      store.filter = value || '';
+      resetToFirstPage();
+    });
+
+    watch(filter, () => {
       fetchItemsData();
     });
 
     watch(selectedTagIds, () => {
-      fetchItemsData();
+      resetToFirstPage();
     }, { deep: true });
 
     onMounted(() => {
-      if (store.page) {
-        page.value = store.page;
-        if (filter.value) {
-          filterLocal.value = filter.value;
-        }
+      if (store.filter) {
+        filterLocal.value = store.filter;
       }
+
       const keyInStore = keyStore.getKey(sourceIdAsNumber, 'vimeo');
       if (keyInStore) {
         encryptionKey.value = keyInStore;
@@ -346,22 +379,23 @@ export default defineComponent({
 
     return {
       authorized,
-      addEncryptionKey,
-      createNewItem,
-      filterLocal,
       dialog,
       dialogEncryptKey,
       encryptionKey,
+      filterLocal,
       gridView,
       itemsData,
       loading,
       maxPages,
       newVimeoId,
-      onSelected,
-      page,
+      paginationModel,
       serverError,
-      showNewVideoDialog,
+      showTopPagination,
       sourceData,
+      addEncryptionKey,
+      createNewItem,
+      onSelected,
+      showNewVideoDialog,
     };
   },
 });

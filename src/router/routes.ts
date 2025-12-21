@@ -43,12 +43,12 @@ const routes: RouteRecordRaw[] = [
         }),
       },
       {
-        path: 'vimeo/:sourceId/items',
-        component: () => import('pages/items/vimeo/item-list/ItemList.vue'),
+        path: 'vimeo/:sourceId/items/:page',
+        component: () => import('pages/items/vimeo/item-list/ItemListRoute.vue'),
         name: 'item-list-vimeo',
         props: (route) => ({
           sourceId: route.params.sourceId,
-          isRoute: true,
+          page: route.params.page,
         }),
       },
       {

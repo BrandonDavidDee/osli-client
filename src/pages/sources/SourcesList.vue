@@ -70,7 +70,7 @@
         :key="source.id"
         v-ripple
         clickable
-        :to="{ name: 'item-list-vimeo', params: { sourceId: source.id}}"
+        :to="{ name: 'item-list-vimeo', params: { sourceId: source.id, page: 1}}"
       >
         <q-item-section avatar>
           <q-icon
