@@ -192,7 +192,7 @@ export default defineComponent({
         keyStore.removeKey(props.sourceId, 'bucket');
       } else {
         positiveNotification('Deleted!');
-        router.push({ name: 'item-list-bucket', params: { sourceId: props.sourceId } });
+        router.push({ name: 'item-list-bucket', params: { sourceId: props.sourceId, page: 1 } });
       }
       closeDialog();
       internalLoading.value = false;
@@ -203,10 +203,14 @@ export default defineComponent({
       const keyInStore = keyStore.getKey(props.sourceId, 'bucket');
       if (!keyInStore) {
         dialogEncryptKey.value = true;
-      } else if (closeDialog) {
-        closeDialog();
+        encryptionKey.value = null;
       } else {
-        dialog.value = true;
+        encryptionKey.value = keyInStore;
+        if (closeDialog) {
+          closeDialog();
+        } else {
+          dialog.value = true;
+        }
       }
     }
 

@@ -17,7 +17,9 @@ export const useKeyStore = defineStore('keyStore', {
   actions: {
     addKey(sourceId: number, sourceType: string, encryptionKey: string) {
       const found = this.keys.find((v: StoredKey) => v.sourceId === sourceId && v.sourceType === sourceType);
-      if (!found) {
+      if (found) {
+        found.encryptionKey = encryptionKey;
+      } else {
         this.keys.push({ sourceId, sourceType, encryptionKey });
       }
     },

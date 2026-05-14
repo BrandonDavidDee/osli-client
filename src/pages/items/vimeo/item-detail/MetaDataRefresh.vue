@@ -95,7 +95,9 @@ export default defineComponent({
       const keyInStore = store.getKey(props.sourceId, 'vimeo');
       if (!keyInStore) {
         dialog.value = true;
+        encryptionKey.value = null;
       } else {
+        encryptionKey.value = keyInStore;
         doUpdate();
       }
     }

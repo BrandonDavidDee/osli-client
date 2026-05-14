@@ -300,7 +300,9 @@ export default defineComponent({
       const keyInStore = keyStore.getKey(sourceIdAsNumber, 'bucket');
       if (!keyInStore) {
         dialogEncryptKey.value = true;
+        encryptionKey.value = null;
       } else {
+        encryptionKey.value = keyInStore;
         dialog.value = true;
       }
     }

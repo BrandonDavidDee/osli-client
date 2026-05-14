@@ -135,7 +135,7 @@
               filled
               color="black"
               label="Vimeo Video ID"
-              :rules="[(v) => !!v || 'Required']"
+              :rules="[(v: string) => !!v || 'Required']"
               :loading="loading"
             />
           </q-card-section>
@@ -316,7 +316,9 @@ export default defineComponent({
       const keyInStore = keyStore.getKey(sourceIdAsNumber, 'vimeo');
       if (!keyInStore) {
         dialogEncryptKey.value = true;
+        encryptionKey.value = null;
       } else {
+        encryptionKey.value = keyInStore;
         dialog.value = true;
       }
     }
