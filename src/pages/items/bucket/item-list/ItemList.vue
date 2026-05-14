@@ -133,7 +133,7 @@
           <q-card-section>
             <BatchUploader
               :encryption-key="encryptionKey"
-              :source-id="sourceId"
+              :source-id="sourceIdAsNumber"
               @uploaded="onUploaded(closeDialog)"
               @error="onUploadError(closeDialog)"
             />
@@ -286,8 +286,8 @@ export default defineComponent({
       } else {
         // If being shown in dialog pagination still needs to be reset
         paginationModel.value = 1;
-        fetchItemsData();
       }
+      fetchItemsData();
     }
 
     function onUploaded(closeDialog: () => void) {
@@ -377,6 +377,7 @@ export default defineComponent({
       serverError,
       showTopPagination,
       sourceData,
+      sourceIdAsNumber,
       addEncryptionKey,
       onSelected,
       onUploaded,
