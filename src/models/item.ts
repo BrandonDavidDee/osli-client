@@ -23,4 +23,5 @@ export interface SearchPayload {
   offset: number;
   filter: string;
   tag_ids: any[];
+  filter_mode: string;
 }

@@ -12,6 +12,17 @@
           {{ sourceData?.title }}
         </q-toolbar-title>
         <TagSelector />
+        <q-btn-toggle
+          v-model="filterMode"
+          size="sm"
+          class="q-pr-sm"
+          color="grey"
+          toggle-color="teal"
+          :options="[
+            { label: 'AND', value: 'and' },
+            { label: 'OR', value: 'or' },
+          ]"
+        />
         <q-input
           v-model="filterLocal"
           class="GPL__toolbar-input"
@@ -239,6 +250,7 @@ export default defineComponent({
     const dialogEncryptKey = ref(false);
     const encryptionKey = ref();
     const filterLocal = ref('');
+    const filterMode = ref('or');
     const itemsData = ref<ItemVimeo[]>([]);
     const limit = ref(18);
     const loading = ref(false);
@@ -265,6 +277,7 @@ export default defineComponent({
         offset: offset.value,
         filter: filter.value,
         tag_ids: selectedTagIds.value,
+        filter_mode: filterMode.value,
       };
       const res = await itemList(sourceIdAsNumber, payload);
       if (res && res.data && res.status === 200) {
@@ -351,7 +364,7 @@ export default defineComponent({
       resetToFirstPage();
     });
 
-    watch(filter, () => {
+    watch([filter, filterMode], () => {
       fetchItemsData();
     });
 
@@ -371,6 +384,7 @@ export default defineComponent({
     });
 
     return {
+      filterMode,
       authorized,
       dialog,
       dialogEncryptKey,
